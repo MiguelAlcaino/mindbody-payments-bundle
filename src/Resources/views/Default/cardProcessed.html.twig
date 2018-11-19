@@ -1,0 +1,7 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    {% if errorMessage is defined %}
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+    {% endif %}
+{% endblock %}

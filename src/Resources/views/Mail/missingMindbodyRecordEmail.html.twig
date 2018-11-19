@@ -1,0 +1,9 @@
+{% extends '@MindBodyPayments/Mail/mailBase.html.twig' %}
+
+{% block content %}
+    <p>Este es un mensaje generado desde el sistema de pagos y no debe ser respondido.</p>
+    <p>El usuario {{ transactionRecord.customer.firstName~" "~transactionRecord.customer.lastName }}
+        - {{ transactionRecord.customer.email }} ha tenido un problema con su compra.
+        Haz <a href="{{ url('admin_transactions_show', {'id': transactionRecord.id }) }}">click aqui</a> para ir al
+        detalle de la transaccion y solucionar el problema.</p>
+{% endblock %}

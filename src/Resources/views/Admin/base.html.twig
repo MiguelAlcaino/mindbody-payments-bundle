@@ -1,0 +1,49 @@
+{% extends '::base.html.twig' %}
+{% block containerClass %}container-fluid{% endblock %}
+{% block body %}
+    <div class="row">
+    <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') == 'admin_transactions_index' %}active{% endif %}" href="{{ path('admin_transactions_index') }}">Transacciones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') == 'admin_product_index' %}active{% endif %}"
+                   href="{{ path('admin_product_index') }}">Planes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') == 'customer_index' %}active{% endif %}"
+                   href="{{ path('customer_index') }}">Clientes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') == 'admin_settings' %}active{% endif %}" href="{{ path('admin_settings') }}" >Settings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('fos_user_security_logout') }}">Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <main role="main" class="col-sm-9 ml-sm-auto col-md-10 pt-3">
+        {% for message in app.flashes('notice') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% block content %}
+        {% endblock %}
+    </main>
+    </div>
+    {% include '@MindBodyPayments/Admin/modal.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+{% endblock %}

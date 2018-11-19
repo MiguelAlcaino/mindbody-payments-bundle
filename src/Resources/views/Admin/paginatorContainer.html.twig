@@ -1,0 +1,9 @@
+<div class="paginator-container">
+    {% if paginator is defined %}
+        {% include '@MindBodyPayments/Admin/paginator.html.twig' with {
+            paginator : paginator
+        } %}
+    {% else %}
+        <nav class="paginator"></nav>
+    {% endif %}
+</div>

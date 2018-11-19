@@ -1,0 +1,73 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Edici&oacute;n de descuento para cliente</h1>
+
+    <table class="table table-sm">
+        <tbody>
+        <tr>
+            <th>Cliente</th>
+            <td>{{ customerDiscount.customer }}</td>
+        </tr>
+        <tr>
+            <th>Descuento</th>
+            <td>{{ customerDiscount.discount }}</td>
+        </tr>
+        <tr>
+            <th>C&oacute;digo</th>
+            <td>{{ customerDiscount.code }}</td>
+        </tr>
+        <tr>
+            <th>Planes asociados al descuento</th>
+            <td>
+                {% for product in customerDiscount.discount.products %}
+                    {{ product }}<br>
+                {% endfor %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="form-group col-md-6">
+            {{ form_label(form.validFrom,'Válido desde') }}
+            {{ form_widget(form.validFrom, {attr: {
+                class: 'form-control'
+            }}) }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ form_label(form.validUntil,'Válido hasta') }}
+            {{ form_widget(form.validUntil, {attr: {
+                class: 'form-control'
+            }}) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+    <a class="btn btn-primary btn-sm" href="{{ path('customer_show', {'id': customerDiscount.customer.id}) }}">Volver al
+        cliente</a>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script>
+        $('#mind_body_payments_bundle_customer_discount_type_validFrom, #mind_body_payments_bundle_customer_discount_type_validUntil').datetimepicker(
+            {
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                },
+                format: 'YYYY-MM-DD HH:mm'
+            }
+        );
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet"
+          href="{{ asset('node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}"/>
+{% endblock %}

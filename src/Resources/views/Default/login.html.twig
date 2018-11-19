@@ -1,0 +1,51 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}Login - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-4 col-xs-12"></div>
+        <div class="col-md-4 col-xs-12">
+
+            {% if errorMessage is defined %}
+                <div class="alert alert-danger">{{ errorMessage }}</div>
+            {% endif %}
+            <div class="card text-center">
+                <div class="card-header">
+                    Ingresa con tus datos de Cyglo Colombia
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {attr: {
+                            class: 'form-control'
+                        }}) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.password) }}
+                        {{ form_widget(form.password, {attr: {
+                            class: 'form-control'
+                        }}) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary login-btn">
+                        <i style="display: none;" class="fa fa-circle-o-notch fa-spin fa-fw"></i> Login
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-xs-12"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('form').submit(function () {
+            var $button = $(this).find('button.login-btn');
+            $button.find('i').show();
+            $button.prop('disabled', true);
+        });
+    </script>
+{% endblock %}

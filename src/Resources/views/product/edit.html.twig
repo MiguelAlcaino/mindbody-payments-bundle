@@ -1,0 +1,261 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Edici&oacute;n de {{ product.name }}</h1>
+    <table class="table table-responsive">
+        <tbody>
+        <tr>
+            <th>Nombre</th>
+            <td>{{ product.name }}</td>
+        </tr>
+        <tr>
+            <th>Precio</th>
+            <td>${{ product.price|number_format(0,',','.') }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="discount-wrapper" class="card border-light mb-3"
+         {% if discount is same as(null) %}style="display: none;" {% else %}data-id="{{ discount.id }}"{% endif %}>
+        <div class="card-header {% if discount is not same as(null) and not discount.enabled %}bg-danger{% endif %}">{% if discount is same as(null) %}Nuevo descuento limitado{% else %}Edici&oacute;n de descuento limitado creado el {{ discount.created|date('d M Y, H:i') }}{% endif %}
+            {% if discount is not same as(null) and not discount.enabled %}(Descuento desactivado){% endif %}</div>
+        <div class="card-body">
+            <div class="alert alert-info" role="alert">
+                <ul>
+                    <li> Hay {{ currentCustomers|length }} clientes que podr&iacute;an usar este descuento. (Clientes
+                        que tienen esta membres&iacute;a a&uacute;n activa.)
+                    </li>
+                </ul>
+            </div>
+            {{ form_start(discountForm, {attr: {
+                class: ''
+            }}) }}
+            <label>Condici&oacute;n del descuento</label>
+            <div class="form-inline mb-3">
+                <div class="form-group">
+
+                    {{ form_widget(discountForm.beforeOrAfter, {attr: {
+                        class: 'form-control form-control-sm'
+                    }}) }}
+
+                    <div class="mr-1 ml-1"> de</div>
+
+                    {{ form_widget(discountForm.days, {attr: {
+                        class: 'form-control form-control-sm',
+                        size: 3
+                    }}) }}
+
+                    <div class="mr-1 ml-1"> d&iacute;as que finalice la membres&iacute;a de un usuario, enviar un c&oacute;digo
+                        de descuento &uacute;nico de
+                    </div>
+
+                    {{ form_widget(discountForm.discountPercentage, { attr: {
+                        class: 'form-control form-control-sm',
+                        size: 3
+                    }}) }}
+
+                    <div class="mr-1">%</div>
+
+                </div>
+            </div>
+
+            <div class="form-inline mb-3">
+                <div class="form-group">
+                    <div class="mr-1 ml-1">D&iacute;as adicionales</div>
+                    {{ form_widget(discountForm.additionalDays, {attr: {
+                        class: 'form-control form-control-sm',
+                        style: 'width: 50px;'
+                    }}) }}
+                    <div class="mr-1 ml-1"> . Enviar el descuento de nuevo al usuario despues de</div>
+                    {{ form_widget(discountForm.sendAgainEveryNumber, {attr: {
+                        class: 'form-control form-control-sm',
+                        style: 'width: 50px;'
+                    }}) }}
+                    <div class="mr-1 ml-1">compras</div>
+                </div>
+                <small class="text-muted">D&iacute;as adicionales ser&aacute;n sumados a la cantidad de d&iacute;as de
+                    la condici&oacute;n. Por ejemplo, Un descuento enviado antes de 3 de que finalice
+                    el plan de un usuario estar&aacute; disponible s&oacute;lo hasta que el plan se acabe. Si hay 1 d&iacute;a
+                    adicional, el descuento estar&aacute; disponible 1 d&iacute;a despues
+                    de que el plan finalice.
+                </small>
+            </div>
+
+            <div class="form-row pl-4">
+                <div class="form-group">
+                    {{ form_label(discountForm.products,'Servicios asociados a este descuento') }}
+                    {% include '@MindBodyPayments/discount/multipleCheckbox.html.twig' with {
+                        widget: discountForm.products,
+                        product: product
+                    } %}
+                    <small class="text-muted">Selecciona el o los servicios asociados a este descuento. Recuerda que
+                        siempre debe haber al menos un servicio seleccionado para que el descuento est&eacute;
+                        disponible.
+                    </small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    {{ form_label(discountForm.emailSubject,'Asunto del correo electrónico') }}
+                    {{ form_widget(discountForm.emailSubject, {attr: {
+                        class: 'form-control form-control-sm'
+                    }}) }}
+                </div>
+            </div>
+
+
+            {{ form_label(discountForm.emailBody,'Cuerpo del correo electrónico') }}
+            <button type="button" id="email-preview-btn" class="btn btn-info btn-sm">Previsualizar correo electr&oacute;nico</button>
+            <div id="editor" style="height: 300px">
+                <img src="{{ absolute_url('/images/cyglo_logo_letras.png') }}" height="100px"><br>
+                <p>Hola #firstName# #lastName#!</p>
+                <p><strong>Hay un descuento esperando por ti en Cyglo!</strong></p>
+                <p>Has sido seleccionado para tener un descuento de #discountPercentage#% si compras cualquiera de los
+                    siguientes planes en Cyglo! #beforeAfter# del d&iacute;a (#discountUntil#):</p>
+                <p>#listOfServices#</p>
+                <p>Haz click en este link #discountLink# para usar tu descuento. Recuerda que tu c&oacute;digo solamente
+                    es v&aacute;lido usando este link.</p>
+                <p><br></p>
+                <p>Esperamos verte pronto!<br>El equipo de Cyglo!</p>
+            </div>
+            <small class="text-muted">Este ser&aacute; el cuerpo del correo electr&oacute;nico enviado al usuario.
+            </small>
+            <div class="row">
+                <div class="col-md-12">
+                    {% if discount is same as(null) %}
+                        <button type="submit" class="btn btn-success btn-sm" id="save-discount-btn"
+                                {% if discount is same as(null) %}style="display: none;"{% endif %}>Guardar descuento
+                            limitado
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" id="disable-discount-btn"
+                                {% if discount is same as(null) %}style="display: none;"{% endif %}>Desactivar descuento
+                            limitado
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success btn-sm" id="save-discount-btn"
+                                {% if not discount.enabled %}style="display: none;"{% endif %}>Guardar descuento
+                            limitado
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" id="disable-discount-btn"
+                                {% if not discount.enabled %}style="display: none;"{% endif %}>Desactivar descuento
+                            limitado
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm" id="enable-discount-btn"
+                                {% if discount.enabled %}style="display: none;"{% endif %}>Reactivar descuento
+                            limitado
+                        </button>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <button type="button" class="btn btn-info btn-sm" id="add-discount-btn"
+            {% if discount is not same as(null) %}style="display: none;"{% endif %}>{% if discount is same as(null) %}Agregar descuento limitado{% else %}Ver descuento limitado{% endif %}</button>
+
+    {{ form_end(discountForm) }}
+
+    <a class="btn btn-primary" href="{{ path('admin_product_index') }}">Volver a la lista</a>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('node_modules/quill/dist/quill.js') }}"></script>
+    <script>
+
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        {% if discount is same as(null) %}
+        $('#mind_body_payments_bundle_discount_type_emailBody').val(quill.root.innerHTML);
+        {% else %}
+        quill.root.innerHTML = '{{ discount.emailBody|raw }}';
+        {% endif %}
+
+        quill.on('text-change', function (delta, oldDelta, source) {
+            $('#mind_body_payments_bundle_discount_type_emailBody').val(quill.root.innerHTML);
+        });
+
+        $('#add-discount-btn').click(function () {
+            var $button = $(this);
+            $('#discount-wrapper').slideDown(function () {
+                $('#disabled-discount-btn').show();
+                $('#save-discount-btn').show();
+                $button.hide();
+            });
+        });
+
+        $('#disable-discount-btn').click(function () {
+            var $button = $(this);
+            if (typeof $('#discount-wrapper').attr('data-id') === 'undefined') {
+                $('#discount-wrapper').slideUp(function () {
+                    $('#add-discount-btn').show();
+                    $('#save-discount-btn').hide();
+                    $button.hide();
+                });
+            } else {
+                $.ajax({
+                    url: '{{ path('admin_discount_disable_discount') }}',
+                    type: 'POST',
+                    data: {
+                        discountId: $('#discount-wrapper').attr('data-id'),
+                        enabled: false
+                    },
+                    success: function (data) {
+                        window.location.href = '{{ path('admin_product_edit', {id: product.id}) }}'
+                    }
+                });
+            }
+        });
+
+        $('#enable-discount-btn').click(function () {
+            var $button = $(this);
+            $.ajax({
+                url: '{{ path('admin_discount_disable_discount') }}',
+                type: 'POST',
+                data: {
+                    discountId: $('#discount-wrapper').attr('data-id'),
+                    enabled: true
+                },
+                success: function (data) {
+                    window.location.href = '{{ path('admin_product_edit', {id: product.id}) }}'
+                }
+            });
+
+        });
+
+        $('#email-preview-btn').click(function () {
+            var productIds = [];
+
+            $('input[name="mind_body_payments_bundle_discount_type[products][]"]:checked').each(function () {
+                productIds.push($(this).val());
+            });
+            $.ajax({
+                url: '{{ path('admin_discount_preview_discount_email') }}',
+                type: 'POST',
+                data: {
+                    productIds: productIds,
+                    beforeAfter: $('#mind_body_payments_bundle_discount_type_beforeOrAfter').val(),
+                    days: $('#mind_body_payments_bundle_discount_type_days').val(),
+                    discountPercentage: $('#mind_body_payments_bundle_discount_type_discountPercentage').val(),
+                    emailBody: quill.root.innerHTML
+                },
+                success: function (data) {
+                    $('#default-modal').on('shown.bs.modal', function () {
+                        $(this).find('.modal-body').html(data.view);
+                        $(this).find('.modal-title').html('Previsualizaci&oacute;n del email');
+                    });
+                    $('#default-modal').modal();
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('node_modules/quill/dist/quill.snow.css') }}" rel="stylesheet">
+{% endblock %}

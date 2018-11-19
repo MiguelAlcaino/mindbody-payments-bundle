@@ -1,0 +1,68 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Lista de transacciones</h1>
+    <form class="form-inline pb-2" id="filter-form" method="GET" action="{{ path('admin_transactions_index') }}">
+        <div class="form-group ">
+            <input type="search" placeholder="Nombre del usuario" class="form-control" name="search"
+                   value="{{ searchedValue }}"/>
+        </div>
+        <div class="form-group mx-sm-3">
+            <input type="text" class="form-control" placeholder="Fecha" name="daterange"
+                   value="{% if start is defined %}{{ start }} - {{ end }}{% endif %}"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button> &nbsp;
+        <a href="{{ path('download_excel', { search: searchedValue|default(''), start: start|default(''), end: end|default('') }) }}"
+           class="btn btn-primary" target="_blank">Excel</a>
+        </form>
+    {% include '@MindBodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with {
+        transactionRecords: transactionRecords
+    } %}
+    {% include '@MindBodyPayments/Admin/paginatorContainer.html.twig' with {
+        paginator: paginator
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        var configDateRangePicker = {
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear',
+                format: 'DD-MM-YYYY'
+            }
+        };
+
+        {% if start is defined %}
+        configDateRangePicker.startDate = '{{ start }}';
+        {% endif %}
+        {% if end is defined %}
+        configDateRangePicker.endDate = '{{ end }}';
+        {% endif %}
+
+        $('input[name="daterange"]').daterangepicker(configDateRangePicker);
+
+        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+        });
+
+        $('input[name="daterange"]').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        $('#filter-form').submit(function (event) {
+            event.preventDefault();
+            var dateRangePickerData = $('input[name="daterange"]').data('daterangepicker');
+            if ($('input[name=search]').val() !== '' && $('input[name=daterange]').val() === '') {
+                window.location.href = '?search=' + $('input[name=search]').val();
+            } else if ($('input[name=search]').val() !== '' && $('input[name=daterange]').val() !== '') {
+                window.location.href = '?search=' + $('input[name=search]').val() + '&start=' + dateRangePickerData.startDate.format('DD-MM-YYYY') + '&end=' + dateRangePickerData.endDate.format('DD-MM-YYYY');
+            } else if ($('input[name=search]').val() === '' && $('input[name=daterange]').val() !== '') {
+                window.location.href = '?start=' + dateRangePickerData.startDate.format('DD-MM-YYYY') + '&end=' + dateRangePickerData.endDate.format('DD-MM-YYYY');
+            } else {
+                window.location.href = '?';
+            }
+        });
+    </script>
+{% endblock %}

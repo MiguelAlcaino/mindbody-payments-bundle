@@ -1,0 +1,20 @@
+{
+    "name": "miguelalcaino/mindbody-payments-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Miguel Alcaino",
+            "email": "miguel.alcaino@ogb.cl"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "ext-soap": "*",
+        "phpoffice/phpspreadsheet": "^1.5",
+        "devincrossman/mindbody-php-api": "^1.6",
+        "guzzlehttp/guzzle": "^6.3",
+        "friendsofsymfony/user-bundle": "^2.1"
+    }
+}

@@ -1,0 +1,10 @@
+{% extends '@MindBodyPayments/Mail/mailBase.html.twig' %}
+{% block content %}
+    <h1>Tu compra de {{ transactionRecord.transactionItems.0.name }} est&aacute; lista para ser usada</h1>
+
+    <p>Nos tom&oacute; un poco de tiempo procesar tu transacci&oacute;n, pero ya est&aacute; lista para ser usada. Anda
+        a <a href="http://cyglocolombia.com">cyglocolombia.com</a> y usa
+        tu {{ transactionRecord.transactionItems.0.name }}.</p>
+    <p>Muchas gracias por confiar en nosotros.<br> El equipo de Cyglo<br>
+        <a href="http://cyglocolombia.com">cyglocolombia.com</a></p>
+{% endblock %}

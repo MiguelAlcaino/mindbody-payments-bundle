@@ -1,0 +1,51 @@
+{% spaceless %}
+    <nav aria-label="Page navigation example">
+
+        <ul class="pagination">
+            {% if paginator.currentpage != 1 %}
+                <li class="page-item">
+                    <a class="page-prev page-link"
+                       data-offset="{{ paginator.currentpage-1 }}"
+                       arial-label="Previous"
+                       href="{{ path(routeName|default('admin_transactions_index'), { page: paginator.currentpage-1, search: searchedValue|default(''), start: start|default(''), end: end|default('') }) }}"
+                    >
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for i in 1..paginator.numpages %}
+
+                {% if paginator.range.0 > 2 and i == paginator.range.0 %}
+                {% endif %}
+
+                {% if(i==1 or i==paginator.numpages or i in paginator.range) %}
+                    {% if i==paginator.currentpage %}
+                        <li class="active page-item">
+                            <a data-offset="{{ i }}" class="page-number page-link"
+                               href="{{ path(routeName|default('admin_transactions_index'), { page: i, search: searchedValue|default(''), start: start|default(''), end: end|default('')}) }}">{{ i }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a data-offset="{{ i }}" class="page-number page-link"
+                               href="{{ path(routeName|default('admin_transactions_index'), { page: i, search: searchedValue|default(''), start: start|default(''), end: end|default('') }) }}"> {{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+
+                {% if paginator.range[paginator.midrange -1] < paginator.numpages -1 and i == paginator.range[paginator.midrange-1] %}
+                {% endif %}
+
+            {% endfor %}
+            {% if paginator.numpages != paginator.currentpage %}
+                <li class="page-item">
+                    <a data-offset="{{ paginator.currentpage+1 }}"
+                       class="page-next page-link"
+                       aria-label="Next"
+                       href="{{ path(routeName|default('admin_transactions_index'), { page: paginator.currentpage+1, search: searchedValue|default(''), start: start|default(''), end: end|default('') }) }}">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endspaceless %}

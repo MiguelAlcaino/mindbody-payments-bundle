@@ -1,0 +1,292 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}Detalles de pago - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-2 col-xs-12"></div>
+        <div class="col-md-8 col-xs-12">
+            {% for message in app.flashes('errorMessage') %}
+                <div class="alert alert-danger">
+                    Mensaje desde el operador bancario: <strong>{{ message }}</strong>. Intenta otra vez.
+                </div>
+            {% endfor %}
+            {% if errorMessage is defined %}
+                <div class="alert alert-danger">{{ errorMessage }}</div>
+            {% endif %}
+            <div class="card text-center">
+                <div class="card-header">
+                    Detalles de pago
+                </div>
+                <div class="card-body">
+
+                    <div class="alert alert-primary mb-2" role="alert">
+                        {% block purchaseInformation %}
+                            <p>Estás comprando: <strong>{{ app.request.session.get('itemName') }}</strong></p>
+                            <div style="display: none;" id="discount_box">
+                                <p>
+                                    Est&aacute;s ahorrando $<span id="total_discount"></span>
+                                </p>
+                                {#<p>C&oacute;digo usado: <span id="used_discount_code"></span></p>#}
+                            </div>
+                            <p>Total a pagar:
+                                <span id="grand_total">${{ app.request.session.get('grandTotal')|number_format(0,',','.') }}</span>
+                                <span id="grand_total_after_discount"></span></p>
+                        {% endblock %}
+                    </div>
+                    {{ form_start(form) }}
+                    {% block discountedProductForm %}{% endblock %}
+                    <div class="card bg-light mb-2" style="box-shadow: none;">
+                        <div class="card-body">
+                            <h4 class="card-title">Datos Personales</h4>
+                            <div class="form-row">
+                                <div class="form-group col-md-6 col-xs-6">
+                                    {{ form_label(form.documentType, 'Tipo de identificación') }}
+                                    {{ form_widget(form.documentType, {attr: {
+                                        class: 'form-control'
+                                    }}) }}
+                                </div>
+                                <div class="form-group col-md-6 col-xs-6">
+                                    {{ form_label(form.documentNumber, '# Cédula de ciudadanía') }}
+                                    {{ form_widget(form.documentNumber, {attr: {
+                                        class: 'form-control'
+                                    }}) }}
+                                </div>
+                            </div>
+                            {% if form.city is defined %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-4 col-xs-4">
+                                        {{ form_label(form.country, 'País') }}
+                                        {{ form_widget(form.country, {attr: {
+                                            class: 'form-control'
+                                        }}) }}
+                                    </div>
+                                    <div class="form-group col-md-4 col-xs-4">
+                                        {{ form_label(form.state, 'Departamento') }}
+                                        {{ form_widget(form.state, {attr: {
+                                            class: 'form-control'
+                                        }}) }}
+                                    </div>
+                                    <div class="form-group col-md-4 col-xs-4">
+                                        {{ form_label(form.city, 'Ciudad') }}
+                                        {{ form_widget(form.city, {attr: {
+                                            class: 'form-control'
+                                        }}) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {% if form.preferredLocations is defined %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 col-xs-12">
+                                        {{ form_label(form.preferredLocations, 'Estudio preferido') }}
+                                        {{ form_widget(form.preferredLocations, {attr: {
+                                            class: 'form-control'
+                                        }}) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="card bg-light" style="box-shadow: none;">
+                        <div class="card-body">
+                            <h4 class="card-title">Datos de la tarjeta</h4>
+
+                            <div class="form-group">
+                        {{ form_label(form.cardHolderName, 'Nombre en la tarjeta') }}
+                        {{ form_widget(form.cardHolderName, {attr: {
+                            class: 'form-control'
+                        }}) }}
+                        <small class="error-list">
+                            {{ form_errors(form.cardHolderName) }}
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.cardNumber, 'Número en la tarjeta') }}
+                        {{ form_widget(form.cardNumber, {attr: {
+                            class: 'form-control'
+                        }}) }}
+                        <small class="error-list">
+                            {{ form_errors(form.cardNumber) }}
+                        </small>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4 col-xs-4">
+                            {{ form_label(form.month, 'Mes de expiración') }}
+                            {{ form_widget(form.month, {attr: {
+                                class: 'form-control'
+                            }}) }}
+                        </div>
+                        <div class="form-group col-md-4 col-xs-4">
+                            {{ form_label(form.year, 'Año de expiración') }}
+                            {{ form_widget(form.year, {attr: {
+                                class: 'form-control'
+                            }}) }}
+                        </div>
+                        <div class="form-group col-md-4 col-xs-4">
+                            {{ form_label(form.cvc, 'Código de seguridad') }}
+                            {{ form_widget(form.cvc, {attr: {
+                                class: 'form-control'
+                            }}) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <small class="error-list">
+                                {{ form_errors(form.month) }}
+                                {% if expirationDateErrorMessage is defined %}{{ expirationDateErrorMessage }}{% endif %}
+                            </small>
+                            <small class="error-list">
+                                {{ form_errors(form.year) }}
+                            </small>
+                            <small class="error-list">
+                                {{ form_errors(form.cvc) }}
+                            </small>
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 col-xs-12">
+                            {{ form_label(form.installments, 'Número de cuotas') }}
+                            {{ form_widget(form.installments, {attr: {
+                                class: 'form-control'
+                            }}) }}
+                        </div>
+                    </div>
+                            {% block discountButton %}
+                                <div class="form-row">
+                                    <div class="col-lg-12"><a href="#" id="discount_code_button">Tengo un c&oacute;digo
+                                            de
+                                            descuento</a></div>
+                                    <div id="discount_code_div" style="display: none;" class="col-lg-12">
+                                        <div class="input-group">
+                                            {#{{ form_label(form.discountCode, 'Código de descuento') }}#}
+                                            {{ form_widget(form.discountCode, {attr: {
+                                                class: 'form-control discount_code_text',
+                                                placeholder: 'Código de descuento'
+                                            }}) }}
+                                            <span class="input-group-btn discount-buttons-group">
+                                    <button class="btn btn-primary" id="discount_code_validate_button" type="button">Aplicar</button>
+                                </span>
+                                        </div>
+                                    </div>
+                                    <small class="error-list discount_code_error pl-1"></small>
+                                </div>
+                            {% endblock %}
+                    <br>
+                    <button type="submit" class="btn btn-primary pay-now-btn">
+                        <i style="display: none;" class="fa fa-circle-o-notch fa-spin fa-fw"></i>
+                        <span class="normal-text-inside-button">Pagar ahora</span>
+                        <span style="display: none;" class="loading-text-inside-button">Procesando el pago...<br>No recargues ésta página.</span>
+                    </button>
+                        </div>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                <div class="card-footer text-muted">
+                    <img src="{{ asset('images/tpaga_logo.png') }}" height="50px"/>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-2 col-xs-12"></div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('form').submit(function () {
+            var $button = $(this).find('button.pay-now-btn');
+            $button.find('i').show();
+            $button.find('span.normal-text-inside-button').hide();
+            $button.find('span.loading-text-inside-button').show();
+            $button.prop('disabled', true);
+        });
+        $('#discount_code_button').click(function (e) {
+            e.preventDefault();
+            $(this).hide();
+            $('#discount_code_div').show();
+        });
+        $('#discount_code_validate_button').click(function () {
+            $('small.discount_code_error').hide();
+            $('#discount_code_validate_button').html('<i class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
+            $.ajax({
+                url: "{{ path('apply_discount') }}",
+                type: 'POST',
+                data: {
+                    discountCode: $('.discount_code_text').val()
+                },
+                success: function (data) {
+                    $('#total_discount').text(data.discountAmount);
+                    $('#grand_total_after_discount').text('$' + data.grandTotal);
+                    $('#grand_total_after_discount').show();
+                    $('#grand_total').hide();
+                    $('#used_discount_code').text(data.discountCode);
+                    var $button = $('<button class="btn btn-danger" onclick="disableDiscount(this)" id="discount_code_delete" type="button">No usar c&oacute;digo</button>');
+
+                    $('.discount-buttons-group').append($button);
+
+                    $('#discount_box').show();
+                    $('#discount_code_validate_button').html('Código aplicado');
+                }
+            }).fail(function () {
+                $('#discount_code_validate_button').html('Aplicar');
+                $('small.discount_code_error').show().text('El código es inválido.')
+            });
+        });
+
+        $('#mind_body_payments_bundle_credit_card_type_documentType').change(function () {
+            var $documentType = $(this);
+            var $documentNumberLabel = $('label[for=mind_body_payments_bundle_credit_card_type_documentNumber]');
+            if ($documentType.val() === 'Pasaporte') {
+                $documentNumberLabel.text('# de Pasaporte');
+            } else {
+                $documentNumberLabel.text('# Cédula de ciudadanía');
+            }
+        });
+
+        function checkStateAndCity($selector) {
+            if ($selector.val() === 'CO') {
+                $('#mind_body_payments_bundle_credit_card_type_state').show();
+                $('label[for=mind_body_payments_bundle_credit_card_type_state]').show();
+
+                $('#mind_body_payments_bundle_credit_card_type_city').show();
+                $('label[for=mind_body_payments_bundle_credit_card_type_city]').show();
+            } else {
+                $('#mind_body_payments_bundle_credit_card_type_state').hide();
+                $('#mind_body_payments_bundle_credit_card_type_state').val(null);
+                $('label[for=mind_body_payments_bundle_credit_card_type_state]').hide();
+
+                $('#mind_body_payments_bundle_credit_card_type_city').hide();
+                $('#mind_body_payments_bundle_credit_card_type_city').val(null);
+                $('label[for=mind_body_payments_bundle_credit_card_type_city]').hide();
+            }
+        }
+
+        checkStateAndCity($('#mind_body_payments_bundle_credit_card_type_country'));
+
+        $('#mind_body_payments_bundle_credit_card_type_country').change(function () {
+            var $selector = $(this);
+            checkStateAndCity($selector);
+        });
+
+
+        function disableDiscount(button) {
+            var $button = $(button);
+            $button.html('<i class="fa fa-circle-o-notch fa-spin fa-fw"></i>');
+            $.ajax({
+                url: "{{ path('apply_discount') }}",
+                type: 'POST',
+                success: function (data) {
+                    $('#grand_total').show();
+                    $('#discount_box').hide();
+                    $('#grand_total_after_discount').hide();
+                    $('#discount_code_validate_button').html('Aplicar');
+                    $('.discount_code_text').val(null);
+                    $button.remove();
+                }
+            });
+        }
+    </script>
+{% endblock %}

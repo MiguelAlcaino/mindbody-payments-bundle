@@ -1,0 +1,88 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Cliente</h1>
+
+    <table class="table table-responsive table-sm">
+        <tbody>
+        <tr>
+            <th>Nombre</th>
+            <td>{{ customer.firstName }}</td>
+        </tr>
+        <tr>
+            <th>Apellido</th>
+            <td>{{ customer.lastName }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ customer.email }}</td>
+        </tr>
+        <tr>
+            <th>Mindbody ID</th>
+            <td>{{ customer.merchantId }}</td>
+        </tr>
+        <tr>
+            <th>Creado</th>
+            <td>{% if customer.created %}{{ customer.created|date('Y-m-d H:i:s') }}{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Pa&iacute;s</th>
+            <td>{{ customer.userCountry }}</td>
+        </tr>
+        <tr>
+            <th>Estado</th>
+            <td>{{ customer.userState }}</td>
+        </tr>
+        <tr>
+            <th>Ciudad</th>
+            <td>{{ customer.userCity }}</td>
+        </tr>
+        <tr>
+            <th>Tipo de documento</th>
+            <td>{{ customer.documentType }}</td>
+        </tr>
+        <tr>
+            <th>N&uacute;mero de documento</th>
+            <td>{{ customer.documentNumber }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Lista de descuentos disponibles para este usuario</h2>
+
+
+    <table class="table table-responsive table-sm mb-5">
+        <thead>
+        <tr>
+            <th>Descuento</th>
+            <th>V&aacute;lido desde</th>
+            <th>V&aacute;lido hasta</th>
+            <th>Opciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for customerDiscount in customer.customerDiscounts %}
+            {% set discount = customerDiscount.discount %}
+            <tr>
+                <td>{{ discount }}</td>
+                <td>{{ customerDiscount.validFrom|date }}</td>
+                <td>{{ customerDiscount.validUntil|date }}</td>
+                <td><a class="btn btn-primary btn-sm"
+                       href="{{ path('admin_customer_discount_edit', {'id': customerDiscount.id}) }}">Editar</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Lista de compras</h2>
+    {% include '@MindBodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with  {
+        transactionRecords: customer.transactionRecords,
+        addedClasses: 'table-sm'
+    } %}
+
+
+
+
+    <a class="btn btn-primary" href="{{ path('customer_index') }}">Volver a la lista</a>
+
+{% endblock %}

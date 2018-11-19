@@ -1,0 +1,38 @@
+parameters:
+    mindbody_source_name: '%env(MINDBODY_SOURCE_NAME)%'
+    mindbody_source_password: '%env(MINDBODY_SOURCE_PASSWORD)%'
+    mindbody_admin_user: '%env(MINDBODY_ADMIN_USER)%'
+    mindbody_admin_password: '%env(MINDBODY_ADMIN_PASSWORD)%'
+    mindbody_site_ids: '%env(json:MINDBODY_SITE_IDS)%'
+    router.request_context.host: '%env(HOST)%'
+    router.request_context.scheme: https
+    router.request_context.base_url: ''
+    mailer_user: '%env(MAILER_USER)%'
+
+services:
+    _defaults:
+        public: false
+    #CONTROLLERS
+    MiguelAlcaino\MindbodyPaymentsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+    #SERVICES
+    file_cache_service:
+        class: Symfony\Component\Cache\Simple\FilesystemCache
+    miguel_alcaino.mb_api:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MB_API
+        arguments:
+            $sourceName: '%mindbody_source_name%'
+            $password: '%mindbody_source_password%'
+            $siteIds: '%mindbody_site_ids%'
+    miguel_alcaino.mindbody_service:
+        public: true
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService
+        arguments:
+            $mb: '@miguel_alcaino.mb_api'
+            $cache: '@file_cache_service'
+            $formFactory: '@form.factory'
+            $router: '@router'
+            $logger: '@logger'
+            $params: '@parameter_bag'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService: '@miguel_alcaino.mindbody_service'

@@ -1,0 +1,48 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Customers list</h1>
+    <form class="form-inline pb-2" id="filter-form" method="GET" action="{{ path('customer_index') }}">
+        <div class="form-group ">
+            <input type="search" placeholder="Nombre del usuario" class="form-control" name="search"
+                   value="{{ searchedValue }}"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Filtrar</button> &nbsp;
+    </form>
+    <table class="table table-striped table-responsive">
+        <thead>
+        <tr>
+
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th>Creado</th>
+            <th>Compras</th>
+            <th>Opciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for customCustomer in customers %}
+            {% set customer = customCustomer.0 %}
+            <tr>
+                <td>{{ customer.firstName }}</td>
+                <td>{{ customer.lastName }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{% if customer.created %}{{ customer.created|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{{ customCustomer.countTransactionRecords }}</td>
+                <td>
+
+                    <a class="btn btn-primary btn-sm" href="{{ path('customer_show', { 'id': customer.id }) }}">show</a>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% include '@MindBodyPayments/Admin/paginatorContainer.html.twig' with {
+        paginator: paginator,
+        routeName: 'customer_index'
+    } %}
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% for choice in widget.children %}
+    <div class="form-check">
+        {% if choice.vars.value == product.id %}
+            {% set isThisProduct = true %}
+        {% else %}
+            {% set isThisProduct = false %}
+        {% endif %}
+        {{ form_widget(choice, {attr: {
+            class: 'form-check-input',
+            onclick: isThisProduct ? 'return false': 'return true;'
+        }}) }}
+        {{ form_label(choice, null, {label_attr: {
+            class: 'form-check-label'
+        }}) }}
+        {% if isThisProduct %}
+            <small class="text-muted">Servicio obligatorio para este descuento.</small>{% endif %}
+    </div>
+{% endfor %}

@@ -1,0 +1,182 @@
+{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+
+    <h1>Detalle de la Transacci&oacute;n</h1>
+
+    <table class="table table-responsive">
+        <tbody>
+        {% if transactionRecord.mindbodyCheckoutFail %}
+            <tr class="table-danger" id="tr-mindbody-error-message">
+                <td colspan="2">Esta transacci&oacute;n sufri&oacute; un error al comunicarse con Mindbody, pero el pago
+                    del cliente S&Iacute; fue registrado y descontado de la tarjeta de pago.
+                    La compra NO fue registrada en Mindbody, por lo tanto, el usuario a&uacute;n no puede usar el
+                    servicio comprado.<br>
+                    Para solucionar esto, presiona el bot&oacute;n <strong>"Completar registro en mindbody"</strong>.
+                    <br>Ver&aacute;s un &iacute;cono spinner dentro del bot&oacute;n que indica que el proceso de
+                    registro en Mindbody
+                    se est&aacute; ejecutando. <strong>NO RECARGUES LA PAGINA MIENTRAS VEAS EL &Iacute;CONO SPINNER
+                        DENTRO DEL BOT&Oacute;N</strong>. Una vez finalizado el proceso ver&aacute;s un mensaje
+                    indicando el
+                    resultado de la operaci&oacute;n. Si el mensaje indica que la operaci&oacute;n se complet&oacute;
+                    con exito, &eacute;sta transacci&oacute;n dejar&aacute; de aparecer en rojo y el usuario
+                    podr&aacute; usar su servicio sin problemas. En caso de que el mensaje indique que la operaci&oacute;
+                    no fue exitosa, deber&aacute;s agregar el servicio al usuario usando el panel de administraci&oacute;n
+                    de Mindbody. <br><br>
+                    <button class="btn btn-success" data-transaction-record-id="{{ transactionRecord.id }}"
+                            id="complete-mindbody-purchase">Completar registro en mindbody <i style="display: none;"
+                                                                                              class="fa fa-cog fa-spin fa-fw"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <th>Id</th>
+            <td>{{ transactionRecord.id }}</td>
+        </tr>
+        <tr>
+            <th>Fecha del pago</th>
+            <td>{{ transactionRecord.created|date('d M Y, H:i') }}</td>
+        </tr>
+        <tr>
+            <th>Fecha expiraci&oacute;n del servicio</th>
+            <td>{{ transactionRecord.serviceExpirationDate|date('d M Y',false) }}</td>
+        </tr>
+        <tr class="{% if transactionRecord.status is same as('voided') %}table-warning{% endif %}">
+            <th>Estado del pago</th>
+            <td>{{ transactionRecord.status }} {% if transactionRecord.status is same as('voided') %}{{ transactionRecord.refundDate|date('d M Y, H:i') }}{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Comprador</th>
+            <td>{{ transactionRecord.customer }}</td>
+        </tr>
+        <tr>
+            <th>Nombre en la tarjeta de pago</th>
+            <td>{{ transactionRecord.creditCardHolderName }}</td>
+        </tr>
+        <tr>
+            <th>Ultimos 4 digitos en la tarjeta de pago</th>
+            <td>{{ transactionRecord.creditCardLastFourDigits }}</td>
+        </tr>
+        <tr>
+            <th>Tipo documento</th>
+            <td>{{ transactionRecord.documentType }}</td>
+        </tr>
+        <tr>
+            <th># documento</th>
+            <td>{{ transactionRecord.documentNumber }}</td>
+        </tr>
+        <tr>
+            <th>Pa&iacute;s</th>
+            <td>{{ transactionRecord.userCountry }}</td>
+        </tr>
+        <tr>
+            <th>Departamento</th>
+            <td>{{ transactionRecord.userState }}</td>
+        </tr>
+        <tr>
+            <th>Ciudad</th>
+            <td>{{ transactionRecord.userCity }}</td>
+        </tr>
+        <tr>
+            <th>Estudio</th>
+            <td>{{ transactionRecord.userPreferredLocation }}</td>
+        </tr>
+        <tr>
+            <th>Email del Comprador</th>
+            <td>{{ transactionRecord.customer.email }}</td>
+        </tr>
+        <tr>
+            <th>Id en del usuario en MindBody</th>
+            <td>{{ transactionRecord.customer.merchantId }}</td>
+        </tr>
+        <tr>
+            <th>Id del cargo en TPAGA</th>
+            <td>{{ transactionRecord.creditCardChargeId }}</td>
+        </tr>
+        <tr>
+            <th>C&oacute;digo de Autorizaci&oacute;n bancario</th>
+            <td>{{ transactionRecord.authorizationCode }}</td>
+        </tr>
+        <tr>
+            <th>Registro de compra en Mindbody</th>
+            <td>{{ transactionRecord.merchantPurchaseId }}</td>
+        </tr>
+        <tr>
+            <th>Monto pagado</th>
+            {% if transactionRecord.amount is not same as(null) %}
+                <td><strong>${{ transactionRecord.amount|number_format(0,',','.') }}</strong></td>
+            {% else %}
+                <td><strong>${{ transactionRecord.preAmount|number_format(0,',','.') }}</strong></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <th>C&oacute;digo de descuento</th>
+            <td>{{ transactionRecord.discountCode }}</td>
+        </tr>
+        <tr>
+            <th>Descuento</th>
+            <td><strong>${{ transactionRecord.discountAmount|number_format(0,',','.') }}</strong></td>
+        </tr>
+        <tr>
+            <th>Impuesto</th>
+            <td>${{ transactionRecord.taxAmount|number_format(0,',','.') }}</td>
+        </tr>
+        <tr>
+            <th>Cuotas</th>
+            <td>{{ transactionRecord.installments }}</td>
+        </tr>
+        <tr>
+            <th>Items</th>
+            <td>
+                <ul>
+                    {% for transactionItem in transactionRecord.transactionItems %}
+                        <li>{{ transactionItem.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+
+    <a class="btn btn-primary" href="{{ path('admin_transactions_index') }}">Volver a la lista</a>
+
+    {% if refundForm is defined and transactionRecord.status is not same as('voided') %}
+
+        {{ form_start(refundForm) }}
+        <button type="submit" class="btn btn-primary">Reembolsar transacci&oacute;n</button>
+        {{ form_end(refundForm) }}
+
+    {% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('#complete-mindbody-purchase').click(function () {
+            var $currentButton = $(this);
+            $currentButton.addClass('disabled');
+            $currentButton.find('i').show();
+            $.ajax({
+                url: '{{ path('admin_transactions_repair_transaction_with_mindbody') }}',
+                type: 'POST',
+                data: {
+                    id: $currentButton.attr('data-transaction-record-id')
+                },
+                success: function (data) {
+                    alert('El proceso se ha completado con exito. Esta transaccion acaba de ser registrada en Mindbody y el usuario pude usar el servicio sin problemas.');
+                    $('#tr-mindbody-error-message').slideUp();
+                }
+            }).fail(function () {
+                alert('El proceso no ha sido completado. Puedes intentar hacer click de nuevo en el boton o registrar la compra directamente en Mindbody.');
+            }).always(function () {
+                $currentButton.find('i').hide();
+                $currentButton.removeClass('disabled');
+            });
+        });
+    </script>
+{% endblock %}
