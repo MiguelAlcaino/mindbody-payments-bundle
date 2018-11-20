@@ -5,6 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use MiguelAlcaino\PaymentGateway\Interfaces\Entity\CustomerInterface;
 
 /**
  * Customer
@@ -13,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Customer
+class Customer implements CustomerInterface
 {
     /**
      * @var int

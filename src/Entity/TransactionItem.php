@@ -3,6 +3,7 @@
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use MiguelAlcaino\PaymentGateway\Interfaces\Entity\TransactionItemInterface;
 
 /**
  * TransactionItem
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="MiguelAlcaino\MindbodyPaymentsBundle\Repository\TransactionItemRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class TransactionItem
+class TransactionItem implements TransactionItemInterface
 {
     /**
      * @var int

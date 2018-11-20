@@ -4,6 +4,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use MiguelAlcaino\PaymentGateway\Interfaces\Entity\TransactionRecordInterface;
 
 /**
  * TransactionRecord
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="MiguelAlcaino\MindbodyPaymentsBundle\Repository\TransactionRecordRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class TransactionRecord
+class TransactionRecord implements TransactionRecordInterface
 {
     /**
      * @var int
