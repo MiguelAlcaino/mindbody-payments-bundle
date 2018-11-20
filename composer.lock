@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "826ca98cb67258a6bef60cff2b417733",
+    "content-hash": "9fc89dac2d0ec0d5715d8f6cf6f1bd05",
     "packages": [
         {
             "name": "devincrossman/mindbody-php-api",
@@ -393,6 +393,38 @@
                 "mathematics"
             ],
             "time": "2018-10-13T23:28:42+00:00"
+        },
+        {
+            "name": "miguelalcaino/payment-gateway",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MiguelAlcaino/payment-gateway.git",
+                "reference": "54b521a31962e69e737666ec09d861875482561e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MiguelAlcaino/payment-gateway/zipball/54b521a31962e69e737666ec09d861875482561e",
+                "reference": "54b521a31962e69e737666ec09d861875482561e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MiguelAlcaino\\PaymentGateway\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Miguel Alcaino",
+                    "email": "miguel.alcaino@ogb.cl"
+                }
+            ],
+            "time": "2018-11-20T12:38:19+00:00"
         },
         {
             "name": "paragonie/random_compat",
