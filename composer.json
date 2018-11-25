@@ -12,6 +12,7 @@
         "php": ">=7.2",
         "ext-json": "*",
         "ext-soap": "*",
+        "ext-fileinfo": "*",
         "phpoffice/phpspreadsheet": "^1.5",
         "devincrossman/mindbody-php-api": "^1.6",
         "guzzlehttp/guzzle": "^6.3",

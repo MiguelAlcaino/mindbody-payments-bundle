@@ -9,8 +9,9 @@
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Repository;
 
 
-use Doctrine\ORM\EntityRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\ProductDiscount;
+use Doctrine\ORM\EntityRepository;
+
 
 class ProductDiscountRepository extends EntityRepository
 {

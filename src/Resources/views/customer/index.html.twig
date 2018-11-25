@@ -1,4 +1,4 @@
-{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+{% extends '@MiguelAlcainoMindbodyPayments/Admin/base.html.twig' %}
 
 {% block content %}
     <h1>Customers list</h1>
@@ -39,7 +39,7 @@
         {% endfor %}
         </tbody>
     </table>
-    {% include '@MindBodyPayments/Admin/paginatorContainer.html.twig' with {
+    {% include '@MiguelAlcainoMindbodyPayments/Admin/paginatorContainer.html.twig' with {
         paginator: paginator,
         routeName: 'customer_index'
     } %}

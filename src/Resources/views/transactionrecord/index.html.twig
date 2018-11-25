@@ -1,4 +1,4 @@
-{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+{% extends '@MiguelAlcainoMindbodyPayments/Admin/base.html.twig' %}
 
 {% block content %}
     <h1>Lista de transacciones</h1>
@@ -15,10 +15,10 @@
         <a href="{{ path('download_excel', { search: searchedValue|default(''), start: start|default(''), end: end|default('') }) }}"
            class="btn btn-primary" target="_blank">Excel</a>
         </form>
-    {% include '@MindBodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with {
+    {% include '@MiguelAlcainoMindbodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with {
         transactionRecords: transactionRecords
     } %}
-    {% include '@MindBodyPayments/Admin/paginatorContainer.html.twig' with {
+    {% include '@MiguelAlcainoMindbodyPayments/Admin/paginatorContainer.html.twig' with {
         paginator: paginator
     } %}
 {% endblock %}

@@ -4,6 +4,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use MiguelAlcaino\PaymentGateway\Interfaces\Entity\TransactionItemInterface;
 use MiguelAlcaino\PaymentGateway\Interfaces\Entity\TransactionRecordInterface;
 
 /**
@@ -432,11 +433,11 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Add transactionItem
      *
-     * @param \MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem $transactionItem
+     * @param TransactionItemInterface $transactionItem
      *
      * @return TransactionRecord
      */
-    public function addTransactionItem(\MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem $transactionItem)
+    public function addTransactionItem(TransactionItemInterface $transactionItem)
     {
         $transactionItem->setTransactionRecord($this);
         $this->transactionItems[] = $transactionItem;
@@ -447,9 +448,9 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Remove transactionItem
      *
-     * @param \MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem $transactionItem
+     * @param TransactionItemInterface $transactionItem
      */
-    public function removeTransactionItem(\MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem $transactionItem)
+    public function removeTransactionItem(TransactionItemInterface $transactionItem)
     {
         $this->transactionItems->removeElement($transactionItem);
     }
@@ -476,7 +477,7 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Get customer
      *
-     * @return \App\Entity\Customer
+     * @return Customer
      */
     public function getCustomer()
     {
@@ -486,11 +487,11 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Set customer
      *
-     * @param \App\Entity\Customer $customer
+     * @param Customer $customer
      *
      * @return TransactionRecord
      */
-    public function setCustomer(\App\Entity\Customer $customer = null)
+    public function setCustomer(Customer $customer = null)
     {
         $this->customer = $customer;
 

@@ -1,4 +1,4 @@
-{% extends '@MindBodyPayments/Admin/base.html.twig' %}
+{% extends '@MiguelAlcainoMindbodyPayments/Admin/base.html.twig' %}
 
 {% block content %}
     <h1>Cliente</h1>
@@ -75,7 +75,7 @@
     </table>
 
     <h2>Lista de compras</h2>
-    {% include '@MindBodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with  {
+    {% include '@MiguelAlcainoMindbodyPayments/transactionrecord/tableOfTransactionRecords.html.twig' with  {
         transactionRecords: customer.transactionRecords,
         addedClasses: 'table-sm'
     } %}

@@ -66,6 +66,12 @@ class CreditCard
      */
     private $customer;
 
+    /**
+     * @var TransactionRecord[]
+     * @ORM\OneToMany(targetEntity="MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord", mappedBy="creditCard")
+     */
+    private $transactionRecords;
+
 
     /**
      * Get id

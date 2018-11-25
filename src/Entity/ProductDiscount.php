@@ -10,6 +10,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * Class ProductDiscount
  * @package MiguelAlcaino\MindbodyPaymentsBundle\Entity
@@ -91,7 +92,7 @@ class ProductDiscount
     /**
      * Get product
      *
-     * @return \MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product
+     * @return Product
      */
     public function getProduct()
     {
@@ -101,11 +102,11 @@ class ProductDiscount
     /**
      * Set product
      *
-     * @param \MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product $product
+     * @param Product $product
      *
      * @return ProductDiscount
      */
-    public function setProduct(\MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product $product = null)
+    public function setProduct(Product $product = null)
     {
         $this->product = $product;
 
@@ -115,7 +116,7 @@ class ProductDiscount
     /**
      * Get discount
      *
-     * @return \MiguelAlcaino\MindbodyPaymentsBundle\Entity\Discount
+     * @return Discount
      */
     public function getDiscount()
     {
@@ -125,11 +126,11 @@ class ProductDiscount
     /**
      * Set discount
      *
-     * @param \MiguelAlcaino\MindbodyPaymentsBundle\Entity\Discount $discount
+     * @param Discount $discount
      *
      * @return ProductDiscount
      */
-    public function setDiscount(\MiguelAlcaino\MindbodyPaymentsBundle\Entity\Discount $discount = null)
+    public function setDiscount(Discount $discount = null)
     {
         $this->discount = $discount;
 
