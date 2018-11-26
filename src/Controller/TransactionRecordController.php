@@ -7,10 +7,10 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\RefundType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Paginator;
+use MiguelAlcaino\PaymentGateway\Interfaces\RefundHandlerInterface;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -118,14 +118,15 @@ class TransactionRecordController extends Controller
     }
 
     /**
-     * @param int $id
+     * @param EntityManagerInterface $manager
+     * @param int                    $id
+     * @param RefundHandlerInterface $refundHandler
      *
-     * @return Response|array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Exception
      * @Route("/refund/{id}", name="admin_transactions_refund", methods={"POST"})
-     * @Template("@MindBodyPayments/transactionrecord/refund.html.twig")
      */
-    public function refundAction(EntityManagerInterface $manager, int $id)
+    public function refundAction(EntityManagerInterface $manager, int $id, RefundHandlerInterface $refundHandler)
     {
         $request           = $this->get('request_stack')->getCurrentRequest();
         $transactionRecord = $manager->getRepository(TransactionRecord::class)->find($id);
@@ -147,39 +148,18 @@ class TransactionRecordController extends Controller
         $refundForm->handleRequest($request);
 
         if ($refundForm->isSubmitted() && $refundForm->isValid()) {
-            // $config = new Configuration();
-            // $config->setHost($this->getParameter('tpaga_api_host'));
-            // $apiClient = new ApiClient($config);
-            //
-            // $config->setUsername($this->getParameter('tpaga_private_key'));
-            //
-            // $refundApi = new RefundApi($apiClient);
-            //
-            // $creditCardRefund = new CreditCardRefund();
-            // $creditCardRefund->setId($transactionRecord->getCreditCardChargeId());
-            //
-            // try {
-            //     $response         = $refundApi->refundCreditCardCharge($creditCardRefund);
-            //     $originalResponse = $refundApi->getApiResponse();
-            //     $transactionRecord->setStatus('voided');
-            //     $transactionRecord->setRefundDate(new \DateTime());
-            //     $transactionRecord->setRefundResponse(json_encode($originalResponse));
-            //
-            //     $manager->persist($transactionRecord);
-            //
-            //     $manager->flush();
-            //
-            //     $this->addFlash('notice', 'El pago ha sido reembolsado');
-            //
-            //     return $this->redirectToRoute(
-            //         'admin_transactions_show',
-            //         [
-            //             'id' => $transactionRecord->getId(),
-            //         ]
-            //     );
-            // } catch (\Exception $e) {
-            //     echo 'Caught exception: ', $e->getMessage(), "\n";
-            // }
+            $refundHandler->refund($transactionRecord);
+            $manager->persist($transactionRecord);
+            $manager->flush();
+
+            $this->addFlash('notice', 'El pago ha sido reembolsado');
+
+            return $this->redirectToRoute(
+                'admin_transactions_show',
+                [
+                    'id' => $transactionRecord->getId(),
+                ]
+            );
         } else {
             throw new \Exception('No deberias estar aca');
         }

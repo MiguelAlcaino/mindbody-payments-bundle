@@ -160,6 +160,12 @@ class TransactionRecord implements TransactionRecordInterface
     private $refundResponse;
 
     /**
+     * @var string
+     * @ORM\Column(name="refund_id", type="string", length=255, nullable=true)
+     */
+    private $refundId;
+
+    /**
      * @var int
      * @ORM\Column(name="merchant_purchase_id", type="integer", nullable=true)
      */
@@ -1318,11 +1324,11 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Set creditCard
      *
-     * @param \App\Entity\CreditCard $creditCard
+     * @param CreditCard $creditCard
      *
      * @return TransactionRecord
      */
-    public function setCreditCard(\App\Entity\CreditCard $creditCard = null)
+    public function setCreditCard(CreditCard $creditCard = null)
     {
         $this->creditCard = $creditCard;
 
@@ -1332,10 +1338,30 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Get creditCard
      *
-     * @return \App\Entity\CreditCard
+     * @return CreditCard
      */
     public function getCreditCard()
     {
         return $this->creditCard;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRefundId()
+    {
+        return $this->refundId;
+    }
+
+    /**
+     * @param string $refundId
+     *
+     * @return TransactionRecord
+     */
+    public function setRefundId(string $refundId)
+    {
+        $this->refundId = $refundId;
+
+        return $this;
     }
 }

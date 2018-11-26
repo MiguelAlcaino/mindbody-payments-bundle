@@ -19,5 +19,10 @@
         "guzzlehttp/guzzle": "^6.3",
         "friendsofsymfony/user-bundle": "^2.1",
         "miguelalcaino/payment-gateway": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MiguelAlcaino\\MindbodyPaymentsBundle\\": "src"
+        }
     }
 }
