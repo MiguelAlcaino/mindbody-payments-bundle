@@ -814,7 +814,7 @@ class MindbodyService
                         ],
                         SOAP_ENC_ARRAY,
                         'Service',
-                        'http://clients.mindbodyonline.com/api/0_5'
+                        'http://clients.mindbodyonline.com/api/0_5_1'
                     ),
                     'DiscountAmount' => $discountAmount,
                 ],
@@ -827,7 +827,7 @@ class MindbodyService
                     ],
                     SOAP_ENC_ARRAY,
                     'CustomPaymentInfo',
-                    'http://clients.mindbodyonline.com/api/0_5'
+                    'http://clients.mindbodyonline.com/api/0_5_1'
                 ),
             ],
             'Test'            => $test,
@@ -1162,7 +1162,8 @@ class MindbodyService
                     ->setPrice($cartItem['Item']['Price'])
                     ->setMerchantId($cartItem['Item']['ID'])
                     ->setName($cartItem['Item']['Name'])
-                    ->setQuantity($cartItem['Quantity']);
+                    ->setQuantity($cartItem['Quantity'])
+                    ->setSaleDatetime(new \DateTime());
                 $transactionRecord->addTransactionItem($transactionItem);
             }
         } catch (MindbodyServiceException $exception) {

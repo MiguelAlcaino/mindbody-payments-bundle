@@ -2,10 +2,12 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
-use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
+use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LoginType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Model\MindbodySession;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class DefaultController
@@ -23,18 +26,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     /**
-     * @param Request               $request
-     * @param MindbodyService       $mindBodyService
-     * @param ParameterBagInterface $parameterBag
+     * @param Request                $request
+     * @param MindbodyService        $mindBodyService
+     * @param ParameterBagInterface  $parameterBag
+     * @param CustomerFillerService  $customerFiller
+     * @param EntityManagerInterface $manager
+     * @param FromSessionService     $fromSessionService
+     * @param TranslatorInterface    $translator
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      * @throws \Exception
      * @Route("/login", name="mindbody_customer_login", methods={"POST", "GET"})
      */
     public function loginCustomerAction(
         Request $request,
         MindBodyService $mindBodyService,
-        ParameterBagInterface $parameterBag
+        ParameterBagInterface $parameterBag,
+        CustomerFillerService $customerFiller,
+        EntityManagerInterface $manager,
+        FromSessionService $fromSessionService,
+        TranslatorInterface $translator
     ) {
         $request->getSession()->set(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME, $request->query->get('service'));
 
@@ -58,67 +69,14 @@ class DefaultController extends AbstractController
                     $form->get('password')->getData()
                 );
 
-                $clients = $mindBodyService->getClients(
-                    [
-                        sprintf($validateLogin['ValidateLoginResult']['Client']['ID']),
-                    ]
-                );
-
-                $locations = $mindBodyService->getRealLocations();
-
-                $manager = $this->getDoctrine()->getManager();
-
-                $systemCustomer = $manager->getRepository(Customer::class)->findOneBy(
-                    [
-                        'email' => $validateLogin['ValidateLoginResult']['Client']['Email'],
-                    ]
-                );
-
-                if (is_null($systemCustomer)) {
-                    $systemCustomer = (new Customer());
-                }
-
-                $systemCustomer
-                    ->setMerchantId($validateLogin['ValidateLoginResult']['Client']['ID'])
-                    ->setFirstName($validateLogin['ValidateLoginResult']['Client']['FirstName'])
-                    ->setLastName($validateLogin['ValidateLoginResult']['Client']['LastName'])
-                    ->setEmail($validateLogin['ValidateLoginResult']['Client']['Email']);
-
-                if (!empty($clients['GetClientsResult']['Clients']['Client']['Country'])) {
-                    $systemCustomer
-                        ->setUserCountry($clients['GetClientsResult']['Clients']['Client']['Country']);
-                } else {
-                    $systemCustomer->setUserCountry(null);
-                }
-
-                if (!empty($clients['GetClientsResult']['Clients']['Client']['State'])) {
-                    $systemCustomer->setUserState($clients['GetClientsResult']['Clients']['Client']['State']);
-                } else {
-                    $systemCustomer->setUserState(null);
-                }
-
-                if (!empty($clients['GetClientsResult']['Clients']['Client']['City'])) {
-                    $systemCustomer->setUserCity($clients['GetClientsResult']['Clients']['Client']['City']);
-                } else {
-                    $systemCustomer->setUserCity(null);
-                }
+                $systemCustomer = $customerFiller->upsertCustomerAfterLogin($validateLogin);
 
                 $manager->persist($systemCustomer);
-
                 $manager->flush();
 
-                $request->getSession()->set(MindbodySession::MINDBODY_CLIENT_GUID_VAR_NAME, $validateLogin['ValidateLoginResult']['GUID']);
-                $request->getSession()->set(MindbodySession::MINDBODY_CLIENT_ID_VAR_NAME, $systemCustomer->getMerchantId());
-                $request->getSession()->set(MindbodySession::MINDBODY_CLIENT_EMAIL_VAR_NAME, $systemCustomer->getEmail());
-
-                if (!array_key_exists('HomeLocation', $clients['GetClientsResult']['Clients']['Client'])) {
-                    $request->getSession()->set(MindbodySession::MINDBODY_REAL_LOCATIONS_VAR_NAME, $locations);
-                } else {
-                    $request->getSession()->set(
-                        MindbodySession::MINDBODY_USER_PROFERRED_LOCATION_ID_VAR_NAME,
-                        $clients['GetClientsResult']['Clients']['Client']['HomeLocation']['ID']
-                    );
-                }
+                $fromSessionService->setMindbodyClientGUID($validateLogin['ValidateLoginResult']['GUID']);
+                $fromSessionService->setMindbodyClientID($systemCustomer->getMerchantId());
+                $fromSessionService->setMindbodyClientEmail($systemCustomer->getEmail());
 
                 if ($request->getSession()->has('referral')) {
                     $referral = $request->getSession()->get('referral');
@@ -132,7 +90,7 @@ class DefaultController extends AbstractController
                     }
                 }
             } catch (NotValidLoginException $exception) {
-                $arrayToReturn['errorMessage'] = 'Incorrect email or password. Please try again.';
+                $arrayToReturn['errorMessage'] = $translator->trans('mindbody.login.incorrect');
 
                 return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
             }
@@ -162,8 +120,10 @@ class DefaultController extends AbstractController
             $request->getSession()->get(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME),
             $discountCode
         );
-        $grandTotal                  = $checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'];
-        $discountAmount              = $checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['DiscountTotal'];
+
+        $grandTotal     = $checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'];
+        $discountAmount = $checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['DiscountTotal'];
+
         $request->getSession()->set(MindbodySession::MINDBODY_GRAND_TOTAL_VAR_NAME, $grandTotal);
 
         if (is_null($discountCode)) {

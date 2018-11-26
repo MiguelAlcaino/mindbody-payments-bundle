@@ -96,7 +96,7 @@ class TransactionItem implements TransactionItemInterface
 
     /**
      * @var \DateTime
-     * @ORM\Column(name="sale_datetime", type="datetime", nullable=false)
+     * @ORM\Column(name="sale_datetime", type="datetime", nullable=true)
      */
     private $saleDatetime;
 
