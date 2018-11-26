@@ -7,7 +7,6 @@ parameters:
     router.request_context.host: '%env(HOST)%'
     router.request_context.scheme: https
     router.request_context.base_url: ''
-    mailer_user: '%env(MAILER_USER)%'
 
 services:
     _defaults:
