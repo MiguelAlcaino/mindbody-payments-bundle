@@ -1228,11 +1228,11 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Set customerDiscount
      *
-     * @param \App\Entity\CustomerDiscount $customerDiscount
+     * @param CustomerDiscount $customerDiscount
      *
      * @return TransactionRecord
      */
-    public function setCustomerDiscount(\App\Entity\CustomerDiscount $customerDiscount = null)
+    public function setCustomerDiscount(CustomerDiscount $customerDiscount = null)
     {
         $this->customerDiscount = $customerDiscount;
 
@@ -1242,7 +1242,7 @@ class TransactionRecord implements TransactionRecordInterface
     /**
      * Get customerDiscount
      *
-     * @return \App\Entity\CustomerDiscount
+     * @return CustomerDiscount
      */
     public function getCustomerDiscount()
     {
