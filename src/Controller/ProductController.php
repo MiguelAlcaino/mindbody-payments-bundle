@@ -10,7 +10,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\DiscountType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\ProductType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @Route("product")
  */
-class ProductController extends Controller
+class ProductController extends AbstractController
 {
     /**
      * Lists all product entities.

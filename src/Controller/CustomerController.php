@@ -5,7 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Paginator;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @Route("customer")
  */
-class CustomerController extends Controller
+class CustomerController extends AbstractController
 {
     /**
      * Lists all customer entities.
@@ -23,7 +23,6 @@ class CustomerController extends Controller
      */
     public function indexAction(Request $request, EntityManagerInterface $em)
     {
-        $em = $this->getDoctrine()->getManager();
 
         $limit         = 50;
         $midRange      = 7;

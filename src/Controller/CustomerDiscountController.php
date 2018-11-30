@@ -4,8 +4,8 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\CustomerDiscount;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\CustomerDiscountType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package MindBodyPaymentsBundle\Controller
  * @Route("/admin/customer-discount")
  */
-class CustomerDiscountController extends Controller
+class CustomerDiscountController extends AbstractController
 {
     /**
      * @return \Symfony\Component\HttpFoundation\Response

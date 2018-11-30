@@ -11,7 +11,6 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -153,9 +152,9 @@ class DefaultController extends AbstractController
      *
      * @return Response
      */
-    private function renderLoginForm(array $viewParams, string $loginTemplatePath = null)
+    private function renderLoginForm(array $viewParams, string $loginTemplatePath = null): ?Response
     {
-        if (!is_null($loginTemplatePath)) {
+        if ($loginTemplatePath !== null) {
             return $this->render($loginTemplatePath, $viewParams);
         } else {
             return $this->render('@MiguelAlcainoMindbodyPayments/Default/login.html.twig', $viewParams);

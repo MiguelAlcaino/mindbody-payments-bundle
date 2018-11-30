@@ -11,7 +11,7 @@ use MiguelAlcaino\PaymentGateway\Interfaces\RefundHandlerInterface;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @Route("admin/transactions")
  */
-class TransactionRecordController extends Controller
+class TransactionRecordController extends AbstractController
 {
     /**
      * Lists all transactionRecord entities.
@@ -97,7 +97,7 @@ class TransactionRecordController extends Controller
         $interval                       = $transactionRecord->getCreated()->diff(new \DateTime());
         $arrayView['transactionRecord'] = $transactionRecord;
 
-        if (intval($interval->days) === 0) {
+        if ((int)$interval->days === 0) {
             $refundForm              = $this->createForm(
                 RefundType::class,
                 null,

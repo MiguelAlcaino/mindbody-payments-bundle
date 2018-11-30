@@ -9,7 +9,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\ProductDiscount;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\DiscountType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\EmailService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @Route("admin/discount")
  */
-class DiscountController extends Controller
+class DiscountController extends AbstractController
 {
     /**
      * Lists all discount entities.
