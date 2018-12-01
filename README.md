@@ -22,3 +22,9 @@ miguel_alcaino_mindbody_payments:
 ```
 The refund handler class should implement `MiguelAlcaino\PaymentGateway\Interfaces\RefundHandlerInterface`
 
+Add parameters
+---------
+```
+parameters:
+    enabled_payment_names: ['kushki']
+```

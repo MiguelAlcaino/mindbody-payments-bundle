@@ -8,13 +8,13 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service;
 
+use GuzzleHttp\Client;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecordException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
-use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -101,17 +101,18 @@ class MindbodyService
         LoggerInterface $logger,
         ParameterBagInterface $params
     ) {
-        $this->mb             = $mb;
-        $this->cache          = $cache;
-        $this->formFactory    = $formFactory;
-        $this->router         = $router;
-        $this->logger         = $logger;
-        $this->params         = $params;
-        $this->adminUser      = $this->params->get('mindbody_admin_user');
-        $this->adminPassword  = $this->params->get('mindbody_admin_password');
-        $this->sourceName     = $this->params->get('mindbody_source_name');
-        $this->sourcePassword = $this->params->get('mindbody_source_password');
-        $this->siteIds        = $this->params->get('mindbody_site_ids');
+        $this->mb                  = $mb;
+        $this->cache               = $cache;
+        $this->formFactory         = $formFactory;
+        $this->router              = $router;
+        $this->logger              = $logger;
+        $this->params              = $params;
+        $this->adminUser           = $this->params->get('mindbody_admin_user');
+        $this->adminPassword       = $this->params->get('mindbody_admin_password');
+        $this->sourceName          = $this->params->get('mindbody_source_name');
+        $this->sourcePassword      = $this->params->get('mindbody_source_password');
+        $this->siteIds             = $this->params->get('mindbody_site_ids');
+        $this->enabledPaymentNames = $this->params->get('enabled_payment_names');
     }
 
     /**
