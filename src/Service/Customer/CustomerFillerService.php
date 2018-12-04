@@ -131,6 +131,7 @@ class CustomerFillerService
 
         //Updating Mindbody client's location
         if ($form->has('preferredLocations')) {
+            $preferredLocationId = $form->get('preferredLocations')->getData();
             try {
                 $this->mindbodyService->updateClientLocation(
                     $systemCustomer->getMerchantId(),
@@ -143,7 +144,10 @@ class CustomerFillerService
             } catch (\Exception $exception) {
                 $transactionRecord->setUserLocationUpdatedError(true);
             }
+        }else{
+            $preferredLocationId = $this->fromSessionService->getUserPreferredLocationId();
         }
+        $transactionRecord->setUserPreferredLocation($this->mindbodyService->getLocationNameById($preferredLocationId));
     }
 
     public function fillDocumentInformation(FormInterface $form, Customer $systemCustomer){
