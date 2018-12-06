@@ -92,6 +92,12 @@ class TransactionRecord implements TransactionRecordInterface
 
     /**
      * @var string
+     * @ORM\Column(name="sub_total", type="string", length=255, nullable=true)
+     */
+    private $subTotal;
+
+    /**
+     * @var string
      *
      * @ORM\Column(name="paymentTransaction", type="string", length=255, nullable=true)
      */
@@ -1361,6 +1367,26 @@ class TransactionRecord implements TransactionRecordInterface
     public function setRefundId(string $refundId)
     {
         $this->refundId = $refundId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubTotal()
+    {
+        return $this->subTotal;
+    }
+
+    /**
+     * @param string $subTotal
+     *
+     * @return TransactionRecord
+     */
+    public function setSubTotal(string $subTotal)
+    {
+        $this->subTotal = $subTotal;
 
         return $this;
     }

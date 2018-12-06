@@ -1017,6 +1017,7 @@ class MindbodyService
             );
             //            dump($checkoutShoppingCartRequest);
             $transactionRecord
+                ->setSubTotal($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'])
                 ->setAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'])
                 ->setMerchantId($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['ID'])
                 ->setMerchantResponse(json_encode($checkoutShoppingCartRequest))
@@ -1151,6 +1152,7 @@ class MindbodyService
             );
 
             $transactionRecord
+                ->setSubTotal($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'])
                 ->setAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'])
                 ->setMerchantId($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['ID'])
                 ->setMerchantResponse(json_encode($checkoutShoppingCartRequest))
