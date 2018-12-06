@@ -1017,6 +1017,8 @@ class MindbodyService
             );
             //            dump($checkoutShoppingCartRequest);
             $transactionRecord
+                ->setDiscountCode($mindbodyDiscountCode)
+                ->setDiscountAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['DiscountTotal'])
                 ->setSubTotal($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'])
                 ->setAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'])
                 ->setMerchantId($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['ID'])
@@ -1152,6 +1154,8 @@ class MindbodyService
             );
 
             $transactionRecord
+                ->setDiscountCode($mindbodyDiscountCode)
+                ->setDiscountAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['DiscountTotal'])
                 ->setSubTotal($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'])
                 ->setAmount($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'])
                 ->setMerchantId($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['ID'])
