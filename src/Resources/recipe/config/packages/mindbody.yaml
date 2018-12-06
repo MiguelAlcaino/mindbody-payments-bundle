@@ -1,0 +1,3 @@
+miguel_alcaino_mindbody_payments:
+    handler:
+        refund_handler: your.handler.service.name

@@ -1,0 +1,22 @@
+{
+    "bundles": {
+        "FOS\\UserBundle\\FOSUserBundle": ["all"],
+        "MiguelAlcaino\\MindbodyPaymentsBundle\\MiguelAlcainoMindbodyPaymentsBundle": ["all"]
+    },
+    "copy-from-recipe": {
+        "src/Resources/recipe/config/routes/": "%CONFIG_DIR%/routes/",
+        "src/Resources/recipe/config/packages/": "%CONFIG_DIR%/packages/"
+    },
+    "env": {
+        "MINDBODY_SOURCE_NAME": "xxxxxx",
+        "MINDBODY_SOURCE_PASSWORD": "xxxxxxxx",
+        "MINDBODY_ADMIN_USER": "xxxxxxxxxx",
+        "MINDBODY_ADMIN_PASSWORD": "xxxxxx",
+        "MINDBODY_SITE_IDS": "[-99]",
+        "HOST": "your.site.com",
+        "MAIN_HOST": "https://www.site.com",
+        "PAYMENT_SYSTEM_URL": "https://your.site.com",
+        "BOOKING_PAGE": "reserve-your-class",
+        "MINDBODY_MAILER_USER": "youremailsender@site.com"
+    }
+}

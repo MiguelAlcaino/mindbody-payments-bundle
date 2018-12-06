@@ -1,0 +1,3 @@
+mindbody_payments:
+    resource: '@MiguelAlcainoMindbodyPaymentsBundle/Controller/'
+    type: annotation
