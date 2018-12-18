@@ -11,6 +11,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -125,7 +126,7 @@ class DefaultController extends AbstractController
 
         $request->getSession()->set(MindbodySession::MINDBODY_GRAND_TOTAL_VAR_NAME, $grandTotal);
 
-        if (is_null($discountCode)) {
+        if ($discountCode === null) {
             $request->getSession()->remove(MindbodySession::MINDBODY_DISCOUNT_CODE_USED_VAR_NAME);
             $request->getSession()->remove(MindbodySession::MINDBODY_DISCOUNT_AMOUNT_VAR_NAME);
         } else {
