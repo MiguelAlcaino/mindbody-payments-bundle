@@ -5,7 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MB_API;
 use Psr\SimpleCache\CacheInterface;
 
-class SiteServiceRequest
+class SiteServiceRequestHandler
 {
     /**
      * @var CacheInterface

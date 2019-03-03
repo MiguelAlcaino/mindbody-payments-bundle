@@ -32,12 +32,12 @@ services:
     ### MINDBODY REQUEST HANDLERS ###
 
     miguel_alcaino.mindbody.request_handler.site_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequest
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler
         arguments:
             $mb: '@miguel_alcaino.mb_api'
             $cache: '@file_cache_service'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     miguel_alcaino.mindbody_service:
         public: true
