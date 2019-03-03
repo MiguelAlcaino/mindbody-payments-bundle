@@ -1558,4 +1558,50 @@ class MindbodyService
 
         return $assocArray;
     }
+
+    /**
+     * @param int|string $clientId
+     * @param int|string $classIdScheduleId
+     *
+     * @return array
+     */
+    public function addClientsToEnrollments($clientId, $classIdScheduleId)
+    {
+        $result = $this->mb->AddClientsToEnrollments(
+            [
+                'ClientIDs'        => [
+                    sprintf($clientId),
+                ],
+                'ClassScheduleIDs' => [
+                    (int)$classIdScheduleId,
+                ],
+            ]
+        );
+
+        return $result;
+    }
+
+    /**
+     * @param int|string $clientId
+     * @param int|string $classId
+     * @param int|string $clientServiceId
+     *
+     * @return array
+     */
+    public function addClientsToClasses($clientId, $classId, $clientServiceId)
+    {
+        $result = $this->mb->AddClientsToClasses(
+            [
+                'ClientIDs'       => [
+                    sprintf($clientId),
+                ],
+                'ClassIDs'        => [
+                    $classId,
+                ],
+                'ClientServiceID' => $clientServiceId,
+            ]
+        );
+
+        return $result;
+    }
 }
