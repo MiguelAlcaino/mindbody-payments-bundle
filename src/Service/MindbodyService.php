@@ -868,16 +868,21 @@ class MindbodyService
     }
 
     /**
-     * Returns the Mindbody client's services by a given $clientId
+     * @param string|int   $clientId
+     * @param boolean|null $showActiveOnly
      *
-     * @param int|string $clientId
+     * @param null         $programIds
      *
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
      */
-    public function getClientServices($clientId)
+    public function getClientServices($clientId, $showActiveOnly = null, $programIds = null)
     {
-        $programs = $this->getPrograms();
+        if ($programIds === null) {
+            $programs = $this->getPrograms();
+        } else {
+            $programs = $programIds;
+        }
 
         $soapPrograms = '';
 
@@ -885,7 +890,7 @@ class MindbodyService
             $soapPrograms .= '<int>' . $program['id'] . '</int>';
         }
 
-        $body       = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://clients.mindbodyonline.com/api/0_5_1">
+        $body = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://clients.mindbodyonline.com/api/0_5_1">
                 <soapenv:Header/>
                 <soapenv:Body>
                    <GetClientServices>
@@ -898,8 +903,11 @@ class MindbodyService
 			               </SiteIDs>
 			            </SourceCredentials>
                          <ClientID>' . $clientId . '</ClientID>
-                         <ProgramIDs>' . $soapPrograms . '</ProgramIDs>
-                      </Request>
+                         <ProgramIDs>' . $soapPrograms . '</ProgramIDs>';
+        if ($showActiveOnly !== null) {
+            $body .= '<ShowActiveOnly>' . ($showActiveOnly ? 'true' : 'false') . '</ShowActiveOnly>';
+        }
+        $body       .= '</Request>
                    </GetClientServices>
                 </soapenv:Body>
              </soapenv:Envelope>
@@ -914,14 +922,14 @@ class MindbodyService
                     "Content-Type" => "text/xml; charset=utf-8",
                     'SOAPAction'   => 'http://clients.mindbodyonline.com/api/0_5_1/GetClientServices',
                     'Host'         => 'api.mindbodyonline.com',
-                ],
+                ]
             ]
         );
 
         $xml = new XmlParser($result->getBody()->getContents());
         foreach ($xml->data['soap:Envelope']['soap:Body']['GetClientServicesResponse']['GetClientServicesResult'] as $getClientServicesResult) {
             if (array_key_exists('ClientServices', $getClientServicesResult)) {
-                if (is_null($getClientServicesResult['ClientServices'])) {
+                if ($getClientServicesResult['ClientServices'] === null) {
                     return [];
                 } else {
                     if (array_key_exists('ClientService', $getClientServicesResult['ClientServices'])) {
