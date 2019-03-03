@@ -15,6 +15,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartExce
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecordException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -72,31 +73,39 @@ class MindbodyService
     private $fromSessionService;
 
     /**
+     * @var SiteServiceRequestHandler
+     */
+    private $siteServiceRequestHandler;
+
+    /**
      * MindBodyService constructor.
      *
-     * @param MB_API                $mb
-     * @param CacheInterface        $cache
-     * @param LoggerInterface       $logger
-     * @param ParameterBagInterface $params
-     * @param FromSessionService    $fromSessionService
+     * @param MB_API                    $mb
+     * @param CacheInterface            $cache
+     * @param LoggerInterface           $logger
+     * @param ParameterBagInterface     $params
+     * @param FromSessionService        $fromSessionService
+     * @param SiteServiceRequestHandler $siteServiceRequestHandler
      */
     public function __construct(
         MB_API $mb,
         CacheInterface $cache,
         LoggerInterface $logger,
         ParameterBagInterface $params,
-        FromSessionService $fromSessionService
+        FromSessionService $fromSessionService,
+        SiteServiceRequestHandler $siteServiceRequestHandler
     ) {
-        $this->mb                  = $mb;
-        $this->cache               = $cache;
-        $this->logger              = $logger;
-        $this->fromSessionService  = $fromSessionService;
-        $this->adminUser           = $params->get('mindbody_admin_user');
-        $this->adminPassword       = $params->get('mindbody_admin_password');
-        $this->sourceName          = $params->get('mindbody_source_name');
-        $this->sourcePassword      = $params->get('mindbody_source_password');
-        $this->siteIds             = $params->get('mindbody_site_ids');
-        $this->enabledPaymentNames = $params->get('enabled_payment_names');
+        $this->mb                        = $mb;
+        $this->cache                     = $cache;
+        $this->logger                    = $logger;
+        $this->fromSessionService        = $fromSessionService;
+        $this->siteServiceRequestHandler = $siteServiceRequestHandler;
+        $this->adminUser                 = $params->get('mindbody_admin_user');
+        $this->adminPassword             = $params->get('mindbody_admin_password');
+        $this->sourceName                = $params->get('mindbody_source_name');
+        $this->sourcePassword            = $params->get('mindbody_source_password');
+        $this->siteIds                   = $params->get('mindbody_site_ids');
+        $this->enabledPaymentNames       = $params->get('enabled_payment_names');
     }
 
     /**
@@ -1303,41 +1312,7 @@ class MindbodyService
      */
     public function getPrograms($useCache = true)
     {
-        if ($this->cache->has('mindbody.site.programs') && $useCache) {
-            $formattedPrograms = $this->cache->get('mindbody.site.programs');
-        } else {
-            $programs = $this->mb->GetPrograms(
-                [
-                    'OnlineOnly'   => true,
-                    'ScheduleType' => 'All',
-                ]
-            );
-
-            $formattedPrograms = [];
-
-            if (array_key_exists('ID', $programs['GetProgramsResult']['Programs']['Program'])) {
-                $formattedPrograms = [
-                    [
-                        'id'           => $programs['GetProgramsResult']['Programs']['Program']['ID'],
-                        'name'         => $programs['GetProgramsResult']['Programs']['Program']['Name'],
-                        'scheduleType' => $programs['GetProgramsResult']['Programs']['Program']['ScheduleType'],
-                        'cancelOffset' => $programs['GetProgramsResult']['Programs']['Program']['CancelOffset'],
-                    ],
-                ];
-            } else {
-                foreach ($programs['GetProgramsResult']['Programs']['Program'] as $program) {
-                    $formattedPrograms[] = [
-                        'id'           => $program['ID'],
-                        'name'         => $program['Name'],
-                        'scheduleType' => $program['ScheduleType'],
-                        'cancelOffset' => $program['CancelOffset'],
-                    ];
-                }
-            }
-            $this->cache->set('mindbody.site.programs', $formattedPrograms, 604800);
-        }
-
-        return $formattedPrograms;
+        return $this->siteServiceRequestHandler->getPrograms($useCache);
     }
 
     /**
