@@ -401,14 +401,16 @@ class MindbodyService
     /**
      * Returns the calculation of the shopping cart
      *
-     * @param int|string       $clientId      - Client's mindbody id
-     * @param int|string|array $itemId        - Item's id
-     * @param int|string|null  $promotionCode - optional promo code
+     * @param int|string       $clientId       - Client's mindbody id
+     * @param int|string|array $itemId         - Item's id
+     * @param int|string|null  $promotionCode  - optional promo code
+     *
+     * @param int              $discountAmount - TODO: Missing implementation
      *
      * @return mixed
-     * @throws InvalidItemInSHoppingCartException
+     * @throws InvalidItemInShoppingCartException
      */
-    public function calculateShoppingCart($clientId, $itemId, $promotionCode = null)
+    public function calculateShoppingCart($clientId, $itemId, $promotionCode = null, $discountAmount = 0)
     {
         $client = new \SoapClient(
             'https://api.mindbodyonline.com/0_5_1/SaleService.asmx?WSDL', [
@@ -451,16 +453,16 @@ class MindbodyService
                     'http://clients.mindbodyonline.com/api/0_5_1'
                 ),
                 'Quantity'       => array_key_exists('quantity', $item) ? $item['quantity'] : 1,
-                'DiscountAmount' => 0,
+                'DiscountAmount' => $item['discountAmount'] ?? 0,
             ];
         }
 
         $request = [
             'Request' => [
                 'SourceCredentials' => [
-                    "SourceName" => $this->sourceName,
-                    "Password"   => $this->sourcePassword,
-                    "SiteIDs"    => $this->siteIds,
+                    'SourceName' => $this->sourceName,
+                    'Password'   => $this->sourcePassword,
+                    'SiteIDs'    => $this->siteIds,
                 ],
                 'ClientID'          => $clientId,
                 'UserCredentials'   => [
@@ -477,6 +479,10 @@ class MindbodyService
                 ],
             ],
         ];
+
+        if ($promotionCode !== null) {
+            $result['Request']['PromotionCode'] = $promotionCode;
+        }
 
         $result = $client->CheckoutShoppingCart($request);
         $result = json_decode(json_encode($result), 1);
