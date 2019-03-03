@@ -32,10 +32,10 @@ services:
         arguments:
             $mb: '@miguel_alcaino.mb_api'
             $cache: '@file_cache_service'
-            $formFactory: '@form.factory'
-            $router: '@router'
             $logger: '@logger'
             $params: '@parameter_bag'
+            $fromSessionService: '@miguel_alcaino.mindbody.from_session'
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService: '@miguel_alcaino.mindbody_service'
     miguel_alcaino.mindbody.country_and_city_service:
         class:  MiguelAlcaino\MindbodyPaymentsBundle\Service\CountryAndCitiesService
