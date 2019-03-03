@@ -67,3 +67,16 @@ services:
             - '@doctrine.orm.entity_manager'
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService: '@miguel_alcaino.mindbody.customer_filler'
 
+    miguel_alcaino.mindbody.user_session_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService
+        arguments:
+            $fromSessionService: '@miguel_alcaino.mindbody.from_session'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService: '@miguel_alcaino.mindbody.user_session_service'
+
+    miguel_alcaino.mindbody.program_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService
+        arguments:
+            $parameterBag: '@parameter_bag'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService: '@miguel_alcaino.mindbody.program_service'
