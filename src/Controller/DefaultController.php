@@ -161,4 +161,17 @@ class DefaultController extends AbstractController
             return $this->render('@MiguelAlcainoMindbodyPayments/Default/login.html.twig', $viewParams);
         }
     }
+
+    /**
+     * @Route("/logout", name="mindbody_customer_logout")
+     * @param FromSessionService $fromSessionService
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function mindbodyCustomerLogout(FromSessionService $fromSessionService)
+    {
+        $fromSessionService->destroyMindbodySession();
+
+        return $this->redirect($this->getParameter('schedule_page'));
+    }
 }

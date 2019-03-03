@@ -17,7 +17,6 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class MindbodyService
