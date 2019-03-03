@@ -1,0 +1,64 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="width: 100%">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.6.0/iframeResizer.contentWindow.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
+<script src="https://widgets.healcode.com/javascripts/healcode.js" type="text/javascript"></script>
+
+<healcode-widget data-type="enrollments" data-widget-partner="object" data-widget-id="5839109ac74" data-widget-version="0"></healcode-widget>
+
+<script>
+    var paymentsSystemUrl = 'http://localhost:8000';
+    var bookUrl = paymentsSystemUrl+'/widget/book-summary';
+    setInterval(function(){
+        $('healcode-widget').find('a.hc-button.signup_now').each(function () {
+            var $button = $(this);
+            $button.removeAttr('data-hc-open-modal');
+            if(typeof $button.attr('data-changed') === 'undefined'){
+                $button.attr('data-changed',true);
+                var dataToSend = {};
+                dataToSend.className = $button.closest('div.enrollment[data-hc-mbo-class-id]').find('h2.healcode-enrollment-name').text();
+                dataToSend.teacherName = $button.closest('div.enrollment[data-hc-mbo-class-id]').find('span.trainer').text();
+                dataToSend.classStartTime = $button.closest('div.enrollment[data-hc-mbo-class-id]').find('time.hc_starttime').attr('datetime');
+                dataToSend.classEndTime = $button.closest('div.enrollment[data-hc-mbo-class-id]').find('time.hc_endtime').attr('datetime');
+                dataToSend.originalUrl = $button.attr('data-url');
+                dataToSend.classId = $button.closest('div.enrollment[data-hc-mbo-class-id]').attr('data-hc-mbo-class-id');
+                dataToSend.classType = 'enrollment';
+                $button.attr('data-url',bookUrl+'?'+$.param(dataToSend));
+
+                $button.click(function(event){
+                    event.preventDefault();
+                    // alert($button.attr('data-url'));
+                    swal({
+                        html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+$button.attr('data-url')+'"></iframe>',
+                        animation: false,
+                        showCloseButton: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: () => {
+                            // add your logic here and return boolean
+                            return false;
+                        },
+                        onOpen: function(){
+                            var popupHeight = $('.swal2-popup').height();
+                            var bodyHeight = $('body').height();
+
+                            if(bodyHeight < popupHeight){
+                                $('body').height(popupHeight+100);
+                            }
+                        }
+                    });
+
+                });
+            }else{
+
+            }
+        });
+    },100);
+
+</script>
+</body>
+</html>

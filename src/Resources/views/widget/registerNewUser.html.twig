@@ -1,0 +1,102 @@
+{% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
+{% block popupTitle %}Sua nova conta{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        main.main{
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        var $countrySelector = $('#mind_body_payments_bundle_new_mindbody_user_type_Country');
+        var countryVal = $countrySelector.val();
+        var $stateSelector = $('#state_selector');
+        var getStates = function(countryCode){
+            return $.ajax({
+                url: 'https://widgets.healcode.com/states/index?country='+countryCode,
+                jsonp: "callback",
+                dataType: "jsonp",
+                cache: false,
+                success: function(data){
+                    $stateSelector.children().remove();
+                    for(var i = 0; i < data.states.length; i++){
+                        var $option = $('<option>').val(data.states[i][1]).text(data.states[i][0]);
+                        $stateSelector.append($option);
+                    }
+                    $('#mind_body_payments_bundle_new_mindbody_user_type_State').val(data.states[0][1]);
+                }
+            });
+        };
+
+        $stateSelector.change(function(){
+            $('#mind_body_payments_bundle_new_mindbody_user_type_State').val($(this).val());
+        });
+        $countrySelector.change(function(){
+            getStates($(this).val());
+        });
+
+        getStates(countryVal);
+    </script>
+{% endblock %}
+{% block content %}
+    <main class="main">
+        <div class="title">
+            <div class="title__content">Namaste! Vamos criar a sua conta.</div>
+        </div>
+        {{ form_start(form, {attr: {
+            class: 'form'
+        }}) }}
+        <fieldset class="fieldset">
+            <legend class="fieldset__legend">Crie seu Login</legend>
+            {% if emailError is defined %}
+            <div style="margin: 20px 0;text-align: center;color: red;">Este endereço de e-mail já está registrado. Por favor, tente novamente.</div>
+            {% endif %}
+            {% if not form.vars.valid %}
+                <div style="margin: 20px 0;text-align: center;color: red; list-style: none;">{{ form_errors(form.Password.first) }}</div>
+            {% endif %}
+            {% if passwordError is defined %}
+                <div style="margin: 20px 0;text-align: center;color: red; list-style: none;">{{ passwordError }}</div>
+            {% endif %}
+
+        {% for key,widget in form.children %}
+            {% if key == '_token' %}
+            {% elseif key == 'Password' %}
+                {% for subwidget in widget.children %}
+                    <div class="field">
+                        {{ form_widget(subwidget, {attr: {
+                            class: 'field__input js-hasValue'
+                        }}) }}
+
+                        {{ form_label(subwidget, null, {label_attr: {
+                            class: 'field__label'
+                        }}) }}
+                    </div>
+                {% endfor %}
+            {% elseif key == 'State' %}
+                <div class="field">
+                    {{ form_widget(widget) }}
+                    <select class="field__select js-hasValue" id="state_selector"></select>
+                    {{ form_label(widget, null, {label_attr: {
+                        class: 'field__label'
+                    }}) }}
+                </div>
+            {% else %}
+            <div class="field">
+                {{ form_widget(widget, {attr: {
+                    class: 'field__input js-hasValue'
+                }}) }}
+
+                {{ form_label(widget, null, {label_attr: {
+                    class: 'field__label'
+                }}) }}
+            </div>
+            {% endif %}
+        {% endfor %}
+        </fieldset>
+        <input type="submit" name="commit" value="Crie sua conta" class="cta" id="hc-register" data-disable-with="Create Account">
+        {{ form_end(form) }}
+    </main>
+{% endblock %}

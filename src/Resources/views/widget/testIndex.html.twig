@@ -1,0 +1,143 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="width: 100%">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://widgets.healcode.com/javascripts/healcode.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.6.0/iframeResizer.contentWindow.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert2@7.19.1/dist/sweetalert2.all.js"></script>
+
+    <healcode-widget data-type="schedules" data-widget-partner="object" data-widget-id="1287094b9c4" data-widget-version="1" ></healcode-widget>
+    {#<healcode-widget data-type="schedules" data-widget-partner="object" data-widget-id="5864577ac74" data-widget-version="1"></healcode-widget>#}
+<style>
+    @media screen and (min-width: 900px) {
+        iframe.popup-iframe{
+            border: 0;
+            max-width:768px;
+            max-height:577px;
+            min-height: 500px;
+            min-width: 728px;
+        }
+        .swal2-popup{
+            min-width: 768px;
+            min-height: 500px;
+        }
+    }
+    @media screen and (max-width: 899px) {
+        iframe.popup-iframe{
+            border: 0;
+            max-width:768px;
+            max-height:577px;
+            min-height: 700px;
+        }
+        .swal2-popup{
+            min-height: 630px;
+        }
+    }
+</style>
+<script>
+    var paymentsSystemUrl = 'http://localhost:8000';
+    var bookUrl = paymentsSystemUrl+'/widget/book-summary';
+    setInterval(function(){
+        $('healcode-widget').find('.bw-widget__signup-now.bw-widget__cta').each(function () {
+            var $button = $(this);
+            $button.removeAttr('data-bw-widget-open-modal');
+            if(typeof $button.attr('data-changed') === 'undefined'){
+                $button.attr('data-changed',true);
+                var dataToSend = {};
+                dataToSend.className = $button.closest('div.bw-session').find('div.bw-session__name').text();
+                dataToSend.teacherName = $button.closest('div.bw-session').find('div.bw-session__staff').text();
+                dataToSend.classStartTime = $button.closest('div.bw-session').find('time.hc_starttime').attr('datetime');
+                dataToSend.classEndTime = $button.closest('div.bw-session').find('time.hc_endtime').attr('datetime');
+                dataToSend.originalUrl = $button.attr('data-url');
+                dataToSend.classId = $button.closest('div.bw-session').attr('data-bw-widget-mbo-class-id');
+                $button.attr('data-url',bookUrl+'?'+$.param(dataToSend));
+
+                $button.click(function(){
+                    // alert($button.attr('data-url'));
+                    swal({
+                        html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+$button.attr('data-url')+'"></iframe>',
+                        animation: false,
+                        showCloseButton: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: () => {
+                            // add your logic here and return boolean
+                            return false;
+                        },
+                        onOpen: function(){
+                            var popupHeight = $('.swal2-popup').height();
+                            var bodyHeight = $('body').height();
+
+                            if(bodyHeight < popupHeight){
+                                $('body').height(popupHeight+100);
+                            }
+                        }
+                    });
+
+                });
+            }else{
+
+            }
+        });
+
+        $('healcode-widget').find('.bw-header__account-link').each(function () {
+
+            if(typeof $(this).attr('data-changed') === 'undefined'){
+                $(this).attr('data-changed',true);
+                $(this).remove();
+            }else{
+
+            }
+        });
+    },100);
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var creditCardFormUrl = paymentsSystemUrl+'/widget/credit-card-form';
+
+    if(urlParams.has('serviceId')){
+        swal({
+            html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+creditCardFormUrl+'?serviceId='+urlParams.get('serviceId')+'"></iframe>',
+            animation: false,
+            showCloseButton: true,
+            showConfirmButton: false,
+            allowOutsideClick: () => {
+                // add your logic here and return boolean
+                return false;
+            },
+            onOpen: function(){
+                var popupHeight = $('.swal2-popup').height();
+                var bodyHeight = $('body').height();
+
+                if(bodyHeight < popupHeight){
+                    $('body').height(popupHeight+100);
+                }
+            }
+        });
+    }
+
+    if(urlParams.has('show_popup_success')){
+        var successfulUrl = '{{ path('widget_successful_payment') }}';
+        swal({
+            html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+successfulUrl+'?serviceId='+urlParams.get('serviceId')+'"></iframe>',
+            animation: false,
+            showCloseButton: true,
+            showConfirmButton: false,
+            allowOutsideClick: () => {
+                // add your logic here and return boolean
+                return false;
+            },
+            onOpen: function(){
+                var popupHeight = $('.swal2-popup').height();
+                var bodyHeight = $('body').height();
+
+                if(bodyHeight < popupHeight){
+                    $('body').height(popupHeight+100);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

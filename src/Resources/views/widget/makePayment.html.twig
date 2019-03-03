@@ -1,0 +1,487 @@
+{% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
+{% block popupTitle %}Detalhes do pagamento{% endblock %}
+{% block content %}
+    <div style="margin: 13px 0;">{{ serviceName }} por {{ moneySymbol }}{{ grandTotal|number_format(0,',','.') }}</div>
+    {{ form_start(form) }}
+        <div class="usable-creditcard-form">
+            <div class="wrapper payment-wrapper" >
+                <div class="input-group nmb_a">
+                    <div class="icon ccic-brand"></div>
+                    {{ form_widget(form.cardNumberFormatted, {attr: {
+                        'autocomplete' : 'off',
+                        'class' : 'credit_card_number',
+                        'data-iugu' : 'number',
+                        'placeholder' : 'Número do Cartão'
+                    }}) }}
+                </div>
+                <div class="input-group nmb_b">
+                    <div class="icon ccic-cvv"></div>
+                    {{ form_widget(form.cvc, {attr: {
+                        'autocomplete' : 'off',
+                        'class' : 'credit_card_cvv',
+                        'data-iugu' : 'verification_value',
+                        'placeholder' : 'CVV'
+                    }}) }}
+                </div>
+                <div class="input-group nmb_c">
+                    <div class="icon ccic-name"></div>
+                    {{ form_widget(form.cardHolderName, {attr: {
+                        'autocomplete' : 'off',
+                        'class' : 'credit_card_name',
+                        'data-iugu' : 'full_name',
+                        'placeholder' : 'Titular do Cartão'
+                    }}) }}
+                </div>
+                <div class="input-group nmb_d">
+                    <div class="icon ccic-exp"></div>
+                    {{ form_widget(form.expiration, {attr: {
+                        'autocomplete' : 'off',
+                        'class' : 'credit_card_expiration',
+                        'data-iugu' : 'expiration',
+                        'placeholder' : 'MM/AA'
+                    }}) }}
+                </div>
+                <div class="input-group nmb_f">
+                    <div class="icon ccic-cpf"></div>
+                    {{ form_widget(form.documentNumber, {attr: {
+                        'autocomplete' : 'off',
+                        'class' : '',
+                        'placeholder' : 'CPF ou CNPJ'
+                    }}) }}
+                </div>
+                <div class="input-group nmb_e">
+                    {{ form_label(form.installments, 'Parcelas') }}
+                    {{ form_widget(form.installments, {attr: {
+
+                    }}) }}
+                </div>
+            </div>
+            <div class="card-error-message" style="{% if errorMessasge is defined %}{% else %}display: none;{% endif %}">
+                {% if errorMessasge is defined %}
+                {{ errorMessasge }}
+                {% endif %}
+            </div>
+            <div style="text-align: center;">
+                <button class="pay-now" type="submit">Pague agora <i style="display: none;" class="fas fa-spinner fa-spin"></i></button>
+            </div>
+            <div class="footer">
+                <img src="http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/cc-icons.e8f4c6b4db3cc0869fa93ad535acbfe7.png"
+                     alt="Visa, Master, Diners. Amex" border="0"/>
+                <a class="iugu-btn" href="http://iugu.com" tabindex="-1"><img
+                            src="http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/payments-by-iugu.1df7caaf6958f1b5774579fa807b5e7f.png"
+                            alt="Pagamentos por Iugu" border="0"/></a>
+            </div>
+        </div>
+
+    {{ form_end(form) }}
+{% endblock %}
+{% block javascript %}
+{{ parent() }}
+<script type="text/javascript" src="https://js.iugu.com/v2"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/formatter.js/0.1.5/formatter.min.js"></script>
+<script type="text/javascript">
+Iugu.setAccountID("{{ paymentGatewayJsId }}");
+{% if app.environment == 'dev' %}
+    Iugu.setTestMode(true);
+{% endif %}
+$('form[name=mind_body_payments_bundle_credit_card_just_text_type]').submit(function(e) {
+    e.preventDefault();
+    var form = $(this);
+    var $errorMessageDiv = $('.card-error-message');
+    $errorMessageDiv.hide();
+    form.find('button[type=submit]').find('i.fa-spinner').show();
+    form.find('button[type=submit]').addClass('is-disabled');
+    var tokenResponseHandler = function(data) {
+
+          if (data.errors) {
+              $errorMessageDiv.find('ul').remove();
+              console.log(data.errors);
+              form.find('button[type=submit]').find('i.fa-spinner').hide();
+              form.find('button[type=submit]').removeClass('is-disabled');
+              var $errorMessage = $('<ul>');
+              if(typeof data.errors.number !== 'undefined'){
+                  $errorMessage.append('<li>The card number is invalid</li>');
+              }
+              if(typeof data.errors.verification_value !== 'undefined'){
+                $errorMessage.append('<li>The verification value is incorrect</li>');
+              }
+              if(typeof data.errors.last_name !== 'undefined'){
+                $errorMessage.append('<li>Please provide your last name</li>');
+              }
+              if(typeof data.errors.expiration !== 'undefined'){
+                $errorMessage.append('<li>Please check the expiration date.</li>');
+              }
+
+              $errorMessageDiv.append($errorMessage);
+              $errorMessageDiv.show()
+          } else {
+              $("#mind_body_payments_bundle_credit_card_just_text_type_jsCreditCardToken").val( data.id );
+              $('#mind_body_payments_bundle_credit_card_just_text_type_cardNumber').val($('#mind_body_payments_bundle_credit_card_just_text_type_cardNumberFormatted').val().replace(/\s/g, ''));
+              console.log($('#mind_body_payments_bundle_credit_card_just_text_type_cardNumber').val());
+              console.log($("#mind_body_payments_bundle_credit_card_just_text_type_jsCreditCardToken").val());
+              form.get(0).submit();
+          }
+      };
+      Iugu.createPaymentToken(this, tokenResponseHandler);
+  });
+
+</script>
+{% endblock %}
+{% block stylesheets %}
+    <style>
+        div.card-error-message{
+            text-align: center;
+            color: red;
+            margin: 6px 0;
+        }
+        div.card-error-message ul{
+            list-style: none;
+        }
+        button.pay-now{
+            background: black;
+            color: white;
+            border: 0;
+            padding: 7px 13px;
+            border-radius: 8px;
+            margin-top: 6px;
+        }
+        @media screen and (max-width: 599px){
+            form .wrapper.payment-wrapper{
+                min-height: 220px;
+            }
+            button.pay-now{
+                background: black;
+                color: white;
+                border: 0;
+                padding: 11px 16px;
+                border-radius: 8px;
+                margin-top: 6px;
+                margin-bottom: 6px;
+            }
+            .usable-creditcard-form .input-group input[type=text]{
+                width: 100%;
+            }
+            .usable-creditcard-form .input-group .icon.ccic-name {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-name.1cafa1882fdd56f8425de54a5a5bbd1e.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-cpf {
+                background: url("{{ asset('images/cpf2.png') }}") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-exp {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-exp.05e708b1489d5e00c871f20ba33bbff3.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-brand {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-brands.48dba03883007f86e118f683dcfc4297.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-cvv {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-cvv.1fe78dcc390427094bdc14dedea10f34.png") no-repeat;
+            }
+            .usable-creditcard-form .input-group .icon.ccic-cvv,
+            .usable-creditcard-form .input-group .icon.ccic-brand {
+                -webkit-transition: background-position .2s ease-in;
+                -moz-transition: background-position .2s ease-in;
+                -o-transition: background-position .2s ease-in;
+                transition: background-position .2s ease-in;
+            }
+
+            .amex .usable-creditcard-form .input-group .icon.ccic-cvv {
+                background-position: 0px -22px;
+            }
+
+            .amex .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -110px;
+            }
+
+            .visa .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -22px;
+            }
+
+            .diners .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -88px;
+            }
+
+            .mastercard .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -66px;
+            }
+            .usable-creditcard-form input {
+                background: none;
+                display: block;
+                width: 100%;
+                padding: 10px;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                margin: 0px;
+                padding-left: 35px;
+                border: none;
+            }
+
+            .usable-creditcard-form .input-group .icon {
+                position: relative;
+                width: 22px;
+                height: 22px;
+                background: #CCC;
+                left: 8px;
+                top: 29px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_a input {
+                border: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form .input-group.nmb_b input {
+                border: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form input::-webkit-input-placeholder {
+                font-size: 12px;
+                text-transform: none;
+            }
+
+            .usable-creditcard-form .input-group.nmb_d input {
+                border: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form .input-group.nmb_c input {
+                text-transform: uppercase;
+                border: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form .input-group.nmb_e select {
+                padding: 10px;
+                margin-top: 20px;
+                width: 100%;
+                background: none;
+                border: 1px solid #ECECEC;
+            }
+            .usable-creditcard-form .input-group.nmb_e label {
+                display: none;
+            }
+
+            .usable-creditcard-form .input-group.nmb_f input {
+                text-transform: uppercase;
+                border: 1px solid #ECECEC;
+            }
+        }
+        /**
+        * Big screen
+         */
+        @media screen and (min-width: 600px){
+            .payment-wrapper{
+                min-height: 80px;
+                width: 400px;
+            }
+            /* Credit Card Form */
+            .usable-creditcard-form, .usable-creditcard-form * {
+                font-size: 13px;
+            }
+
+            .usable-creditcard-form {
+                position: relative;
+                padding: 0px;
+                margin-left: auto;
+                margin-right: auto;
+                height: 100px;
+                width: 400px;
+            }
+
+            .usable-creditcard-form .wrapper {
+                border: 1px solid #CCC;
+                border-top: 1px solid #AAA;
+                border-right: 1px solid #AAA;
+                height: 150px;
+                width: 400px;
+                position: relative;
+                -webkit-border-radius: 5px;
+                -moz-border-radius: 5px;
+                border-radius: 5px;
+            }
+
+            .usable-creditcard-form .input-group {
+                position: absolute;
+                top: 300px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_a {
+                position: absolute;
+                width: 300px;
+                top: 0px;
+                left: 0px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_b {
+                position: absolute;
+                width: 100px;
+                top: 0px;
+                right: 0px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_b input,
+            .usable-creditcard-form .input-group.nmb_d input {
+                text-align: center;
+            }
+
+            .usable-creditcard-form .input-group.nmb_c {
+                position: absolute;
+                width: 300px;
+                top: 37px;
+                left: 0px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_d {
+                position: absolute;
+                width: 100px;
+                top: 37px;
+                right: 0px;
+            }
+                .usable-creditcard-form .input-group.nmb_e {
+                    position: absolute;
+                    width: 300px;
+                    top: 117px;
+                    left: 110px;
+                }
+
+            .usable-creditcard-form .input-group.nmb_f {
+                position: absolute;
+                width: 398px;
+                top: 72px;
+                left: 0px;
+                border-bottom: 1px solid #ECECEC;
+            }
+
+
+            .usable-creditcard-form input {
+                background: none;
+                display: block;
+                width: 100%;
+                padding: 10px;
+                -moz-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                margin: 0px;
+                padding-left: 35px;
+                border: none;
+            }
+
+            .usable-creditcard-form .input-group .icon {
+                position: absolute;
+                width: 22px;
+                height: 22px;
+                background: #CCC;
+                left: 8px;
+                top: 7px;
+            }
+
+            .usable-creditcard-form .input-group.nmb_a input {
+                border-right: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form .input-group.nmb_c input {
+                border-top: 1px solid #ECECEC;
+                border-right: 1px solid #ECECEC;
+                border-bottom: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form input::-webkit-input-placeholder {
+                font-size: 12px;
+                text-transform: none;
+            }
+
+            .usable-creditcard-form .input-group.nmb_d input {
+                border-top: 1px solid #ECECEC;
+                border-bottom: 1px solid #ECECEC;
+            }
+
+            .usable-creditcard-form .input-group.nmb_c input {
+                text-transform: uppercase;
+            }
+
+            .usable-creditcard-form .accept {
+                color: #999;
+                font-size: 11px;
+                margin-bottom: 5px;
+            }
+
+            .usable-creditcard-form .footer {
+                margin-top: 3px;
+                position: relative;
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+
+            .usable-creditcard-form .footer img {
+                padding: 0px;
+                margin: 0px;
+            }
+
+            .usable-creditcard-form .iugu-btn {
+                position: absolute;
+                top: 0px;
+                right: 0px;
+            }
+
+            /* Do not forget to store your images in a secure server */
+            .usable-creditcard-form .input-group .icon.ccic-name {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-name.1cafa1882fdd56f8425de54a5a5bbd1e.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-cpf {
+                background: url("{{ asset('images/cpf2.png') }}") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-exp {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-exp.05e708b1489d5e00c871f20ba33bbff3.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-brand {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-brands.48dba03883007f86e118f683dcfc4297.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-cvv {
+                background: url("http://storage.pupui.com.br/9CA0F40E971643D1B7C8DE46BBC18396/assets/ccic-cvv.1fe78dcc390427094bdc14dedea10f34.png") no-repeat;
+            }
+
+            .usable-creditcard-form .input-group .icon.ccic-cvv,
+            .usable-creditcard-form .input-group .icon.ccic-brand {
+                -webkit-transition: background-position .2s ease-in;
+                -moz-transition: background-position .2s ease-in;
+                -o-transition: background-position .2s ease-in;
+                transition: background-position .2s ease-in;
+            }
+
+            .amex .usable-creditcard-form .input-group .icon.ccic-cvv {
+                background-position: 0px -22px;
+            }
+
+            .amex .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -110px;
+            }
+
+            .visa .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -22px;
+            }
+
+            .diners .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -88px;
+            }
+
+            .mastercard .usable-creditcard-form .input-group .icon.ccic-brand {
+                background-position: 0px -66px;
+            }
+
+            /* Non Credit Card Form - Token Area */
+            .token-area {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                border: 1px dotted #CCC;
+                display: block;
+                padding: 20px;
+                background: #EFEFEF;
+            }
+        }
+    </style>
+{% endblock %}
