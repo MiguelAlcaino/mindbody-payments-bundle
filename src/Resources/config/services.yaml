@@ -48,6 +48,7 @@ services:
             $logger: '@logger'
             $params: '@parameter_bag'
             $fromSessionService: '@miguel_alcaino.mindbody.from_session'
+            $siteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService: '@miguel_alcaino.mindbody_service'
 
