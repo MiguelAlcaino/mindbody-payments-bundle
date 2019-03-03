@@ -430,4 +430,12 @@ class FromSessionService
         $this->session->remove(MindbodySession::MINDBODY_CLIENT_CURRENT_SERVICE_ID);
     }
 
+    public function destroyMindbodySession(){
+        $this->session->remove(MindbodySession::MINDBODY_CLIENT_GUID_VAR_NAME);
+        $this->session->remove(MindbodySession::MINDBODY_CLIENT_ID_VAR_NAME);
+        $this->session->remove(MindbodySession::MINDBODY_CLIENT_EMAIL_VAR_NAME);
+        //TODO: Check if the following is needed
+        $this->session->remove('mindbody_client');
+    }
+
 }

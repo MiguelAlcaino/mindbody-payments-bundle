@@ -17,7 +17,6 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class MindbodyService
@@ -401,14 +400,16 @@ class MindbodyService
     /**
      * Returns the calculation of the shopping cart
      *
-     * @param int|string       $clientId      - Client's mindbody id
-     * @param int|string|array $itemId        - Item's id
-     * @param int|string|null  $promotionCode - optional promo code
+     * @param int|string       $clientId       - Client's mindbody id
+     * @param int|string|array $itemId         - Item's id
+     * @param int|string|null  $promotionCode  - optional promo code
+     *
+     * @param int              $discountAmount - TODO: Missing implementation
      *
      * @return mixed
-     * @throws InvalidItemInSHoppingCartException
+     * @throws InvalidItemInShoppingCartException
      */
-    public function calculateShoppingCart($clientId, $itemId, $promotionCode = null)
+    public function calculateShoppingCart($clientId, $itemId, $promotionCode = null, $discountAmount = 0)
     {
         $client = new \SoapClient(
             'https://api.mindbodyonline.com/0_5_1/SaleService.asmx?WSDL', [
@@ -451,16 +452,16 @@ class MindbodyService
                     'http://clients.mindbodyonline.com/api/0_5_1'
                 ),
                 'Quantity'       => array_key_exists('quantity', $item) ? $item['quantity'] : 1,
-                'DiscountAmount' => 0,
+                'DiscountAmount' => $item['discountAmount'] ?? 0,
             ];
         }
 
         $request = [
             'Request' => [
                 'SourceCredentials' => [
-                    "SourceName" => $this->sourceName,
-                    "Password"   => $this->sourcePassword,
-                    "SiteIDs"    => $this->siteIds,
+                    'SourceName' => $this->sourceName,
+                    'Password'   => $this->sourcePassword,
+                    'SiteIDs'    => $this->siteIds,
                 ],
                 'ClientID'          => $clientId,
                 'UserCredentials'   => [
@@ -477,6 +478,10 @@ class MindbodyService
                 ],
             ],
         ];
+
+        if ($promotionCode !== null) {
+            $result['Request']['PromotionCode'] = $promotionCode;
+        }
 
         $result = $client->CheckoutShoppingCart($request);
         $result = json_decode(json_encode($result), 1);
@@ -868,16 +873,21 @@ class MindbodyService
     }
 
     /**
-     * Returns the Mindbody client's services by a given $clientId
+     * @param string|int   $clientId
+     * @param boolean|null $showActiveOnly
      *
-     * @param int|string $clientId
+     * @param null         $programIds
      *
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
      */
-    public function getClientServices($clientId)
+    public function getClientServices($clientId, $showActiveOnly = null, $programIds = null)
     {
-        $programs = $this->getPrograms();
+        if ($programIds === null) {
+            $programs = $this->getPrograms();
+        } else {
+            $programs = $programIds;
+        }
 
         $soapPrograms = '';
 
@@ -885,7 +895,7 @@ class MindbodyService
             $soapPrograms .= '<int>' . $program['id'] . '</int>';
         }
 
-        $body       = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://clients.mindbodyonline.com/api/0_5_1">
+        $body = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://clients.mindbodyonline.com/api/0_5_1">
                 <soapenv:Header/>
                 <soapenv:Body>
                    <GetClientServices>
@@ -898,8 +908,11 @@ class MindbodyService
 			               </SiteIDs>
 			            </SourceCredentials>
                          <ClientID>' . $clientId . '</ClientID>
-                         <ProgramIDs>' . $soapPrograms . '</ProgramIDs>
-                      </Request>
+                         <ProgramIDs>' . $soapPrograms . '</ProgramIDs>';
+        if ($showActiveOnly !== null) {
+            $body .= '<ShowActiveOnly>' . ($showActiveOnly ? 'true' : 'false') . '</ShowActiveOnly>';
+        }
+        $body       .= '</Request>
                    </GetClientServices>
                 </soapenv:Body>
              </soapenv:Envelope>
@@ -914,14 +927,14 @@ class MindbodyService
                     "Content-Type" => "text/xml; charset=utf-8",
                     'SOAPAction'   => 'http://clients.mindbodyonline.com/api/0_5_1/GetClientServices',
                     'Host'         => 'api.mindbodyonline.com',
-                ],
+                ]
             ]
         );
 
         $xml = new XmlParser($result->getBody()->getContents());
         foreach ($xml->data['soap:Envelope']['soap:Body']['GetClientServicesResponse']['GetClientServicesResult'] as $getClientServicesResult) {
             if (array_key_exists('ClientServices', $getClientServicesResult)) {
-                if (is_null($getClientServicesResult['ClientServices'])) {
+                if ($getClientServicesResult['ClientServices'] === null) {
                     return [];
                 } else {
                     if (array_key_exists('ClientService', $getClientServicesResult['ClientServices'])) {
@@ -941,17 +954,20 @@ class MindbodyService
      *
      * @param int|string $clientId
      *
+     * @param null       $programs
+     *
      * @return bool
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
+     * TODO: This should return a DTO with the boolean value and  the current client service id
      */
-    public function clientHasAnActiveService($clientId)
+    public function clientHasAnActiveService($clientId, $programs = null)
     {
-        $mindbodyClientServices = $this->getClientServices($clientId);
-
+        $mindbodyClientServices = $this->getClientServices($clientId, true, $programs);
         if (!empty($mindbodyClientServices)) {
             $expirationDate = new \DateTime($mindbodyClientServices['ExpirationDate']);
             $now            = new \DateTime();
             if ($expirationDate > $now) {
+                $this->fromSessionService->setMindbodyClientCurrentServiceId($mindbodyClientServices['ID']);
                 return true;
             }
         }
@@ -1557,5 +1573,51 @@ class MindbodyService
         }
 
         return $assocArray;
+    }
+
+    /**
+     * @param int|string $clientId
+     * @param int|string $classIdScheduleId
+     *
+     * @return array
+     */
+    public function addClientsToEnrollments($clientId, $classIdScheduleId)
+    {
+        $result = $this->mb->AddClientsToEnrollments(
+            [
+                'ClientIDs'        => [
+                    sprintf($clientId),
+                ],
+                'ClassScheduleIDs' => [
+                    (int)$classIdScheduleId,
+                ],
+            ]
+        );
+
+        return $result;
+    }
+
+    /**
+     * @param int|string $clientId
+     * @param int|string $classId
+     * @param int|string $clientServiceId
+     *
+     * @return array
+     */
+    public function addClientsToClasses($clientId, $classId, $clientServiceId)
+    {
+        $result = $this->mb->AddClientsToClasses(
+            [
+                'ClientIDs'       => [
+                    sprintf($clientId),
+                ],
+                'ClassIDs'        => [
+                    $classId,
+                ],
+                'ClientServiceID' => $clientServiceId,
+            ]
+        );
+
+        return $result;
     }
 }
