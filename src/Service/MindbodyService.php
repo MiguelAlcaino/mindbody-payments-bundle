@@ -16,10 +16,9 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecord
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 class MindbodyService
 {
@@ -29,7 +28,7 @@ class MindbodyService
     private $mb;
 
     /**
-     * @var FilesystemCache
+     * @var CacheInterface
      */
     private $cache;
 
@@ -59,16 +58,6 @@ class MindbodyService
     private $sourcePassword;
 
     /**
-     * @var FormFactoryInterface
-     */
-    private $formFactory;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -79,40 +68,36 @@ class MindbodyService
     private $enabledPaymentNames;
 
     /**
-     * @var ParameterBagInterface
+     * @var FromSessionService
      */
-    private $params;
+    private $fromSessionService;
 
     /**
      * MindBodyService constructor.
      *
      * @param MB_API                $mb
-     * @param FilesystemCache       $cache
-     * @param FormFactoryInterface  $formFactory
-     * @param RouterInterface       $router
+     * @param CacheInterface        $cache
      * @param LoggerInterface       $logger
      * @param ParameterBagInterface $params
+     * @param FromSessionService    $fromSessionService
      */
     public function __construct(
         MB_API $mb,
-        FilesystemCache $cache,
-        FormFactoryInterface $formFactory,
-        RouterInterface $router,
+        CacheInterface $cache,
         LoggerInterface $logger,
-        ParameterBagInterface $params
+        ParameterBagInterface $params,
+        FromSessionService $fromSessionService
     ) {
         $this->mb                  = $mb;
         $this->cache               = $cache;
-        $this->formFactory         = $formFactory;
-        $this->router              = $router;
         $this->logger              = $logger;
-        $this->params              = $params;
-        $this->adminUser           = $this->params->get('mindbody_admin_user');
-        $this->adminPassword       = $this->params->get('mindbody_admin_password');
-        $this->sourceName          = $this->params->get('mindbody_source_name');
-        $this->sourcePassword      = $this->params->get('mindbody_source_password');
-        $this->siteIds             = $this->params->get('mindbody_site_ids');
-        $this->enabledPaymentNames = $this->params->get('enabled_payment_names');
+        $this->fromSessionService  = $fromSessionService;
+        $this->adminUser           = $params->get('mindbody_admin_user');
+        $this->adminPassword       = $params->get('mindbody_admin_password');
+        $this->sourceName          = $params->get('mindbody_source_name');
+        $this->sourcePassword      = $params->get('mindbody_source_password');
+        $this->siteIds             = $params->get('mindbody_site_ids');
+        $this->enabledPaymentNames = $params->get('enabled_payment_names');
     }
 
     /**

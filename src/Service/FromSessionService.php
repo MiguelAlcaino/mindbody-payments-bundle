@@ -50,20 +50,54 @@ class FromSessionService
      */
     public function getTransactionRecord()
     {
-        return $this->session->get('transactionRecord');
+        return $this->session->get(MindbodySession::TRANSACTION_RECORD_VAR_NAME);
     }
 
     public function setTransactionRecord(TransactionRecord $transactionRecord){
-        $this->session->set('transactionRecord', $transactionRecord);
+        $this->session->set(MindbodySession::TRANSACTION_RECORD_VAR_NAME, $transactionRecord);
+    }
+
+    public function removeTransactionRecord()
+    {
+        $this->session->remove(MindbodySession::TRANSACTION_RECORD_VAR_NAME);
     }
 
     public function getPaymentResponse(){
         return $this->session->get('paymentResponse');
     }
 
+    public function removePaymentResponse()
+    {
+        $this->session->remove('paymentResponse');
+    }
+
+    /**
+     * @param $paymentResponse
+     */
+    public function setPaymentResponse($paymentResponse)
+    {
+        $this->session->set('paymentResponse', $paymentResponse);
+    }
+
+    /**
+     * @return string
+     */
     public function getAmount()
     {
         return $this->session->get(MindbodySession::MINDBODY_GRAND_TOTAL_VAR_NAME);
+    }
+
+    /**
+     * @param string $amount
+     */
+    public function setAmount($amount)
+    {
+        $this->session->set(MindbodySession::MINDBODY_GRAND_TOTAL_VAR_NAME, $amount);
+    }
+
+    public function removeAmount()
+    {
+        return $this->session->remove(MindbodySession::MINDBODY_GRAND_TOTAL_VAR_NAME);
     }
 
     public function getRealMindbodyLocations()
@@ -84,6 +118,38 @@ class FromSessionService
         return $this->session->get(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME);
     }
 
+    /**
+     * @param $serviceId
+     *
+     * @return $this
+     */
+    public function setSelectedMindbodyServiceId($serviceId)
+    {
+        $this->session->set(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME, $serviceId);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSelectedMindbodyServiceName()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_SELECTED_SERVICE_NAME_VAR_NAME);
+    }
+
+    /**
+     * @param string $serviceName
+     *
+     * @return $this
+     */
+    public function setSelectedMindbodyServiceName($serviceName)
+    {
+        $this->session->set(MindbodySession::MINDBODY_SELECTED_SERVICE_NAME_VAR_NAME, $serviceName);
+
+        return $this;
+    }
+
     public function getDiscountCodeUsed()
     {
         return $this->session->get(MindbodySession::MINDBODY_DISCOUNT_CODE_USED_VAR_NAME);
@@ -92,6 +158,23 @@ class FromSessionService
     public function getDiscountAmount()
     {
         return $this->session->get(MindbodySession::MINDBODY_DISCOUNT_AMOUNT_VAR_NAME, 0);
+    }
+
+    /**
+     * @param double $discountAmount
+     *
+     * @return $this
+     */
+    public function setDiscountAmount($discountAmount)
+    {
+        $this->session->set(MindbodySession::MINDBODY_DISCOUNT_AMOUNT_VAR_NAME, $discountAmount);
+
+        return $this;
+    }
+
+    public function removeDiscountAmount()
+    {
+        $this->session->remove(MindbodySession::MINDBODY_DISCOUNT_AMOUNT_VAR_NAME);
     }
 
     public function getSelectedMindbodyPaymentMethodId()
@@ -120,8 +203,14 @@ class FromSessionService
     public function setMindbodyClientGUID($GUID){
         $this->session->set(MindbodySession::MINDBODY_CLIENT_GUID_VAR_NAME, $GUID);
     }
+
     public function getMindbodyClientGUID(){
         return $this->session->get(MindbodySession::MINDBODY_CLIENT_GUID_VAR_NAME);
+    }
+
+    public function hasMindbodyClientGUID()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLIENT_GUID_VAR_NAME);
     }
 
     public function getMindbodyClientID(){
@@ -132,12 +221,25 @@ class FromSessionService
         $this->session->set(MindbodySession::MINDBODY_CLIENT_ID_VAR_NAME, $clientId);
     }
 
+    /**
+     * @return bool
+     */
+    public function hasMindbodyClientID()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLIENT_ID_VAR_NAME);
+    }
+
     public function getMindbodyClientEmail(){
         return $this->session->get(MindbodySession::MINDBODY_CLIENT_EMAIL_VAR_NAME);
     }
 
     public function setMindbodyClientEmail($email){
         $this->session->set(MindbodySession::MINDBODY_CLIENT_EMAIL_VAR_NAME, $email);
+    }
+
+    public function hasMindbodyClientEmail()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLIENT_EMAIL_VAR_NAME);
     }
 
     /**
@@ -152,6 +254,180 @@ class FromSessionService
      */
     public function setShouldUserLocationBeUpdated($should){
         $this->session->set(MindbodySession::MINDBODY_SHOULD_CLIENT_LOCATION_BE_UPDATED_VAR_NAME, $should);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassType()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_TYPE_VAR_NAME);
+    }
+
+    /**
+     * @param string $classType
+     *
+     * @return $this
+     */
+    public function setMindbodyClassType($classType): self
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_TYPE_VAR_NAME, $classType);
+
+        return $this;
+    }
+
+    public function removeMindbodyClassType()
+    {
+        $this->session->remove(MindbodySession::MINDBODY_CLASS_TYPE_VAR_NAME);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasMindbodyClassType()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLASS_TYPE_VAR_NAME);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassTeacherName()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_TEACHER_NAME_VAR_NAME);
+    }
+
+    /**
+     * @param string $teacherName
+     *
+     * @return $this
+     */
+    public function setMindbodyClassTeacherName($teacherName)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_TEACHER_NAME_VAR_NAME, $teacherName);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassName()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_NAME_VAR_NAME);
+    }
+
+    /**
+     * @param string $clasName
+     *
+     * @return $this
+     */
+    public function setMindbodyClassName($clasName)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_NAME_VAR_NAME, $clasName);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassStartTime()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_START_TIME_VAR_NAME);
+    }
+
+    /**
+     * @param string $startTime
+     *
+     * @return $this
+     */
+    public function setMindbodyClassStartTime($startTime)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_START_TIME_VAR_NAME, $startTime);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassEndTime()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_END_TIME_VAR_NAME);
+    }
+
+    /**
+     * @param string $endTime
+     *
+     * @return $this
+     */
+    public function setMindbodyClassEndTime($endTime)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_END_TIME_VAR_NAME, $endTime);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClassId()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLASS_ID_VAR_NAME);
+    }
+
+    /**
+     * @param string|int $classId
+     *
+     * @return $this
+     */
+    public function setMindbodyClassId($classId)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLASS_ID_VAR_NAME, $classId);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasMindbodyClassId()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLASS_ID_VAR_NAME);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMindbodyClientCurrentServiceId()
+    {
+        return $this->session->get(MindbodySession::MINDBODY_CLIENT_CURRENT_SERVICE_ID);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasMindbodyClientCurrentServiceId()
+    {
+        return $this->session->has(MindbodySession::MINDBODY_CLIENT_CURRENT_SERVICE_ID);
+    }
+
+    /**
+     * @param string|int $clientCurrentServiceId
+     *
+     * @return $this
+     */
+    public function setMindbodyClientCurrentServiceId($clientCurrentServiceId)
+    {
+        $this->session->set(MindbodySession::MINDBODY_CLIENT_CURRENT_SERVICE_ID, $clientCurrentServiceId);
+
+        return $this;
+    }
+
+    public function removeMindbodyClientCurrentServiceId()
+    {
+        $this->session->remove(MindbodySession::MINDBODY_CLIENT_CURRENT_SERVICE_ID);
     }
 
 }

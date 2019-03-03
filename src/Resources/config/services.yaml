@@ -19,46 +19,60 @@ services:
     #SERVICES
     file_cache_service:
         class: Symfony\Component\Cache\Simple\FilesystemCache
+
     Symfony\Component\Cache\Simple\FilesystemCache: '@file_cache_service'
+
     miguel_alcaino.mb_api:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MB_API
         arguments:
             $sourceName: '%mindbody_source_name%'
             $password: '%mindbody_source_password%'
             $siteIds: '%mindbody_site_ids%'
+
     miguel_alcaino.mindbody_service:
         public: true
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService
         arguments:
             $mb: '@miguel_alcaino.mb_api'
             $cache: '@file_cache_service'
-            $formFactory: '@form.factory'
-            $router: '@router'
             $logger: '@logger'
             $params: '@parameter_bag'
+            $fromSessionService: '@miguel_alcaino.mindbody.from_session'
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService: '@miguel_alcaino.mindbody_service'
+
     miguel_alcaino.mindbody.country_and_city_service:
         class:  MiguelAlcaino\MindbodyPaymentsBundle\Service\CountryAndCitiesService
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\CountryAndCitiesService: '@miguel_alcaino.mindbody.country_and_city_service'
+
     miguel_alcaino.mindbody.transaction_record.factory:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Factory\TransactionRecordFactory
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Factory\TransactionRecordFactory: '@miguel_alcaino.mindbody.transaction_record.factory'
+
     miguel_alcaino.mindbody.transaction_record_filler:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordFillerService
         arguments:
             - '@miguel_alcaino.mindbody.from_session'
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordFillerService: '@miguel_alcaino.mindbody.transaction_record_filler'
+
     miguel_alcaino.mindbody.from_session:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@session'
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService: '@miguel_alcaino.mindbody.from_session'
+
     miguel_alcaino.mindbody.within_ten_years_validator:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Validator\WithinTenYearsValidatorService
         arguments:
             $translatorService: '@translator'
+
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Validator\WithinTenYearsValidatorService: '@miguel_alcaino.mindbody.within_ten_years_validator'
+
     miguel_alcaino.mindbody.customer_filler:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService
         arguments:
