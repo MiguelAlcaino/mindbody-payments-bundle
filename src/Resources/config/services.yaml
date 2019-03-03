@@ -29,6 +29,16 @@ services:
             $password: '%mindbody_source_password%'
             $siteIds: '%mindbody_site_ids%'
 
+    ### MINDBODY REQUEST HANDLERS ###
+
+    miguel_alcaino.mindbody.request_handler.site_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequest
+        arguments:
+            $mb: '@miguel_alcaino.mb_api'
+            $cache: '@file_cache_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
+
     miguel_alcaino.mindbody_service:
         public: true
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService
