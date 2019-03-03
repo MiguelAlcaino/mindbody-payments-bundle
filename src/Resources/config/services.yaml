@@ -103,5 +103,6 @@ services:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService
         arguments:
             $parameterBag: '@parameter_bag'
+            $siteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService: '@miguel_alcaino.mindbody.program_service'
