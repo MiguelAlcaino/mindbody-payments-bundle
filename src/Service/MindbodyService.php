@@ -949,17 +949,20 @@ class MindbodyService
      *
      * @param int|string $clientId
      *
+     * @param null       $programs
+     *
      * @return bool
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Exception
+     * TODO: This should return a DTO with the boolean value and  the current client service id
      */
-    public function clientHasAnActiveService($clientId)
+    public function clientHasAnActiveService($clientId, $programs = null)
     {
-        $mindbodyClientServices = $this->getClientServices($clientId);
-
+        $mindbodyClientServices = $this->getClientServices($clientId, true, $programs);
         if (!empty($mindbodyClientServices)) {
             $expirationDate = new \DateTime($mindbodyClientServices['ExpirationDate']);
             $now            = new \DateTime();
             if ($expirationDate > $now) {
+                $this->fromSessionService->setMindbodyClientCurrentServiceId($mindbodyClientServices['ID']);
                 return true;
             }
         }
