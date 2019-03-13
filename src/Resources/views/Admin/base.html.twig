@@ -5,21 +5,21 @@
     <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
         <ul class="nav nav-pills flex-column">
             <li class="nav-item">
-                <a class="nav-link {% if app.request.get('_route') == 'admin_transactions_index' %}active{% endif %}" href="{{ path('admin_transactions_index') }}">Transacciones</a>
+                <a class="nav-link {% if app.request.get('_route') == 'admin_transactions_index' %}active{% endif %}" href="{{ path('admin_transactions_index') }}">{% trans %}menu.transactions{% endtrans %}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {% if app.request.get('_route') == 'admin_product_index' %}active{% endif %}"
-                   href="{{ path('admin_product_index') }}">Planes</a>
+                   href="{{ path('admin_product_index') }}">{% trans %}menu.services{% endtrans %}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {% if app.request.get('_route') == 'customer_index' %}active{% endif %}"
-                   href="{{ path('customer_index') }}">Clientes</a>
+                   href="{{ path('customer_index') }}">{% trans %}menu.clients{% endtrans %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {% if app.request.get('_route') == 'admin_settings' %}active{% endif %}" href="{{ path('admin_settings') }}" >Settings</a>
+                <a class="nav-link {% if app.request.get('_route') == 'admin_settings' %}active{% endif %}" href="{{ path('admin_settings') }}" >{% trans %}menu.settings{% endtrans %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('fos_user_security_logout') }}">Logout</a>
+                <a class="nav-link" href="{{ path('fos_user_security_logout') }}">{% trans %}menu.logout{% endtrans %}</a>
             </li>
         </ul>
     </nav>
