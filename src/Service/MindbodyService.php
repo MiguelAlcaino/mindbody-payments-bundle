@@ -116,6 +116,7 @@ class MindbodyService
      *
      * @return array|mixed|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest::getServices instead
      */
     public function getServices($locations, $userChache = true)
     {
