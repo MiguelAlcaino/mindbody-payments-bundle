@@ -78,10 +78,10 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @param Request $request
+     * @param Request            $request
+     * @param FromSessionService $fromSessionService
      *
      * @return array|Response
-     * @Template("@MindBodyPayments/Widget/bookSummary.html.twig")
      * @Route("/book-summary", name="widget_book_summary")
      */
     public function bookSummaryAction(Request $request, FromSessionService $fromSessionService)
@@ -111,12 +111,15 @@ class WidgetController extends AbstractController
         $fromSessionService->setMindbodyClassStartTime($classStartTime);
         $fromSessionService->setMindbodyClassEndTime($classEndTime);
 
-        return [
+        return $this->render(
+            '@MiguelAlcainoMindbodyPayments/widget/bookSummary.html.twig',
+            [
             'teacherName'    => $teacherName,
             'className'      => $className,
             'classStartTime' => $classStartTime,
             'classEndTime'   => $classEndTime,
-        ];
+            ]
+        );
     }
 
     /**
