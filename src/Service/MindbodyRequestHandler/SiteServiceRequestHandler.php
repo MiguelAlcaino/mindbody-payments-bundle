@@ -1,8 +1,9 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MB_API;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest;
 use Psr\SimpleCache\CacheInterface;
 
 class SiteServiceRequestHandler
@@ -18,15 +19,51 @@ class SiteServiceRequestHandler
     private $mb;
 
     /**
-     * SiteServiceRequest constructor.
-     *
-     * @param CacheInterface $cache
-     * @param MB_API         $mb
+     * @var SiteServiceSOAPRequest
      */
-    public function __construct(CacheInterface $cache, MB_API $mb)
+    private $siteServiceSOAPRequest;
+
+    /**
+     * SiteServiceRequestHandler constructor.
+     *
+     * @param CacheInterface         $cache
+     * @param MB_API                 $mb
+     * @param SiteServiceSOAPRequest $siteServiceSOAPRequest
+     */
+    public function __construct(CacheInterface $cache, MB_API $mb, SiteServiceSOAPRequest $siteServiceSOAPRequest)
     {
-        $this->cache = $cache;
-        $this->mb    = $mb;
+        $this->cache                  = $cache;
+        $this->mb                     = $mb;
+        $this->siteServiceSOAPRequest = $siteServiceSOAPRequest;
+    }
+
+    /**
+     * Returns an array with id and name of the different Mindbody locations
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getFormattedLocations(): array
+    {
+        $locations          = $this->siteServiceSOAPRequest->getLocations();
+        $formattedLocations = [];
+        if (array_key_exists('SiteID', $locations['GetLocationsResult']['Locations']['Location'])) {
+            $formattedLocations = [
+                [
+                    'id'   => $locations['GetLocationsResult']['Locations']['Location']['ID'],
+                    'name' => $locations['GetLocationsResult']['Locations']['Location']['Name'],
+                ],
+            ];
+        } else {
+            foreach ($locations['GetLocationsResult']['Locations']['Location'] as $location) {
+                $formattedLocations[] = [
+                    'id'   => $location['ID'],
+                    'name' => $location['Name'],
+                ];
+            }
+        }
+
+        return $formattedLocations;
     }
 
     /**
