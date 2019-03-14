@@ -52,8 +52,6 @@ class SaleServiceSOAPRequest
             $request
         );
 
-        dump($response);
-
         return $response;
     }
 }
