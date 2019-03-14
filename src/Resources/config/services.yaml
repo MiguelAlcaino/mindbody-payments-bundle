@@ -11,10 +11,6 @@ parameters:
 services:
     _defaults:
         public: false
-    #CONTROLLERS
-    MiguelAlcaino\MindbodyPaymentsBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
 
     #SERVICES
     guzzle.client:

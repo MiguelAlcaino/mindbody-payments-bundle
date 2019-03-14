@@ -1,0 +1,5 @@
+services:
+    #CONTROLLERS
+    MiguelAlcaino\MindbodyPaymentsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
