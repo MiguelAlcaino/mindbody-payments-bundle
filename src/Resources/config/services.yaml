@@ -133,3 +133,25 @@ services:
             $siteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService: '@miguel_alcaino.mindbody.program_service'
+
+    ### REPOSITORY ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    ### END REPOSITORY ###
