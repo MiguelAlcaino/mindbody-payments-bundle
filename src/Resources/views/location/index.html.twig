@@ -1,0 +1,39 @@
+{% extends '@MiguelAlcainoMindbodyPayments/Admin/base.html.twig' %}
+
+{% block content %}
+    <h1>Location index</h1>
+    <div class="row pb-2">
+        <div class="col-md-12">
+            <a href="{{ path('location_synchronize') }}" id="synchronize-products-btn" class="btn btn-primary">{% trans %}admin.location.sync_button{% endtrans %}<i style="display: none;" class="fa fa-cog fa-spin fa-fw"></i></a>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>MerchantId</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for location in locations %}
+            <tr>
+                <td>{{ location.id }}</td>
+                <td>{{ location.name }}</td>
+                <td>{{ location.merchantId }}</td>
+                <td>
+                    <a href="{{ path('location_show', {'id': location.id}) }}">show</a>
+                    <a href="{{ path('location_edit', {'id': location.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('location_new') }}">Create new</a>
+{% endblock %}

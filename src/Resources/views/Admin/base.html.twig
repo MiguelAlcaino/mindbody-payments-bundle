@@ -12,6 +12,10 @@
                    href="{{ path('admin_product_index') }}">{% trans %}menu.services{% endtrans %}</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {% if app.request.get('_route') == 'admin_location_index' %}active{% endif %}"
+                   href="{{ path('location_index') }}">{% trans %}menu.locations{% endtrans %}</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {% if app.request.get('_route') == 'customer_index' %}active{% endif %}"
                    href="{{ path('customer_index') }}">{% trans %}menu.clients{% endtrans %}</a>
             </li>
