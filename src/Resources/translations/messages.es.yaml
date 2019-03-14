@@ -2,10 +2,11 @@ mindbody.within_ten_years_validator.before_current_month_year: 'La fecha de expi
 mindbody.within_ten_years_validator.after_ten_years: 'La fecha de expiración supera 10 años desde la fecha actual.'
 service_for_new_users.error: 'Estás intentando comprar un servicio que es sólo para nuevos usuarios. Nuestros registros indican que ya has comprado antes. Por favor selecciona otro servicio.'
 mindbody.login.incorrect: 'Incorrect email or password. Please try again.'
-
-#ADMIN
 menu.transactions: Transacciones
 menu.services: Planes
 menu.clients: Clientes
 menu.settings: Settings
 menu.logout: Logout
+menu.locations: Locaciones
+notice.locations_successfully_synchronized: Las locaciones han sido sincronizadas correctamente
+notice.products_successfully_synchronized: 'Los servicios han sido sincronizados correctamente con Mindbody'
