@@ -4,15 +4,18 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Discount;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\DiscountType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\ProductType;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository;
+use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Product controller.
@@ -25,12 +28,13 @@ class ProductController extends AbstractController
      * Lists all product entities.
      *
      * @Route("/", name="admin_product_index", methods={"GET"})
+     * @param ProductRepository $productRepository
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction()
+    public function indexAction(ProductRepository $productRepository)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $products = $em->getRepository(Product::class)->findBy(
+        $products = $productRepository->findBy(
             [
                 'isDeleted' => false,
             ]
@@ -63,24 +67,32 @@ class ProductController extends AbstractController
      * Displays a form to edit an existing product entity.
      *
      * @Route("/{id}/edit", name="admin_product_edit", methods={"GET"})
+     * @param Request            $request
+     * @param Product            $product
+     * @param ProductRepository  $productRepository
+     *
+     * @param CustomerRepository $customerRepository
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function editAction(Request $request, Product $product)
+    public function editAction(Request $request, Product $product, ProductRepository $productRepository, CustomerRepository $customerRepository)
     {
         $manager = $this->getDoctrine()->getManager();
 
-        $currentCustomers = $manager->getRepository(Customer::class)->getCurrentCustomersOfProduct($product);
+        $currentCustomers = $customerRepository->getCurrentCustomersOfProduct($product);
         $editForm         = $this->createForm(ProductType::class, $product);
         $editForm->handleRequest($request);
 
         /** @var Discount $mainDiscount */
-        $mainDiscount = $manager->getRepository(Product::class)->getMainDiscount($product);
+        $mainDiscount = $productRepository->getMainDiscount($product);
 
-        if (!is_null($mainDiscount)) {
+        if ($mainDiscount !== null) {
             $discount        = $mainDiscount;
-            $defaultProducts = $manager->getRepository(Product::class)->getActiveProductsOfDiscount($discount);
+            $defaultProducts = $productRepository->getActiveProductsOfDiscount($discount);
         } else {
             $discount        = null;
-            $defaultProducts = (new ArrayCollection());
+            $defaultProducts = new ArrayCollection();
             $defaultProducts->add($product);
         }
 
@@ -93,7 +105,7 @@ class ProductController extends AbstractController
                     'admin_discount_save',
                     [
                         'productId'  => $product->getId(),
-                        'discountId' => is_null($discount) ? null : $discount->getId(),
+                        'discountId' => $discount === null ? null : $discount->getId(),
                     ]
                 ),
                 'method'          => 'POST',
@@ -113,20 +125,34 @@ class ProductController extends AbstractController
 
     /**
      * @Route("/synchronize/now", name="admin_product_synchronize")
+     * @param SaleServiceRequestHandler $saleServiceRequestHandler
+     * @param EntityManagerInterface    $manager
+     * @param ProductRepository         $productRepository
+     *
+     * @param TranslatorInterface       $translator
+     *
+     * @return RedirectResponse
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function synchronizeProductsAction(MindbodyService $mindBodyService, EntityManagerInterface $manager)
+    public function synchronizeProductsAction(
+        SaleServiceRequestHandler $saleServiceRequestHandler,
+        EntityManagerInterface $manager,
+        ProductRepository $productRepository,
+        TranslatorInterface $translator
+    )
     {
-        $services = $mindBodyService->getFormattedServices();
+        $services = $saleServiceRequestHandler->getFormattedServices();
 
         $newProducts     = [];
         $removedProducts = [];
 
-        $products = $manager->getRepository(Product::class)->findAll();
+        /** @var Product[] $products */
+        $products = $productRepository->findAll();
 
         foreach ($products as $product) {
             $isThere = false;
             foreach ($services as $service) {
-                if ($product->getMerchantId() == $service['id']) {
+                if ($product->getMerchantId() === (string)$service['id']) {
                     $isThere = true;
                 }
             }
@@ -138,12 +164,12 @@ class ProductController extends AbstractController
         }
 
         foreach ($services as $service) {
-            $product = $manager->getRepository(Product::class)->findOneBy(
+            $product = $productRepository->findOneBy(
                 [
                     'merchantId' => $service['id'],
                 ]
             );
-            if (is_null($product)) {
+            if ($product === null) {
                 $product = (new Product())
                     ->setName($service['name'])
                     ->setPrice($service['price'])
@@ -156,7 +182,7 @@ class ProductController extends AbstractController
 
         $manager->flush();
 
-        $this->addFlash('notice', 'Los servicios han sido sincronizados correctamente con Mindbody');
+        $this->addFlash('notice', $translator->trans('notice.products_successfully_synchronized'));
 
         return $this->redirectToRoute('admin_product_index');
     }
