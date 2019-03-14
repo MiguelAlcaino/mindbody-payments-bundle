@@ -119,7 +119,7 @@ class MindbodySOAPRequester
         $xml    = new \SimpleXMLElement($response);
         $output = $xml->xpath('//soap:Body')[0];
 
-        return json_decode(json_encode((array)$output), true);
+        return json_decode(json_encode((array)$output), true)["{$methodName}Response"];
     }
 
     /**
