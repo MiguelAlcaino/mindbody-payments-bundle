@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService;
 
 class GetClassesRequest implements \JsonSerializable
 {

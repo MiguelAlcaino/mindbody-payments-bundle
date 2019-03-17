@@ -2,7 +2,7 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetClassesRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 
 class ClassServiceSOAPRequester extends AbstractSOAPRequester
 {
