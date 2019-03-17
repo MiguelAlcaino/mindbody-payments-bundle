@@ -15,7 +15,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartExce
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecordException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -146,6 +146,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedServices instead
      */
     public function getFormattedServices($useCache = true)
     {
@@ -200,6 +201,8 @@ class MindbodyService
      * Returns an array with id and name of the different Mindbody locations
      *
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler::getFormattedLocations instead
      */
     public function getFormattedLocations()
     {
@@ -229,6 +232,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest::getLocations instead
      */
     public function getLocations()
     {

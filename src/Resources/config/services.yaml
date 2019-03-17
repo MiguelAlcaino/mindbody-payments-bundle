@@ -11,10 +11,6 @@ parameters:
 services:
     _defaults:
         public: false
-    #CONTROLLERS
-    MiguelAlcaino\MindbodyPaymentsBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
 
     #SERVICES
     guzzle.client:
@@ -31,16 +27,6 @@ services:
             $sourceName: '%mindbody_source_name%'
             $password: '%mindbody_source_password%'
             $siteIds: '%mindbody_site_ids%'
-
-    ### MINDBODY REQUEST HANDLERS ###
-
-    miguel_alcaino.mindbody.request_handler.site_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler
-        arguments:
-            $mb: '@miguel_alcaino.mb_api'
-            $cache: '@file_cache_service'
-
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     ### MINDBODY SOAP REQUESTERS ###
 
@@ -64,7 +50,41 @@ services:
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.sale_service'
 
+    miguel_alcaino.mindbody.soap.request.site_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
+
+    miguel_alcaino.mindbody.soap.request.class_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
+
     ### END MINDBODY SOAP REQUESTERS ###
+
+    ### MINDBODY REQUEST HANDLERS ###
+
+    miguel_alcaino.mindbody.request_handler.sale_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.sale_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.sale_service'
+
+    miguel_alcaino.mindbody.request_handler.site_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler
+        arguments:
+            $mb: '@miguel_alcaino.mb_api'
+            $cache: '@file_cache_service'
+            $siteServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.site_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+
+    ### END MINDBODY REQUEST HANDLERS ###
 
     miguel_alcaino.mindbody_service:
         public: true
@@ -133,3 +153,25 @@ services:
             $siteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService: '@miguel_alcaino.mindbody.program_service'
+
+    ### REPOSITORY ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    ### END REPOSITORY ###

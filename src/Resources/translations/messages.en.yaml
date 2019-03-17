@@ -1,8 +1,11 @@
 service_for_new_users.error: 'This service is just for new users.'
-
-#ADMIN
 menu.transactions: Transactions
 menu.services: Packages
 menu.clients: Clients
 menu.settings: Settings
 menu.logout: Logout
+menu.locations: Locations
+notice.locations_successfully_synchronized: 'Locations have been successfully synchronized'
+notice.products_successfully_synchronized: 'Packages have been successfully synchronized'
+admin.location.sync_button: Sync Locations
+
