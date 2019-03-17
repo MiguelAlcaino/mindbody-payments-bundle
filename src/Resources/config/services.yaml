@@ -57,6 +57,13 @@ services:
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
 
+    miguel_alcaino.mindbody.soap.request.class_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
+
     ### END MINDBODY SOAP REQUESTERS ###
 
     ### MINDBODY REQUEST HANDLERS ###
