@@ -2,9 +2,12 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 
-class ClassServiceSOAPRequester
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetClassesRequest;
+
+class ClassServiceSOAPRequester extends AbstractSOAPRequester
 {
-    const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/ClassService.asmx';
+    private const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/ClassService.asmx';
+
     /**
      * @var MindbodySOAPRequester
      */
@@ -20,14 +23,20 @@ class ClassServiceSOAPRequester
         $this->minbodySoapRequester = $minbodySoapRequester;
     }
 
-    public function getClasses(): array
+    /**
+     * @param GetClassesRequest $request
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getClasses(GetClassesRequest $request): array
     {
-        $request = [];
+        $arrayRequest = $this->decodeRequesterObject($request);
 
         $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
             self::SERVICE_URI,
             'GetClasses',
-            $request
+            $arrayRequest
         );
 
         return $response;
