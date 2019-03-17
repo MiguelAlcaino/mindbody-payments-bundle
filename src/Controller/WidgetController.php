@@ -10,6 +10,8 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\MindbodySOAPRequester;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService;
 use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
 use Psr\Log\LoggerInterface;
@@ -31,29 +33,27 @@ class WidgetController extends AbstractController
     /**
      * Test purposes
      *
-     * @param Request $request
-     *
-     * @return array
+     * @return Response
      * @Route("/test-enrollment", name="widget_test_enrollment")
-     * @Template("@MindBodyPayments/Widget/enrollment.html.twig")
      */
     public function enrollmentTestAction()
     {
-        return [];
+        return $this->render('@MiguelAlcainoMindbodyPayments/widget/enrollment.html.twig');
     }
 
     /**
      * Test Purposes
      *
-     * @param Request $request
+     * @param MindbodySOAPRequester $mindbodySOAPRequester
      *
-     * @return array
+     * @return Response
      * @Route("/test-index", name="widget_test_index")
-     * @Template("@MindBodyPayments/Widget/testIndex.html.twig")
      */
-    public function testIndexAction(Request $request)
+    public function testIndexAction(SaleServiceSOAPRequest $saleServiceSOAPRequest)
     {
-        return [];
+
+        $saleServiceSOAPRequest->getServices();
+        return $this->render('@MiguelAlcainoMindbodyPayments/widget/testIndex.html.twig');
     }
 
     /**
