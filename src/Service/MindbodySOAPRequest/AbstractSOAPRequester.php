@@ -11,6 +11,6 @@ abstract class AbstractSOAPRequester
      */
     public function decodeRequesterObject($requesterObject): array
     {
-        return json_decode(json_encode($requesterObject), true);
+        return $requesterObject === null ? [] : json_decode(json_encode($requesterObject), true);
     }
 }
