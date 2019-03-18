@@ -9,4 +9,7 @@ notice.locations_successfully_synchronized: 'Locations have been successfully sy
 notice.products_successfully_synchronized: 'Packages have been successfully synchronized'
 admin.location.sync_button: Sync Locations
 notice.programs_successfully_synchronized: 'Programs have been successfully synchronized'
+notice.widget.client_registered_already_in_class: 'You are registered in this class already'
+notice.widget.client_outside_schedule_window: 'You are outside the scheduling window'
+error.widget.error_add_user_to_class: 'There has been an error trying to make this booking. Please try again.'
 
