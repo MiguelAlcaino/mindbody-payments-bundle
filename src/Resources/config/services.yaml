@@ -174,4 +174,10 @@ services:
             - '@doctrine'
         tags: ['doctrine.repository_service']
 
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProgramRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProgramRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
     ### END REPOSITORY ###
