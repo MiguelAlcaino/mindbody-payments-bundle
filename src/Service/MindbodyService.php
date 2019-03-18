@@ -519,6 +519,7 @@ class MindbodyService
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler::getClientServicesFormatted instead
      */
     public function getClientServicesFormatted($clientId, $programIds = [], $showActiveOnly = true)
     {
@@ -568,6 +569,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServicesSoap($clientId, $programIds = [], $showActiveOnly = true)
     {
@@ -894,6 +896,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Exception
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServices($clientId, $showActiveOnly = null, $programIds = null)
     {

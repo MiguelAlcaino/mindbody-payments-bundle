@@ -64,6 +64,13 @@ services:
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
 
+    miguel_alcaino.mindbody.soap.request.client_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.client_service'
+
     ### END MINDBODY SOAP REQUESTERS ###
 
     ### MINDBODY REQUEST HANDLERS ###
@@ -83,6 +90,13 @@ services:
             $siteServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.site_service'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+
+    miguel_alcaino.mindbody.request_handler.client_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.client_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.client_service'
 
     ### END MINDBODY REQUEST HANDLERS ###
 
