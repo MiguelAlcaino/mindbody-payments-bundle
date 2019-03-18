@@ -2,6 +2,8 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassDescriptionsRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 
 class ClassServiceSOAPRequester extends AbstractSOAPRequester
@@ -36,6 +38,44 @@ class ClassServiceSOAPRequester extends AbstractSOAPRequester
         $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
             self::SERVICE_URI,
             'GetClasses',
+            $arrayRequest
+        );
+
+        return $response;
+    }
+
+    /**
+     * @param AddClientToClassRequest $request
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function addClientToClass(AddClientToClassRequest $request): array
+    {
+        $arrayRequest = $this->decodeRequesterObject($request);
+
+        $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
+            self::SERVICE_URI,
+            'AddClientToClass',
+            $arrayRequest
+        );
+
+        return $response;
+    }
+
+    /**
+     * @param GetClassDescriptionsRequest|null $request
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getClassDescriptions(GetClassDescriptionsRequest $request = null): array
+    {
+        $arrayRequest = $this->decodeRequesterObject($request);
+
+        $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
+            self::SERVICE_URI,
+            'GetClassDescriptions',
             $arrayRequest
         );
 
