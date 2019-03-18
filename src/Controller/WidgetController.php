@@ -44,16 +44,19 @@ class WidgetController extends AbstractController
     /**
      * Test Purposes
      *
-     * @param MindbodySOAPRequester $mindbodySOAPRequester
+     * @param Request $request
      *
      * @return Response
      * @Route("/test-index", name="widget_test_index")
      */
-    public function testIndexAction(SaleServiceSOAPRequest $saleServiceSOAPRequest)
+    public function testIndexAction(Request $request)
     {
-
-        $saleServiceSOAPRequest->getServices();
-        return $this->render('@MiguelAlcainoMindbodyPayments/widget/testIndex.html.twig');
+        return $this->render(
+            '@MiguelAlcainoMindbodyPayments/widget/testIndex.html.twig',
+            [
+                'host' => $request->getSchemeAndHttpHost(),
+            ]
+        );
     }
 
     /**

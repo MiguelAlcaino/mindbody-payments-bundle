@@ -38,7 +38,7 @@
     }
 </style>
 <script>
-    var paymentsSystemUrl = 'http://localhost:8000';
+    var paymentsSystemUrl = '{{ host }}';
     var bookUrl = paymentsSystemUrl+'/widget/book-summary';
     setInterval(function(){
         $('healcode-widget').find('.bw-widget__signup-now.bw-widget__cta').each(function () {
