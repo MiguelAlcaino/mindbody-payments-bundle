@@ -2,23 +2,9 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 
-class SaleServiceSOAPRequest
+class SaleServiceSOAPRequest extends AbstractSOAPRequester
 {
     const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/SaleService.asmx';
-    /**
-     * @var MindbodySOAPRequester
-     */
-    private $minbodySoapRequester;
-
-    /**
-     * SaleServiceSOAPRequest constructor.
-     *
-     * @param MindbodySOAPRequester $minbodySoapRequester
-     */
-    public function __construct(MindbodySOAPRequester $minbodySoapRequester)
-    {
-        $this->minbodySoapRequester = $minbodySoapRequester;
-    }
 
     /**
      * @param array  $programs
