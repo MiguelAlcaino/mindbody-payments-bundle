@@ -9,9 +9,12 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\MindbodySOAPRequester;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService;
 use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
 use Psr\Log\LoggerInterface;
@@ -21,6 +24,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class WidgetController
@@ -185,93 +189,102 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @param Request            $request
-     * @param MindbodyService    $mindbodyService
-     * @param FromSessionService $fromSessionService
+     * @param FromSessionService          $fromSessionService
+     * @param ClassServiceSOAPRequester   $classServiceSOAPRequester
+     * @param ClientServiceRequestHandler $clientServiceRequestHandler
+     * @param TranslatorInterface         $translator
+     * @param LoggerInterface             $logger
+     * @param ParameterBagInterface       $parameterBag
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @Route("/signup-for-class", name="widget_sign_up_for_class")
      */
-    public function signUpClassAction(Request $request, MindbodyService $mindbodyService, FromSessionService $fromSessionService)
+    public function signUpClassAction(
+        FromSessionService $fromSessionService,
+        ClassServiceSOAPRequester $classServiceSOAPRequester,
+        ClientServiceRequestHandler $clientServiceRequestHandler,
+        TranslatorInterface $translator,
+        LoggerInterface $logger,
+        ParameterBagInterface $parameterBag
+    )
     {
-        if ($this->isUserReadyToBookClass()) {
-            $signUpForClassResult = $mindbodyService->addClientsToClasses(
-                $fromSessionService->getMindbodyClientID(),
-                $fromSessionService->getMindbodyClassId(),
-                $fromSessionService->getMindbodyClientCurrentServiceId()
+        $getClassesRequest = (new GetClassesRequest())
+            ->setClassIDs(
+                [
+                    $fromSessionService->getMindbodyClassId(),
+                ]
             );
+
+        $getClassesResponse       = $classServiceSOAPRequester->getClasses($getClassesRequest);
+        $programId                = $getClassesResponse['GetClassesResult']['Classes']['Class']['ClassDescription']['Program']['ID'];
+        $getClientServicesRequest = new GetClientServicesRequest(
+            $fromSessionService->getMindbodyClientID(),
+            [$programId]
+        );
+
+        $getClientServicesRequest->setClassID($fromSessionService->getMindbodyClassId());
+
+        $canUserBookThisClass = $clientServiceRequestHandler->canClientBookClass($getClientServicesRequest);
+
+        if ($canUserBookThisClass) {
+            $addClientToClassRequest = new AddClientToClassRequest(
+                $fromSessionService->getMindbodyClientID(),
+                $fromSessionService->getMindbodyClassId()
+            );
+
+            $signUpForClassResult = $classServiceSOAPRequester->addClientToClass($addClientToClassRequest);
             $viewParams           = [];
             $viewParams['result'] = $signUpForClassResult;
 
-            if ($signUpForClassResult['AddClientsToClassesResult']['ErrorCode'] !== 200) {
+            if ((int)$signUpForClassResult['AddClientToClassResult']['ErrorCode'] !== 200) {
                 if (
-                    isset($signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
-                    && $signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 603
+                    isset($signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
+                    && $signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 603
                 ) {
-                    $viewParams['errorMessage'] = 'You are registered in this class already';
+                    $viewParams['errorMessage'] = $translator->trans('notice.widget.client_registered_already_in_class');
                 } elseif (
-                    isset($signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
-                    && $signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 602
+                    isset($signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
+                    && $signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 602
                 ) {
-                    $viewParams['errorMessage'] = 'You are outside the scheduling window';
+                    $viewParams['errorMessage'] = $translator->trans('notice.widget.client_outside_schedule_window');
                 } elseif (
-                    isset($signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
-                    && $signUpForClassResult['AddClientsToClassesResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 601
+                    isset($signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'])
+                    && $signUpForClassResult['AddClientToClassResult']['Classes']['Class']['Clients']['Client']['ErrorCode'] == 601
                 ) {
                     //TODO: SOMETIMES HERE A LOOP IS HAPPENING. This route should be dynamic with a default value
                     return $this->redirectToRoute('widget_checkout');
                 } else {
-                    $viewParams['errorMessage'] = 'Houve um erro na sua reserva. Por favor, tente novamente.';
-                    $this->get('logger')->error('Error trying to signup classes', $signUpForClassResult);
+                    $viewParams['errorMessage'] = $translator->trans('error.widget.error_add_user_to_class');
+                    $logger->error('Error trying to add user to class', $signUpForClassResult);
                 }
             }
 
-            $viewParams['schedulePage'] = $this->getParameter('schedule_page');
+            $viewParams['schedulePage'] = $parameterBag->get('schedule_page');
 
             return $this->render('@MiguelAlcainoMindbodyPayments/widget/signUpForClass.html.twig', $viewParams);
         } else {
-            //TODO: the route should be dynamic
-            return $this->redirectToRoute('mindbody_customer_login');
+            return $this->redirectToRoute('widget_checkout');
         }
     }
 
     /**
      *
-     * @param FromSessionService     $fromSessionService
-     * @param UserSessionService     $userSessionService
-     * @param ParameterBagInterface  $parameterBag
-     * @param MindbodyService        $mindbodyService
-     *
-     * @param MindbodyProgramService $mindbodyProgramService
+     * @param FromSessionService $fromSessionService
+     * @param UserSessionService $userSessionService
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Exception
      * @Route("/before-login", name="widget_before_login")
      */
     public function beforeLoginAction(
         FromSessionService $fromSessionService,
-        UserSessionService $userSessionService,
-        ParameterBagInterface $parameterBag,
-        MindbodyService $mindbodyService,
-        MindbodyProgramService $mindbodyProgramService
+        UserSessionService $userSessionService
     ) {
         if ($userSessionService->isUserLoggedIn()) {
-            $programIds = $mindbodyProgramService->getProgramsIds($fromSessionService->getMindbodyClassType());
-
-            $hasClientActiveService = $mindbodyService->clientHasAnActiveService(
-                $fromSessionService->getMindbodyClientID(),
-                $programIds
-            );
-
-            if ($hasClientActiveService) {
-                if ($fromSessionService->getMindbodyClassType() === 'enrollment') {
-                    return $this->redirectToRoute('widget_sign_up_for_enrollment');
-                } else {
-                    return $this->redirectToRoute('widget_sign_up_for_class');
-                }
+            if ($fromSessionService->getMindbodyClassType() === 'enrollment') {
+                return $this->redirectToRoute('widget_sign_up_for_enrollment');
             } else {
-                // Membership to buy selector
-                return $this->redirectToRoute($parameterBag->get('login_success_route'));
+                return $this->redirectToRoute('widget_sign_up_for_class');
             }
         } else {
             return $this->redirectToRoute('mindbody_customer_login');
