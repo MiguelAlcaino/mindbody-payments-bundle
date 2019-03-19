@@ -34,14 +34,14 @@ class ClientServiceRequestHandler
 
         $clientServicesFormatted = [];
 
-        if (count($clientServices['GetClientServicesResponse']['GetClientServicesResult']['ClientServices']) > 0) {
+        if (count($clientServices['GetClientServicesResult']['ClientServices']) > 0) {
             if (
             array_key_exists(
                 'Current',
-                $clientServices['GetClientServicesResponse']['GetClientServicesResult']['ClientServices']['ClientService']
+                $clientServices['GetClientServicesResult']['ClientServices']['ClientService']
             )
             ) {
-                $clientService             = $clientServices['GetClientServicesResponse']['GetClientServicesResult']['ClientServices']['ClientService'];
+                $clientService             = $clientServices['GetClientServicesResult']['ClientServices']['ClientService'];
                 $clientServicesFormatted[] = [
                     'current'        => $clientService['Current'],
                     'id'             => $clientService['ID'],
@@ -51,7 +51,7 @@ class ClientServiceRequestHandler
                     'expirationDate' => $clientService['ExpirationDate'],
                 ];
             } else {
-                foreach ($clientServices['GetClientServicesResponse']['GetClientServicesResult']['ClientServices']['ClientService'] as $clientService) {
+                foreach ($clientServices['GetClientServicesResult']['ClientServices']['ClientService'] as $clientService) {
                     $clientServicesFormatted[] = [
                         'current'        => $clientService['Current'],
                         'id'             => $clientService['ID'],
