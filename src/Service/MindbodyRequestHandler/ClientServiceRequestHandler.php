@@ -67,4 +67,16 @@ class ClientServiceRequestHandler
         return $clientServicesFormatted;
     }
 
+    /**
+     * @param GetClientServicesRequest $getClientServicesRequest
+     *
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function canClientBookClass(GetClientServicesRequest $getClientServicesRequest): bool
+    {
+        $clientServices = $this->getClientServicesFormatted($getClientServicesRequest);
+
+        return count($clientServices) > 0;
+    }
 }
