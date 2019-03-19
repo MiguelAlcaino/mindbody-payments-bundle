@@ -100,6 +100,18 @@ services:
 
     ### END MINDBODY REQUEST HANDLERS ###
 
+    ### MINDBODY BUSINESS LOGIC ###
+
+    miguel_alcaino.mindbody.shopping_cart:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.class_service'
+            - '@miguel_alcaino.mindbody.request_handler.sale_service'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository'
+
+    ### END MINDBODY BUSINESS LOGIC ###
+
     miguel_alcaino.mindbody_service:
         public: true
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService
