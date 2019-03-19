@@ -2,6 +2,7 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget;
 
+use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,11 +15,15 @@ class CheckoutForm extends AbstractType
         $serviceChoices = [];
 
         foreach ($options['services'] as $service) {
-            $serviceChoices[$service['name']] = $service['id'];
+            if ($service instanceof Product) {
+                $serviceChoices[$service->getName()] = $service->getMerchantId();
+            } else {
+                $serviceChoices[$service['name']] = $service['id'];
+            }
         }
 
         $builder->add('service', ChoiceType::class, [
-            'choices' => $serviceChoices,
+            'choices'  => $serviceChoices,
             'multiple' => false,
             'expanded' => true
         ]);
