@@ -2,6 +2,7 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler;
 
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetServicesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest;
 
 class SaleServiceRequestHandler
@@ -22,16 +23,14 @@ class SaleServiceRequestHandler
     }
 
     /**
-     * @param array  $programs
-     * @param string $classScheduleId
-     * @param string $locationId
+     * @param GetServicesRequest $request
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getFormattedServices(array $programs = [], string $classScheduleId = '', string $locationId = ''): array
+    public function getFormattedServices(GetServicesRequest $request = null): array
     {
-        $services = $this->saleServiceSOAPRequest->getServices($programs, $classScheduleId, $locationId);
+        $services = $this->saleServiceSOAPRequest->getServices($request);
 
         $formattedServices = [];
         foreach ($services['GetServicesResult']['Services']['Service'] as $service) {

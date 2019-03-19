@@ -2,40 +2,26 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
 
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetServicesRequest;
+
 class SaleServiceSOAPRequest extends AbstractSOAPRequester
 {
     const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/SaleService.asmx';
 
     /**
-     * @param array  $programs
-     * @param string $classScheduleId
-     * @param string $locationId
+     * @param GetServicesRequest $request
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getServices(array $programs = [], string $classScheduleId = '', string $locationId = ''): array
+    public function getServices(GetServicesRequest $request = null): array
     {
-        $request = [];
-
-        if (!empty($programs)) {
-            $request['ProgramIDs'] = [
-                'int' => $programs,
-            ];
-        }
-
-        if (!empty($classScheduleId)) {
-            $request['ClassScheduleID'] = $classScheduleId;
-        }
-
-        if(!empty($locationId)){
-            $request['LocationID'] = $locationId;
-        }
+        $arrayRequest = $this->decodeRequesterObject($request);
 
         $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
             self::SERVICE_URI,
             'GetServices',
-            $request
+            $arrayRequest
         );
 
         return $response;
