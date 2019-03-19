@@ -110,6 +110,8 @@ services:
             - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository'
             - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository'
 
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService: '@miguel_alcaino.mindbody.shopping_cart'
+
     ### END MINDBODY BUSINESS LOGIC ###
 
     miguel_alcaino.mindbody_service:
