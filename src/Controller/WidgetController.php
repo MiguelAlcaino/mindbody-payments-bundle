@@ -7,14 +7,17 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
+use MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository;
+use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetServicesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService;
 use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
 use Psr\Log\LoggerInterface;
@@ -292,60 +295,75 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @Route("/checkout", name="widget_checkout")
-     * @param Request                $request
-     * @param MindbodyService        $mindbodyService
-     * @param FromSessionService     $fromSessionService
-     * @param MindbodyProgramService $mindbodyProgramService
+     * @param SaleServiceRequestHandler $saleServiceRequestHandler
+     * @param ClassServiceSOAPRequester $classServiceSOAPRequester
+     * @param FromSessionService        $fromSessionService
+     * @param ProductRepository         $productRepository
+     * @param LocationRepository        $locationRepository
      *
      * @return string|\Symfony\Component\HttpFoundation\RedirectResponse
-     * @throws \Exception
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @Route("/checkout", name="widget_checkout")
      */
     public function choosePackageAction(
-        Request $request,
-        MindbodyService $mindbodyService,
+        SaleServiceRequestHandler $saleServiceRequestHandler,
+        ClassServiceSOAPRequester $classServiceSOAPRequester,
         FromSessionService $fromSessionService,
-        MindbodyProgramService $mindbodyProgramService
+        ProductRepository $productRepository,
+        LocationRepository $locationRepository
     ) {
-        $programIds = $mindbodyProgramService->getProgramsIds($fromSessionService->getMindbodyClassType());
+        $getClassesRequest = (new GetClassesRequest())
+            ->setClassIDs(
+                [
+                    $fromSessionService->getMindbodyClassId(),
+                ]
+            );
 
-        $hasClientActiveService = $mindbodyService->clientHasAnActiveService(
-            $fromSessionService->getMindbodyClientID(),
-            $programIds
+        $getClassesResponse = $classServiceSOAPRequester->getClasses($getClassesRequest);
+        $programId          = $getClassesResponse['GetClassesResult']['Classes']['Class']['ClassDescription']['Program']['ID'];
+        $locationId         = $getClassesResponse['GetClassesResult']['Classes']['Class']['Location']['ID'];
+
+        $getServicesRequest = new GetServicesRequest();
+        $getServicesRequest->setProgramIDs(
+            [
+                $programId,
+            ]
+        )->setSellOnline(true);
+
+        $services = $saleServiceRequestHandler->getFormattedServices($getServicesRequest);
+
+        $servicesIds = array_map(
+            function ($value) {
+                return $value['id'];
+            },
+            $services
         );
 
-        if ($hasClientActiveService) {
-            if ($fromSessionService->getMindbodyClassType() === 'enrollment') {
-                return $this->redirectToRoute('widget_sign_up_for_enrollment');
-            } else {
-                return $this->redirectToRoute('widget_sign_up_for_class');
-            }
-        } else {
-            try {
-                $services = $this->getServices($request);
-            } catch (NoneServiceFoundException $exception) {
-                return $exception->getRoute();
-            }
+        $dbLocation = $locationRepository->findBy(
+            [
+                'merchantId' => $locationId,
+            ]
+        );
 
-            $form = $this->createForm(
-                CheckoutForm::class,
-                null,
-                [
-                    'services' => $services,
-                    'method'   => 'POST',
-                    'action'   => $this->generateUrl('widget_make_payment'),
-                ]
-            );
+        $dbServices = $productRepository->getServicesByIdsAndLocations($servicesIds, $dbLocation);
 
-            return $this->renderView(
-                '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
-                [
-                    'services'    => $services,
-                    'form'        => $form->createView(),
-                    'moneySymbol' => $this->getParameter('money_symbol'),
-                ]
-            );
-        }
+        $form = $this->createForm(
+            CheckoutForm::class,
+            null,
+            [
+                'services' => $dbServices,
+                'method'   => 'POST',
+                'action'   => $this->generateUrl('widget_make_payment'),
+            ]
+        );
+
+        return $this->render(
+            '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
+            [
+                'services' => $services,
+                'form'     => $form->createView(),
+            ]
+        );
     }
 
     /**
