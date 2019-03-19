@@ -2,7 +2,7 @@
 {% block popupTitle %}Detalhes da conta{% endblock %}
 {% block content %}
     <p>Thanks you just purchased {{ transactionRecord.transactionItems.0.name }}.</p>
-    <p>Your payment of {{ moneySymbol }}{{ transactionRecord.amount }} has been done successfully.</p>
+    <p>Your payment of {{ currency }}{{ transactionRecord.amount }} has been done successfully.</p>
 
     <a style="margin-bottom: 20px;" class="cta cart-cta-disable-me-on-click cart-cta-preview-confirmation" href="{{ nextUrl }}">Continue to yor booking. </a>
 {% endblock %}

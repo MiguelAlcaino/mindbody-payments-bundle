@@ -13,7 +13,7 @@
                 {% if service.id == radioWidget.vars.value %}
                 <label class="radio {#is-active#}" for="{{ radioWidget.vars.id }}">
                     <div class="radio__label">{{ radioWidget.vars.label }}</div>
-                    <div class="radio__detail">{{ moneySymbol }}{{ service.price|number_format(0,'.') }}</div>
+                    <div class="radio__detail">{{ currency }}{{ service.price|number_format(0,'.') }}</div>
                     {{ form_widget(radioWidget, {attr: {
                         class: 'radio__input'
                     }}) }}
