@@ -14,6 +14,18 @@ class AddClientToClassRequest implements \JsonSerializable
      */
     private $ClassID;
 
+    /**
+     * AddClientToClassRequest constructor.
+     *
+     * @param string $ClientID
+     * @param int    $ClassID
+     */
+    public function __construct(string $ClientID, int $ClassID)
+    {
+        $this->ClientID = $ClientID;
+        $this->ClassID  = $ClassID;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -31,34 +43,10 @@ class AddClientToClassRequest implements \JsonSerializable
     }
 
     /**
-     * @param string $ClientID
-     *
-     * @return AddClientToClassRequest
-     */
-    public function setClientID(string $ClientID): AddClientToClassRequest
-    {
-        $this->ClientID = $ClientID;
-
-        return $this;
-    }
-
-    /**
      * @return int
      */
     public function getClassID(): int
     {
         return $this->ClassID;
-    }
-
-    /**
-     * @param int $ClassID
-     *
-     * @return AddClientToClassRequest
-     */
-    public function setClassID(int $ClassID): AddClientToClassRequest
-    {
-        $this->ClassID = $ClassID;
-
-        return $this;
     }
 }
