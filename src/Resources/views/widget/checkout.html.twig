@@ -10,7 +10,7 @@
         <legend class="fieldset__legend">Passes</legend>
         {% for radioWidget in form.service.children %}
             {% for service in services %}
-                {% if service.id == radioWidget.vars.value %}
+                {% if service.merchantId == radioWidget.vars.value %}
                 <label class="radio {#is-active#}" for="{{ radioWidget.vars.id }}">
                     <div class="radio__label">{{ radioWidget.vars.label }}</div>
                     <div class="radio__detail">{{ currency }}{{ service.price|number_format(0,'.') }}</div>
