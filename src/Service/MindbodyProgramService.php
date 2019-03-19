@@ -2,7 +2,7 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service;
 
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class MindbodyProgramService
