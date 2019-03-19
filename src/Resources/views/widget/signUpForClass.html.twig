@@ -1,5 +1,5 @@
 {% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
-{% block popupTitle %}Payment status{% endblock %}
+{% block popupTitle %}{% trans %}widget.sign_up_for_class.popup_title{% endtrans %}{% endblock %}
 
 {% block content %}
     {% if errorMessage is not defined %}
@@ -11,11 +11,11 @@
             <div class="sa-fix"></div>
         </div>
     </div>
-    <h2 class="thank__header">Thanks. Your payment has been successfull. You can proceed to book your class.</h2>
+    <h2 class="thank__header">{% trans %}widget.sign_up_for_class.content{% endtrans %}</h2>
     {% else %}
         <h2 class="alert-danger" style="margin-top: 65px;">{{ errorMessage }}</h2>
     {% endif %}
-    <a class="cta cart-cta-disable-me-on-click cart-cta-preview-confirmation" target="_parent" href="{{ schedulePage }}">View schedule</a>
+    <a class="cta cart-cta-disable-me-on-click cart-cta-preview-confirmation" target="_parent" href="{{ schedulePage }}">{% trans %}widget.sign_up_for_class.view_schedule_page_link_title{% endtrans %}</a>
     <br>
 {% endblock %}
 {% block stylesheets %}
