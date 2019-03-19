@@ -7,18 +7,15 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
-use MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\GetServicesRequest;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService;
 use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -295,57 +292,18 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @param SaleServiceRequestHandler $saleServiceRequestHandler
-     * @param ClassServiceSOAPRequester $classServiceSOAPRequester
-     * @param FromSessionService        $fromSessionService
-     * @param ProductRepository         $productRepository
-     * @param LocationRepository        $locationRepository
+     * @param FromSessionService  $fromSessionService
+     * @param ShoppingCartService $shoppingCartService
      *
      * @return string|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @Route("/checkout", name="widget_checkout")
      */
     public function choosePackageAction(
-        SaleServiceRequestHandler $saleServiceRequestHandler,
-        ClassServiceSOAPRequester $classServiceSOAPRequester,
         FromSessionService $fromSessionService,
-        ProductRepository $productRepository,
-        LocationRepository $locationRepository
+        ShoppingCartService $shoppingCartService
     ) {
-        $getClassesRequest = (new GetClassesRequest())
-            ->setClassIDs(
-                [
-                    $fromSessionService->getMindbodyClassId(),
-                ]
-            );
-
-        $getClassesResponse = $classServiceSOAPRequester->getClasses($getClassesRequest);
-        $programId          = $getClassesResponse['GetClassesResult']['Classes']['Class']['ClassDescription']['Program']['ID'];
-        $locationId         = $getClassesResponse['GetClassesResult']['Classes']['Class']['Location']['ID'];
-
-        $getServicesRequest = new GetServicesRequest();
-        $getServicesRequest->setProgramIDs(
-            [
-                $programId,
-            ]
-        )->setSellOnline(true);
-
-        $services = $saleServiceRequestHandler->getFormattedServices($getServicesRequest);
-
-        $servicesIds = array_map(
-            function ($value) {
-                return $value['id'];
-            },
-            $services
-        );
-
-        $dbLocation = $locationRepository->findBy(
-            [
-                'merchantId' => $locationId,
-            ]
-        );
-
-        $dbServices = $productRepository->getServicesByIdsAndLocations($servicesIds, $dbLocation);
+        $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
 
         $form = $this->createForm(
             CheckoutForm::class,
@@ -360,40 +318,36 @@ class WidgetController extends AbstractController
         return $this->render(
             '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
             [
-                'services' => $services,
+                'services' => $dbServices,
                 'form'     => $form->createView(),
             ]
         );
     }
 
     /**
-     * @param Request               $request
-     * @param MindbodyService       $mindbodyService
-     * @param FromSessionService    $fromSessionService
-     * @param ParameterBagInterface $parameterBag
+     * @param Request             $request
+     * @param MindbodyService     $mindbodyService
+     * @param FromSessionService  $fromSessionService
+     * @param ShoppingCartService $shoppingCartService
      *
      * @return array|Response
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @Route("/make-payment", name="widget_make_payment")
+     * @Route("/make-payment", name="widget_make_payment", methods={"POST"})
      */
     public function makePaymentAction(
         Request $request,
         MindbodyService $mindbodyService,
         FromSessionService $fromSessionService,
-        ParameterBagInterface $parameterBag
+        ShoppingCartService $shoppingCartService
     ) {
-        try {
-            $services = $this->getServices($request);
-        } catch (NoneServiceFoundException $exception) {
-            return $exception->getRoute();
-        }
+        $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
 
         $form = $this->createForm(
             CheckoutForm::class,
             null,
             [
-                'services' => $services,
+                'services' => $dbServices,
                 'method'   => 'POST',
                 'action'   => $this->generateUrl('widget_make_payment'),
             ]
@@ -403,42 +357,6 @@ class WidgetController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             //service here is the Mindbody price selected
             $serviceId = $form->get('service')->getData();
-
-            $clientService = $mindbodyService->getClientServices(
-                $fromSessionService->getMindbodyClientID(),
-                true,
-                [
-                    [
-                        // TODO: Find out why just class_program_id and not enrollment_program_id
-                        'id' => $parameterBag->get('class_program_id'),
-                    ],
-                ]
-            );
-
-            $applyDiscount = false;
-            $discount      = 0;
-
-            //TODO: This is a custom logic, it should go in a service that implements an Interface
-            if (count($clientService) > 0) {
-                foreach ($parameterBag->get('memberships_with_discount_for_enrollments') as $membership) {
-                    if (trim($clientService['Name']) === $membership) {
-                        $applyDiscount = true;
-                        break;
-                    }
-                }
-
-                if ($applyDiscount) {
-                    if ($serviceId === $parameterBag->get('membership_id_with_30_discount')) {
-                        $discount = 30;
-                    } else {
-                        foreach ($services as $service) {
-                            if ($serviceId === $service['id']) {
-                                $discount = $service['price'] * 0.5;
-                            }
-                        }
-                    }
-                }
-            }
 
             $responseCalculateShoppingCart = $mindbodyService->calculateShoppingCart(
                 $fromSessionService->getMindbodyClientID(),
@@ -465,7 +383,7 @@ class WidgetController extends AbstractController
                 '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
                 [
                     'form'     => $form->createView(),
-                    'services' => $services,
+                    'services' => $dbServices,
                 ]
             );
         }
