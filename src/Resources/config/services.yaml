@@ -133,7 +133,7 @@ services:
     miguel_alcaino.mindbody.from_session:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine.orm.default_entity_manager'
             - '@session'
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService: '@miguel_alcaino.mindbody.from_session'
@@ -150,7 +150,7 @@ services:
         arguments:
             - '@miguel_alcaino.mindbody.from_session'
             - '@miguel_alcaino.mindbody_service'
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine.orm.default_entity_manager'
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService: '@miguel_alcaino.mindbody.customer_filler'
 
     miguel_alcaino.mindbody.user_session_service:
