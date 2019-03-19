@@ -623,7 +623,6 @@ class WidgetController extends AbstractController
                 [
                     'paymentGatewayJsId' => $this->getParameter('iugu.js_id'),
                     'form'               => $creditCardForm->createView(),
-                    'moneySymbol'        => $this->getParameter('money_symbol'),
                     'serviceName'        => $request->getSession()->get('serviceName'),
                     'grandTotal'         => $request->getSession()->get('grandTotal'),
                 ]
@@ -659,7 +658,6 @@ class WidgetController extends AbstractController
             '@MindBodyPayments/Widget/successfulPayment.html.twig',
             [
                 'transactionRecord' => $transactionRecord,
-                'moneySymbol'       => $this->getParameter('money_symbol'),
                 'nextUrl'           => $nextUrl,
             ]
         );
