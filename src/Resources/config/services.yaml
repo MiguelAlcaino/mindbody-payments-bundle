@@ -154,11 +154,11 @@ services:
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService: '@miguel_alcaino.mindbody.customer_filler'
 
     miguel_alcaino.mindbody.user_session_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService
         arguments:
             $fromSessionService: '@miguel_alcaino.mindbody.from_session'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService: '@miguel_alcaino.mindbody.user_session_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService: '@miguel_alcaino.mindbody.user_session_service'
 
     ### REPOSITORY ###
 
