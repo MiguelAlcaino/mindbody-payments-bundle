@@ -16,6 +16,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecord
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
