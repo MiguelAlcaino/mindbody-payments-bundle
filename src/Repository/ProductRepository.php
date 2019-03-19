@@ -4,6 +4,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Discount;
+use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Location;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -97,6 +98,27 @@ class ProductRepository extends ServiceEntityRepository
             ->andWhere('p.isTrialPackage = :is_trial_package')
             ->setParameter('is_trial_package', true)
             ->orderBy('p.name', 'ASC')
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param array      $serviceMerchantIds
+     * @param Location[] $locations
+     *
+     * @return Product[]
+     */
+    public function getServicesByIdsAndLocations(array $serviceMerchantIds, array $locations): array
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from(Product::class, 'p')
+            ->leftJoin('p.locations', 'l')
+            ->where('l IN (:locations)')
+            ->andWhere('p.merchantId IN (:merchantIds)')
+            ->setParameter('locations', $locations)
+            ->setParameter('merchantIds', $serviceMerchantIds)
             ->getQuery();
 
         return $query->getResult();
