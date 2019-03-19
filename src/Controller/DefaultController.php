@@ -7,7 +7,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LoginType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Model\MindbodySession;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;

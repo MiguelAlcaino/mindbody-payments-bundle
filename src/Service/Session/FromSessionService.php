@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\Session;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;

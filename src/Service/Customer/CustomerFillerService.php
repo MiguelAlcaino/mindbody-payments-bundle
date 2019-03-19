@@ -5,7 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer;
 use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use Symfony\Component\Form\FormInterface;
 

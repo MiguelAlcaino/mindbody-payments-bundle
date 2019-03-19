@@ -131,12 +131,12 @@ services:
     MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordFillerService: '@miguel_alcaino.mindbody.transaction_record_filler'
 
     miguel_alcaino.mindbody.from_session:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService
         arguments:
             - '@doctrine.orm.default_entity_manager'
             - '@session'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService: '@miguel_alcaino.mindbody.from_session'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService: '@miguel_alcaino.mindbody.from_session'
 
     miguel_alcaino.mindbody.within_ten_years_validator:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Validator\WithinTenYearsValidatorService

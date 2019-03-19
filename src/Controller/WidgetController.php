@@ -9,7 +9,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;

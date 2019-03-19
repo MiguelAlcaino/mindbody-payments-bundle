@@ -3,7 +3,7 @@
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 
 class TransactionRecordFillerService
 {
