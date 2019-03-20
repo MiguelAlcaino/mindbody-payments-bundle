@@ -30,7 +30,6 @@ Add parameters to your `config/services.yaml`
 parameters:
     enabled_payment_names: ['kushki']
     login_success_route: 'your_route_name_after_successful_login'
-    login_template: 'default/login.html.twig'
     payment_response_route: 'your_successful_payment_route_name'
     siteName:'Your site name' # This will be used in templates
 ```

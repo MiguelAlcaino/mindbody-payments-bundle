@@ -270,7 +270,9 @@ class WidgetController extends AbstractController
                 return $this->redirectToRoute('widget_sign_up_for_class');
             }
         } else {
-            return $this->redirectToRoute('mindbody_customer_login');
+            return $this->redirectToRoute('mindbody_customer_login',[
+                'template' => 'widget'
+            ]);
         }
     }
 

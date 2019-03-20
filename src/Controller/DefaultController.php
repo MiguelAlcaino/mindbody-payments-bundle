@@ -7,8 +7,8 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LoginType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Model\MindbodySession;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -92,11 +92,18 @@ class DefaultController extends AbstractController
                 }
             } catch (NotValidLoginException $exception) {
                 $arrayToReturn['errorMessage'] = $translator->trans('mindbody.login.incorrect');
-
-                return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
+                if ($request->query->has('template') && $request->query->get('template') === 'widget') {
+                    return $this->renderLoginForm($arrayToReturn, $parameterBag->get('widget_login_template'));
+                } else {
+                    return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
+                }
             }
         } else {
-            return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
+            if ($request->query->has('template') && $request->query->get('template') === 'widget') {
+                return $this->renderLoginForm($arrayToReturn, $parameterBag->get('widget_login_template'));
+            } else {
+                return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
+            }
         }
     }
 
