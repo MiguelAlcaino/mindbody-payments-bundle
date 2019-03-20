@@ -36,40 +36,40 @@ services:
             - '@parameter_bag'
 
     miguel_alcaino.mindbody.soap.request:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\MindbodySOAPRequester
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\MindbodySOAPRequester
         arguments:
             - '@miguel_alcaino.minbody.credentials'
             - '@guzzle.client'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\MindbodySOAPRequester: '@miguel_alcaino.mindbody.soap.request'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\MindbodySOAPRequester: '@miguel_alcaino.mindbody.soap.request'
 
     miguel_alcaino.mindbody.soap.request.sale_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest
         arguments:
             - '@miguel_alcaino.mindbody.soap.request'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.sale_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.sale_service'
 
     miguel_alcaino.mindbody.soap.request.site_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest
         arguments:
             - '@miguel_alcaino.mindbody.soap.request'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     miguel_alcaino.mindbody.soap.request.class_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClassServiceSOAPRequester
         arguments:
             - '@miguel_alcaino.mindbody.soap.request'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
 
     miguel_alcaino.mindbody.soap.request.client_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester
         arguments:
             - '@miguel_alcaino.mindbody.soap.request'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.client_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.client_service'
 
     ### END MINDBODY SOAP REQUESTERS ###
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest;
 
 use GuzzleHttp\Client;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Credentials\MindbodyCredentialsService;

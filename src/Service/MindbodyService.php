@@ -117,7 +117,7 @@ class MindbodyService
      *
      * @return array|mixed|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SaleServiceSOAPRequest::getServices instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest::getServices instead
      */
     public function getServices($locations, $userChache = true)
     {
@@ -233,7 +233,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceSOAPRequest::getLocations instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest::getLocations instead
      */
     public function getLocations()
     {
@@ -570,7 +570,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServicesSoap($clientId, $programIds = [], $showActiveOnly = true)
     {
@@ -897,7 +897,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Exception
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServices($clientId, $showActiveOnly = null, $programIds = null)
     {
