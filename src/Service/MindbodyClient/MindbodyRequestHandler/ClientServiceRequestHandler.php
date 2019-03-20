@@ -75,6 +75,7 @@ class ClientServiceRequestHandler
      */
     public function canClientBookClass(GetClientServicesRequest $getClientServicesRequest): bool
     {
+        $getClientServicesRequest->setShowActiveOnly(true);
         $clientServices = $this->getClientServicesFormatted($getClientServicesRequest);
 
         return count($clientServices) > 0;
