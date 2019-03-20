@@ -10,7 +10,7 @@
         </tr>
         <tr>
             <th>Precio</th>
-            <td>${{ product.price|price_format }}</td>
+            <td>{{ currency }}{{ product.price|price_format }}</td>
         </tr>
         </tbody>
     </table>

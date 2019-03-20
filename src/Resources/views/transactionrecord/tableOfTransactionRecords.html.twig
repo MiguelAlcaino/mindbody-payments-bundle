@@ -24,8 +24,8 @@
                     <strong>{{ transactionItem.name }}</strong><br>
                 {% endfor %}
             </td>
-            <td>${{ transactionRecord.amount|price_format }}</td>
-            <td>${{ transactionRecord.discountAmount|price_format }}</td>
+            <td>{{ currency }}{{ transactionRecord.amount|price_format }}</td>
+            <td>{{ currency }}{{ transactionRecord.discountAmount|price_format }}</td>
             <td>{{ transactionRecord.userPreferredLocation }}</td>
             <td>
                 <a class="btn btn-primary btn-sm"

@@ -105,9 +105,9 @@
         <tr>
             <th>Monto pagado</th>
             {% if transactionRecord.amount is not same as(null) %}
-                <td><strong>${{ transactionRecord.amount|price_format }}</strong></td>
+                <td><strong>{{ currency }}{{ transactionRecord.amount|price_format }}</strong></td>
             {% else %}
-                <td><strong>${{ transactionRecord.preAmount|price_format }}</strong></td>
+                <td><strong>{{ currency }}{{ transactionRecord.preAmount|price_format }}</strong></td>
             {% endif %}
         </tr>
         <tr>
@@ -116,11 +116,11 @@
         </tr>
         <tr>
             <th>Descuento</th>
-            <td><strong>${{ transactionRecord.discountAmount|price_format }}</strong></td>
+            <td><strong>{{ currency }}{{ transactionRecord.discountAmount|price_format }}</strong></td>
         </tr>
         <tr>
             <th>Impuesto</th>
-            <td>${{ transactionRecord.taxAmount|price_format }}</td>
+            <td>{{ currency }}{{ transactionRecord.taxAmount|price_format }}</td>
         </tr>
         <tr>
             <th>Cuotas</th>
