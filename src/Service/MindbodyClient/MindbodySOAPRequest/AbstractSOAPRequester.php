@@ -5,6 +5,11 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySO
 abstract class AbstractSOAPRequester
 {
     /**
+     * Date format used in mindbody requests
+     */
+    public const DATE_MINDBODY_FORMAT = 'Y-m-d\TH:i:s';
+
+    /**
      * @var MindbodySOAPRequester
      */
     protected $minbodySoapRequester;
