@@ -18,4 +18,6 @@ widget.sign_up_for_class.view_schedule_page_link_title: 'View schedule'
 widget.error.chopping_cart_calculation_error: 'There has been an error trying to add this package to your shopping cart. Please check your selection and try again.'
 widget.layout.next_button: 'Next'
 widget.book_summary.title: 'Choose your class'
-
+widget.choose_package.title: 'Please choose the package you want to buy'
+widget.choose_package.next_button: 'Proceed to payment'
+widget.choose_package.form.title: 'Packages'

@@ -299,7 +299,7 @@ class WidgetController extends AbstractController
         );
 
         return $this->render(
-            '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
+            '@MiguelAlcainoMindbodyPayments/widget/choosePackage.html.twig',
             [
                 'services' => $dbServices,
                 'form'     => $form->createView(),

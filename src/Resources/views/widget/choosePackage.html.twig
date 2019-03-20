@@ -1,5 +1,5 @@
 {% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
-{% block popupTitle %}Escolha sua mensalidade ou pacote de aulas{% endblock %}
+{% block popupTitle %}{% trans %}widget.choose_package.title{% endtrans %}{% endblock %}
 {% block content %}
     {% for message in app.flashes('error') %}
         <div class="alert alert-danger">{{ message }}</div>
@@ -10,7 +10,7 @@
     {#<form class="form" action="/sites/50710/cart/add_service" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">#}
     <input type="hidden" name="ecommerce_redirect" id="ecommerce_redirect" value="true">
     <fieldset class="fieldset">
-        <legend class="fieldset__legend">Passes</legend>
+        <legend class="fieldset__legend">{% trans %}widget.choose_package.form.title{% endtrans %}</legend>
         {% for radioWidget in form.service.children %}
             {% for service in services %}
                 {% if service.merchantId == radioWidget.vars.value %}
@@ -29,7 +29,7 @@
         {% endfor %}
     </fieldset>
     <button name="button" type="submit" class="cta cart-cta-disable-me-on-click cart-cta-select-service"
-            autocomplete="off">Next
+            autocomplete="off">{% trans %}widget.choose_package.next_button{% endtrans %}
     </button>
     {{ form_end(form) }}
 {% endblock %}
