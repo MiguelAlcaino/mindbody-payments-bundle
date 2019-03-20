@@ -20,6 +20,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService;
 use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
+use MiguelAlcaino\PaymentGateway\Interfaces\PaymentGatewayRouterInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -328,11 +329,12 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @param Request                   $request
-     * @param FromSessionService        $fromSessionService
-     * @param ShoppingCartService       $shoppingCartService
-     * @param SaleServiceRequestHandler $saleServiceRequestHandler
-     * @param TranslatorInterface       $translator
+     * @param Request                       $request
+     * @param FromSessionService            $fromSessionService
+     * @param ShoppingCartService           $shoppingCartService
+     * @param SaleServiceRequestHandler     $saleServiceRequestHandler
+     * @param TranslatorInterface           $translator
+     * @param PaymentGatewayRouterInterface $paymentGatewayRouter
      *
      * @return array|Response
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -343,7 +345,8 @@ class WidgetController extends AbstractController
         FromSessionService $fromSessionService,
         ShoppingCartService $shoppingCartService,
         SaleServiceRequestHandler $saleServiceRequestHandler,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        PaymentGatewayRouterInterface $paymentGatewayRouter
     ) {
         $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
 
@@ -389,7 +392,7 @@ class WidgetController extends AbstractController
                 return $this->redirectToRoute('widget_checkout');
             }
 
-            return $this->redirectToRoute('widget_credit_card_form');
+            return $this->redirectToRoute($paymentGatewayRouter->getPaymentFormRoute());
         } else {
             return $this->redirectToRoute('widget_checkout');
         }
