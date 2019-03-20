@@ -53,20 +53,13 @@ class ShoppingCartService
     }
 
     /**
-     * @param int $classId
+     * @param GetClassesRequest $getClassesRequest
      *
      * @return Product[]
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getFilteredServicesByClassId(int $classId): array
+    public function getFilteredServicesByClassId(GetClassesRequest $getClassesRequest): array
     {
-        $getClassesRequest = (new GetClassesRequest())
-            ->setClassIDs(
-                [
-                    $classId,
-                ]
-            );
-
         $getClassesResponse = $this->classServiceSOAPRequester->getClasses($getClassesRequest);
         $programId          = $getClassesResponse['GetClassesResult']['Classes']['Class']['ClassDescription']['Program']['ID'];
         $locationId         = $getClassesResponse['GetClassesResult']['Classes']['Class']['Location']['ID'];
