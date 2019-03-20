@@ -10,3 +10,21 @@ menu.logout: Logout
 menu.locations: Locaciones
 notice.locations_successfully_synchronized: Las locaciones han sido sincronizadas correctamente
 notice.products_successfully_synchronized: 'Los servicios han sido sincronizados correctamente con Mindbody'
+admin.location.sync_button: Sync Locaciones
+notice.programs_successfully_synchronized: 'Los programas se han sicronizado con éxito.'
+notice.widget.client_registered_already_in_class: 'Ya estas registrado en esta clase.'
+notice.widget.client_outside_schedule_window: 'Estas fuera de la ventana de agendamiento. No puedes reservar esta clase.'
+error.widget.error_add_user_to_class: 'Ha habido un error tratando de reservar esta clase. Por favor intenta de nuevo.'
+widget.sign_up_for_class.popup_title: 'Estado de la reserva'
+widget.sign_up_for_class.content: 'Felicidades! Has agendado la clase con éxito.'
+widget.sign_up_for_class.view_schedule_page_link_title: 'Ver calendario'
+widget.error.chopping_cart_calculation_error: 'Ha habido un error tratando de agragar este item a tu compra. Por favor verfica tu selección e intenta otra vez.'
+widget.layout.next_button: 'Siguiente'
+widget.book_summary.title: 'Selecciona tu clase'
+widget.choose_package.title: 'Selecciona un paqueta para comprar'
+widget.choose_package.next_button: 'Continua al pago'
+widget.choose_package.form.title: 'Paquetes'
+login.title: 'Estás registrado? Logueate aquí'
+login.password_recovery: 'Perdiste tu contraseña?'
+login.register: 'Registrate aquí'
+or: o

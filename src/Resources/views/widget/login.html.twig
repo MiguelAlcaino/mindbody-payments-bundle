@@ -15,7 +15,7 @@
         }
     }) }}
         <div class="title--attached">
-            <div class="title__content">Already a member? Please login.</div>
+            <div class="title__content">{% trans %}login.title{% endtrans %}</div>
         </div>
         <fieldset class="fieldset">
             <div class="field">
@@ -37,9 +37,9 @@
                 }}) }}
             </div>
         </fieldset>  <button name="button" type="submit" class="cta signin__cta" autocomplete="off">Login <i style="display: none;" class="fas fa-spinner fa-spin"></i></button>
-        <a class="signin__forgot" href="https://widgets.healcode.com/sites/727087/client/forgot_password">Password recovery?</a>
-        <div class="signin__or">ou</div>
-        <a style="pointer-events: all;" class="cta--outline signin__create_account" href="{{ path('widget_register_new_mindbody_user') }}">Register</a>
+        <a class="signin__forgot" href="https://widgets.healcode.com/sites/727087/client/forgot_password">{% trans %}login.password_recovery{% endtrans %}</a>
+        <div class="signin__or">{% trans %}or{% endtrans %}</div>
+        <a style="pointer-events: all;" class="cta--outline signin__create_account" href="{{ path('widget_register_new_mindbody_user') }}">{% trans %}login.register{% endtrans %}</a>
     {{ form_end(form) }}
 {% endblock %}
 
