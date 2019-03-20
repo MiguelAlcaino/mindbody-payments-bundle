@@ -31,7 +31,7 @@ services:
     ### MINDBODY SOAP REQUESTERS ###
 
     miguel_alcaino.minbody.credentials:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Credentials\MindbodyCredentialsService
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\Credentials\MindbodyCredentialsService
         arguments:
             - '@parameter_bag'
 

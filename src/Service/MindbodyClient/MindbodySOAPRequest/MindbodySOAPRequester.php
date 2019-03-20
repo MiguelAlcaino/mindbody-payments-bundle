@@ -3,7 +3,7 @@
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest;
 
 use GuzzleHttp\Client;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\Credentials\MindbodyCredentialsService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\Credentials\MindbodyCredentialsService;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class MindbodySOAPRequester

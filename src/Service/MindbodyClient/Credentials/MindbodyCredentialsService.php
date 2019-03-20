@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\Credentials;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\Credentials;
 
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
