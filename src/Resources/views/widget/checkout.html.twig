@@ -1,6 +1,9 @@
 {% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
 {% block popupTitle %}Escolha sua mensalidade ou pacote de aulas{% endblock %}
 {% block content %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
     {{ form_start(form, {attr: {
         class: 'form'
     }}) }}

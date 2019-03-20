@@ -8,11 +8,14 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\ClassServiceSOAPRequester;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\ShoppingCart\CartItemRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\Request\SaleService\ShoppingCart\ItemRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService;
@@ -311,7 +314,7 @@ class WidgetController extends AbstractController
             [
                 'services' => $dbServices,
                 'method'   => 'POST',
-                'action'   => $this->generateUrl('widget_make_payment'),
+                'action'   => $this->generateUrl('widget_calculate_shopping_cart'),
             ]
         );
 
@@ -325,21 +328,22 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @param Request             $request
-     * @param MindbodyService     $mindbodyService
-     * @param FromSessionService  $fromSessionService
-     * @param ShoppingCartService $shoppingCartService
+     * @param Request                   $request
+     * @param FromSessionService        $fromSessionService
+     * @param ShoppingCartService       $shoppingCartService
+     * @param SaleServiceRequestHandler $saleServiceRequestHandler
+     * @param TranslatorInterface       $translator
      *
      * @return array|Response
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartException
-     * @Route("/make-payment", name="widget_make_payment", methods={"POST"})
+     * @Route("/calculate-shopping-cart", name="widget_calculate_shopping_cart", methods={"POST"})
      */
-    public function makePaymentAction(
+    public function calculateShoppingCartAction(
         Request $request,
-        MindbodyService $mindbodyService,
         FromSessionService $fromSessionService,
-        ShoppingCartService $shoppingCartService
+        ShoppingCartService $shoppingCartService,
+        SaleServiceRequestHandler $saleServiceRequestHandler,
+        TranslatorInterface $translator
     ) {
         $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
 
@@ -349,7 +353,7 @@ class WidgetController extends AbstractController
             [
                 'services' => $dbServices,
                 'method'   => 'POST',
-                'action'   => $this->generateUrl('widget_make_payment'),
+                'action'   => $this->generateUrl('widget_calculate_shopping_cart'),
             ]
         );
         $form->handleRequest($request);
@@ -358,34 +362,36 @@ class WidgetController extends AbstractController
             //service here is the Mindbody price selected
             $serviceId = $form->get('service')->getData();
 
-            $responseCalculateShoppingCart = $mindbodyService->calculateShoppingCart(
-                $fromSessionService->getMindbodyClientID(),
+            $cartItem = new CartItemRequest(
+                new ItemRequest(
                 $serviceId,
-                null,
-                $applyDiscount ? $discount : 0
+                    'Service' //TODO: Change this adding $type to Product
+                ), 1
             );
 
-            if ($discount > 0) {
-                $fromSessionService->setDiscountAmount($discount);
+            $cartItems = [$cartItem];
+
+            $responseCalculateShoppingCart = $saleServiceRequestHandler->calculateShoppingCart(
+                $fromSessionService->getMindbodyClientID(),
+                $cartItems
+            );
+
+            if ((int)$responseCalculateShoppingCart['CheckoutShoppingCartResult']['ErrorCode'] === 200) {
+                $fromSessionService->setSelectedMindbodyServiceId($serviceId);
+                $fromSessionService->setSelectedMindbodyServiceName(
+                    $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['CartItems']['CartItem']['Item']['Name']
+                );
+                $fromSessionService->setAmount(
+                    $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal']
+                );
+            } else {
+                $this->addFlash('error', $translator->trans('widget.error.chopping_cart_calculation_error'));
+                return $this->redirectToRoute('widget_checkout');
             }
-
-            $fromSessionService->setSelectedMindbodyServiceId($serviceId);
-            $fromSessionService->setSelectedMindbodyServiceName(
-                $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['CartItems']['CartItem']['Item']['Name']
-            );
-            $fromSessionService->setAmount(
-                $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal']
-            );
 
             return $this->redirectToRoute('widget_credit_card_form');
         } else {
-            return $this->render(
-                '@MiguelAlcainoMindbodyPayments/widget/checkout.html.twig',
-                [
-                    'form'     => $form->createView(),
-                    'services' => $dbServices,
-                ]
-            );
+            return $this->redirectToRoute('widget_checkout');
         }
     }
 
