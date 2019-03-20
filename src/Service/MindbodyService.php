@@ -15,7 +15,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartExce
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecordException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -147,7 +147,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedServices instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedServices instead
      */
     public function getFormattedServices($useCache = true)
     {
@@ -203,7 +203,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler::getFormattedLocations instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler::getFormattedLocations instead
      */
     public function getFormattedLocations()
     {
@@ -520,7 +520,7 @@ class MindbodyService
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler::getClientServicesFormatted instead
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler::getClientServicesFormatted instead
      */
     public function getClientServicesFormatted($clientId, $programIds = [], $showActiveOnly = true)
     {

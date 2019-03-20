@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;

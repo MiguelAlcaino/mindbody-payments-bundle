@@ -5,7 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Program;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProgramRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;

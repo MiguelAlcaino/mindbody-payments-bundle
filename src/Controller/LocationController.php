@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Location;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LocationType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -10,7 +10,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Form\DiscountType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\ProductType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

@@ -76,27 +76,27 @@ services:
     ### MINDBODY REQUEST HANDLERS ###
 
     miguel_alcaino.mindbody.request_handler.sale_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler
         arguments:
             - '@miguel_alcaino.mindbody.soap.request.sale_service'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SaleServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.sale_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.sale_service'
 
     miguel_alcaino.mindbody.request_handler.site_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler
         arguments:
             $mb: '@miguel_alcaino.mb_api'
             $cache: '@file_cache_service'
             $siteServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.site_service'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
 
     miguel_alcaino.mindbody.request_handler.client_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler
         arguments:
             - '@miguel_alcaino.mindbody.soap.request.client_service'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyRequestHandler\ClientServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.client_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.client_service'
 
     ### END MINDBODY REQUEST HANDLERS ###
 
