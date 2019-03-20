@@ -32,6 +32,7 @@ parameters:
     login_success_route: 'your_route_name_after_successful_login'
     login_template: 'default/login.html.twig'
     payment_response_route: 'your_successful_payment_route_name'
+    siteName:'Your site name' # This will be used in templates
 ```
 
 Add .env variables
@@ -47,6 +48,18 @@ HOST=your.site.com
 MAIN_HOST=https://www.site.com
 PAYMENT_SYSTEM_URL=https://your.site.com
 BOOKING_PAGE='reserva-tu-clase'
+```
+
+Add global variables to Twig in `config/packages/twig.yaml`
+----------------
+```
+twig:
+    globals:
+        main_host: '%env(MAIN_HOST)%'
+        payment_host: '%env(PAYMENT_SYSTEM_URL)%'
+        booking_page: '%env(BOOKING_PAGE)%'
+        currency: '%currency%'
+        siteName: '%siteName%'
 ```
 
 Configure FosUserBundle:
