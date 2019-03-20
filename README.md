@@ -62,6 +62,14 @@ twig:
         siteName: '%siteName%'
 ```
 
+Prices
+------
+By default, when prices are being displayed in twig they will be using the `price_format` filter which by default has 2 decimal separators, 
+'.' as decimal point and '.' as thousand separator. If you want to change these values, add the following parameters to your `config/services.yaml`:
+ - price.default_decimals (int)
+ - price.default_decimal_point (string)
+ - price.default_thousand_separator (string)
+
 Configure FosUserBundle:
 ======================
 

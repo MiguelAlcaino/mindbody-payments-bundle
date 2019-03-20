@@ -201,3 +201,13 @@ services:
         tags: ['doctrine.repository_service']
 
     ### END REPOSITORY ###
+
+    ### TWIG EXTENSIONS ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension
+        arguments:
+            - '@parameter_bag'
+        tags: ['twig.extension']
+
+    ### END TWIG EXTENSIONS ###
