@@ -91,4 +91,24 @@ class GetClientServicesRequest implements \JsonSerializable
     {
         return $this->ProgramIDs;
     }
+
+    /**
+     * @return bool
+     */
+    public function isShowActiveOnly(): ?bool
+    {
+        return $this->ShowActiveOnly;
+    }
+
+    /**
+     * @param bool $ShowActiveOnly
+     *
+     * @return GetClientServicesRequest
+     */
+    public function setShowActiveOnly(bool $ShowActiveOnly): GetClientServicesRequest
+    {
+        $this->ShowActiveOnly = $ShowActiveOnly;
+
+        return $this;
+    }
 }
