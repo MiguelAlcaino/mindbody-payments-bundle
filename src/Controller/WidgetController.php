@@ -9,13 +9,13 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClassServiceSOAPRequester;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\ClassService\AddClientToClassRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\ClassService\GetClassesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\ClientService\GetClientServicesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\ShoppingCart\CartItemRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\ShoppingCart\ItemRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService;
@@ -172,6 +172,23 @@ class WidgetController extends AbstractController
     }
 
     /**
+     * @param FromSessionService $fromSessionService
+     *
+     * @return GetClassesRequest
+     */
+    private function createGetClassesRequestFromSession(FromSessionService $fromSessionService): GetClassesRequest
+    {
+        return (new GetClassesRequest())
+            ->setClassIDs(
+                [
+                    $fromSessionService->getMindbodyClassId(),
+                ]
+            )
+            ->setStartDateTime(\DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $fromSessionService->getMindbodyClassStartTime()))
+            ->setEndDateTime(\DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $fromSessionService->getMindbodyClassEndTime()));
+    }
+
+    /**
      * @param FromSessionService          $fromSessionService
      * @param ClassServiceSOAPRequester   $classServiceSOAPRequester
      * @param ClientServiceRequestHandler $clientServiceRequestHandler
@@ -192,13 +209,7 @@ class WidgetController extends AbstractController
         ParameterBagInterface $parameterBag
     )
     {
-        $getClassesRequest = (new GetClassesRequest())
-            ->setClassIDs(
-                [
-                    $fromSessionService->getMindbodyClassId(),
-                ]
-            );
-
+        $getClassesRequest        = $this->createGetClassesRequestFromSession($fromSessionService);
         $getClassesResponse       = $classServiceSOAPRequester->getClasses($getClassesRequest);
         $programId                = $getClassesResponse['GetClassesResult']['Classes']['Class']['ClassDescription']['Program']['ID'];
         $getClientServicesRequest = new GetClientServicesRequest(
@@ -288,7 +299,8 @@ class WidgetController extends AbstractController
         FromSessionService $fromSessionService,
         ShoppingCartService $shoppingCartService
     ) {
-        $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
+        $getClassesRequest = $getClassesRequest = $this->createGetClassesRequestFromSession($fromSessionService);
+        $dbServices        = $shoppingCartService->getFilteredServicesByClassId($getClassesRequest);
 
         $form = $this->createForm(
             CheckoutForm::class,
@@ -329,7 +341,8 @@ class WidgetController extends AbstractController
         TranslatorInterface $translator,
         PaymentGatewayRouterInterface $paymentGatewayRouter
     ) {
-        $dbServices = $shoppingCartService->getFilteredServicesByClassId($fromSessionService->getMindbodyClassId());
+        $getClassesRequest = $getClassesRequest = $this->createGetClassesRequestFromSession($fromSessionService);
+        $dbServices        = $shoppingCartService->getFilteredServicesByClassId($getClassesRequest);
 
         $form = $this->createForm(
             CheckoutForm::class,
