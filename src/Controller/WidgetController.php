@@ -68,27 +68,6 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * Test Purposes
-     * @Route("/set-values", name="widget_set_values")
-     */
-    public function setValuesAction(Request $request)
-    {
-        if ($this->get('kernel')->getEnvironment() !== 'dev') {
-            $response = new Response();
-            $response->setStatusCode(Response::HTTP_BAD_GATEWAY);
-
-            return $response;
-        }
-        $request->getSession()->set('mindbody_client_ID', $request->query->get('id'));
-        $clients = $this->get('mind_body_service')->getClients([$request->query->get('id')]);
-
-        $request->getSession()->set('mindbody_client_email', $clients['GetClientsResult']['Clients']['Client']['Email']);
-        $request->getSession()->set('mindbody_client_guid', random_int(0, 999999));
-
-        return $this->redirect($this->getParameter('schedule_page'));
-    }
-
-    /**
      * @param Request            $request
      * @param FromSessionService $fromSessionService
      *
