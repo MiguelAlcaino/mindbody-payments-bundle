@@ -1,7 +1,7 @@
 {% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
 {% block popupTitle %}Detalhes do pagamento{% endblock %}
 {% block content %}
-    <div style="margin: 13px 0;">{{ serviceName }} por {{ currency }}{{ grandTotal|number_format(0,',','.') }}</div>
+    <div style="margin: 13px 0;">{{ serviceName }} por {{ currency }}{{ grandTotal|price_format }}</div>
     {{ form_start(form) }}
         <div class="usable-creditcard-form">
             <div class="wrapper payment-wrapper" >

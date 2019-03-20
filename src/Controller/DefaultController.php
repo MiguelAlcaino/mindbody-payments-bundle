@@ -9,6 +9,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Model\MindbodySession;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -100,16 +101,16 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @param Request         $request
-     * @param MindBodyService $mindBodyService
+     * @param Request              $request
+     * @param MindBodyService      $mindBodyService
+     * @param PriceFormatExtension $priceFormatExtension
      *
      * @return Response
+     * @throws \MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartException
      * @Route("/apply-discount", name="mindbody_apply_discount", methods={"POST"})
      *
-     * @return JsonResponse
-     * @throws \MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInSHoppingCartException
      */
-    public function applyDiscountCodeAction(Request $request, MindBodyService $mindBodyService)
+    public function applyDiscountCodeAction(Request $request, MindBodyService $mindBodyService, PriceFormatExtension $priceFormatExtension)
     {
         $discountCode = $request->request->get(MindbodySession::MINDBODY_DISCOUNT_CODE_USED_VAR_NAME);
         if (empty($discountCode)) {
@@ -137,9 +138,9 @@ class DefaultController extends AbstractController
         return new JsonResponse(
             [
                 'response'       => $checkoutShoppingCartRequest,
-                'discountAmount' => number_format($discountAmount, 0, '', '.'),
-                'subTotal'       => number_format($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'], 0, '', '.'),
-                'grandTotal'     => number_format($grandTotal, 0, '', '.'),
+                'discountAmount' => $priceFormatExtension->formatPrice($discountAmount),
+                'subTotal'       => $priceFormatExtension->formatPrice($checkoutShoppingCartRequest['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal']),
+                'grandTotal'     => $priceFormatExtension->formatPrice($grandTotal),
                 'discountCode'   => $discountCode,
             ]
         );
