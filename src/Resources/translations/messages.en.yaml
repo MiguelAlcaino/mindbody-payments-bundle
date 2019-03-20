@@ -15,4 +15,5 @@ error.widget.error_add_user_to_class: 'There has been an error trying to make th
 widget.sign_up_for_class.popup_title: 'Booking status'
 widget.sign_up_for_class.content: 'Congratulations!. Your booking has been done successfully.'
 widget.sign_up_for_class.view_schedule_page_link_title: 'View schedule'
+widget.error.chopping_cart_calculation_error: 'There has been an error trying to add this package to your shopping cart. Please check your selection and try again.'
 
