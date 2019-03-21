@@ -7,7 +7,7 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequ
 
 class SaleServiceSOAPRequest extends AbstractSOAPRequester
 {
-    const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/SaleService.asmx';
+    private const SERVICE_URI = 'https://api.mindbodyonline.com/0_5_1/SaleService.asmx';
 
     /**
      * @param GetServicesRequest $request
@@ -42,6 +42,20 @@ class SaleServiceSOAPRequest extends AbstractSOAPRequester
             self::SERVICE_URI,
             'CheckoutShoppingCart',
             $arrayRequest
+        );
+
+        return $response;
+    }
+
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getCustomPaymentMethods(): array
+    {
+        $response = $this->minbodySoapRequester->createEnvelopeAndExecuteRequest(
+            self::SERVICE_URI,
+            'GetCustomPaymentMethods'
         );
 
         return $response;
