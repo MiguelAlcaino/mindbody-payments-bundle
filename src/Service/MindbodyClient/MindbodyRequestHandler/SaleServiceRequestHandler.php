@@ -5,6 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRe
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\CheckoutShoppingCartRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\GetServicesRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\ShoppingCart\CartItemRequest;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\Request\SaleService\ShoppingCart\PaymentInfoRequest;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest;
 
 class SaleServiceRequestHandler
@@ -73,6 +74,59 @@ class SaleServiceRequestHandler
         $checkoutShoppingCartRequest
             ->setInStore(true)
             ->setFields(['paymentcheck']);
+
+        return $this->saleServiceSOAPRequest->checkoutShoppingCart($checkoutShoppingCartRequest);
+    }
+
+    /**
+     * Returns an array of formatted custom payment methods
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getFormattedCustomPaymentMethods(): array
+    {
+        $customPaymentMethods = $this->saleServiceSOAPRequest->getCustomPaymentMethods();
+        dump($customPaymentMethods);
+        $formattedCustomPaymentMethods = [];
+
+        if ((int)$customPaymentMethods['GetCustomPaymentMethodsResult']['ResultCount'] === 1) {
+            $customPaymentMethod                                         = $customPaymentMethods['GetCustomPaymentMethodsResult']['PaymentMethods']['CustomPaymentInfo'];
+            $formattedCustomPaymentMethods[$customPaymentMethod['Name']] = $customPaymentMethod['ID'];
+        } else {
+            foreach ($customPaymentMethods['GetCustomPaymentMethodsResult']['PaymentMethods']['CustomPaymentInfo'] as $customPaymentMethod) {
+                $formattedCustomPaymentMethods[$customPaymentMethod['Name']] = $customPaymentMethod['ID'];
+            }
+        }
+
+        return $formattedCustomPaymentMethods;
+    }
+
+    /**
+     * @param string               $clientId
+     * @param CartItemRequest[]    $cartItems
+     * @param PaymentInfoRequest[] $paymentInfos
+     * @param string|null          $promotionalCode
+     * @param bool                 $test
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function purchaseShoppingCart(
+        string $clientId,
+        array $cartItems,
+        array $paymentInfos,
+        string $promotionalCode = null,
+        bool $test = true
+    ): array {
+        $checkoutShoppingCartRequest = new CheckoutShoppingCartRequest(
+            $clientId,
+            $cartItems,
+            $test
+        );
+        $checkoutShoppingCartRequest
+            ->setPayments($paymentInfos)
+            ->setPromotionCode($promotionalCode);
 
         return $this->saleServiceSOAPRequest->checkoutShoppingCart($checkoutShoppingCartRequest);
     }
