@@ -21,7 +21,7 @@ widget.book_summary.title: 'Choose your class'
 widget.choose_package.title: 'Please choose the package you want to buy'
 widget.choose_package.next_button: 'Proceed to payment'
 widget.choose_package.form.title: 'Packages'
-widget.login.title: 'Already a member? Please login.'
+login.title: 'Already a member? Please login.'
 login.password_recovery: 'Password recovery?'
 login.register: 'Register'
 or: or
