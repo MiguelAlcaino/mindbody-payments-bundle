@@ -150,16 +150,20 @@ class CheckoutShoppingCartRequest implements \JsonSerializable
     /**
      * @return PaymentInfoRequest[]
      */
-    public function getPayments(): array
+    public function getPayments(): ?array
     {
         return $this->Payments;
     }
 
     /**
      * @param PaymentInfoRequest[] $Payments
+     *
+     * @return CheckoutShoppingCartRequest
      */
-    public function setPayments(array $Payments): void
+    public function setPayments(array $Payments): CheckoutShoppingCartRequest
     {
         $this->Payments = $Payments;
+
+        return $this;
     }
 }
