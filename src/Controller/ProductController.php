@@ -170,14 +170,14 @@ class ProductController extends AbstractController
                 ]
             );
             if ($product === null) {
-                $product = (new Product())
-                    ->setName($service['name'])
-                    ->setPrice($service['price'])
-                    ->setMerchantId($service['id']);
-                $manager->persist($product);
-
-                $newProducts[] = $product;
+                $product = new Product();
             }
+
+            $product
+                ->setName($service['name'])
+                ->setPrice($service['price'])
+                ->setMerchantId($service['id']);
+            $manager->persist($product);
         }
 
         $manager->flush();
