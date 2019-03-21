@@ -27,7 +27,7 @@ class PaymentInfoRequest implements \JsonSerializable
      * @param float  $Amount
      * @param string $type
      */
-    public function __construct(float $Amount, string $type)
+    public function __construct(float $Amount, string $type = 'CustomPaymentInfo')
     {
         $this->Amount = $Amount;
         $this->type   = $type;
