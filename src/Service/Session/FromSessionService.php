@@ -113,6 +113,9 @@ class FromSessionService
         $this->session->set(MindbodySession::MINDBODY_REAL_LOCATIONS_VAR_NAME, $locations);
     }
 
+    /**
+     * @return string
+     */
     public function getSelectedMindbodyServiceId()
     {
         return $this->session->get(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME);
