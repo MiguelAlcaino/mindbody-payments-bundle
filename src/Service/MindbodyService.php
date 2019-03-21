@@ -643,6 +643,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws MindbodyServiceException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::purchaseShoppingCart instead
      */
     public function purchaseShoppingCartWithSoap(
         $clientId,
@@ -789,6 +790,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws MindbodyServiceException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::purchaseShoppingCart instead
      */
     public function purchaseShoppingCart(
         $clientId,
@@ -1009,6 +1011,7 @@ class MindbodyService
      * @throws \Exception
      * @return TransactionRecord
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService::makePurchase instead
      */
     public function makePurchaseWithSoap(
         $transactionRecord,
@@ -1146,6 +1149,7 @@ class MindbodyService
      * @throws \Exception
      * @return TransactionRecord
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService::makePurchase instead
      */
     public function makePurchase(
         $transactionRecord,
@@ -1244,6 +1248,7 @@ class MindbodyService
      * Returns an array of formatted custom payment methods
      *
      * @return array
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedCustomPaymentMethods instead
      */
     public function getFormattedCustomPaymentMethods()
     {
