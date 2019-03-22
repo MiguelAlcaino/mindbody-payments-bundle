@@ -65,7 +65,7 @@ class CheckoutShoppingCartRequest implements \JsonSerializable
                 'CartItem' => $this->CartItems,
             ],
             'Test'      => $this->Test,
-            'InStore'   => $this->InStore,
+            'InStore'   => $this->InStore ? 'true' : 'false',
         ];
 
         if ($this->Payments !== null) {
@@ -140,7 +140,7 @@ class CheckoutShoppingCartRequest implements \JsonSerializable
      *
      * @return CheckoutShoppingCartRequest
      */
-    public function setPromotionCode(string $PromotionCode): CheckoutShoppingCartRequest
+    public function setPromotionCode(string $PromotionCode = null): CheckoutShoppingCartRequest
     {
         $this->PromotionCode = $PromotionCode;
 
