@@ -3,6 +3,8 @@
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Product;
+use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem;
+use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler;
@@ -87,5 +89,53 @@ class ShoppingCartService
         );
 
         return $this->productRepository->getServicesByIdsAndLocations($servicesIds, $dbLocation);
+    }
+
+    /**
+     * @param TransactionRecord $transactionRecord
+     * @param string            $clientId
+     * @param array             $cartItems
+     * @param array             $paymentInfos
+     * @param string|null       $promotionalCode
+     *
+     * @return TransactionRecord
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function makePurchase(
+        TransactionRecord $transactionRecord,
+        string $clientId,
+        array $cartItems,
+        array $paymentInfos,
+        string $promotionalCode = null
+    ): TransactionRecord {
+        $checkoutShoppingCartResponse = $this->saleServiceRequestHandler->purchaseShoppingCart(
+            $clientId,
+            $cartItems,
+            $paymentInfos,
+            $promotionalCode
+        );
+
+        $transactionRecord
+            ->setDiscountCode($promotionalCode)
+            ->setDiscountAmount($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['DiscountTotal'])
+            ->setSubTotal($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['SubTotal'])
+            ->setAmount($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal'])
+            ->setMerchantId($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['ID'])
+            ->setMerchantResponse(json_encode($checkoutShoppingCartResponse))
+            ->setTaxAmount($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['TaxTotal']);
+
+        $transactionRecord->wipeTransactionItems();
+
+        foreach ($checkoutShoppingCartResponse['CheckoutShoppingCartResult']['ShoppingCart']['CartItems'] as $cartItem) {
+            $transactionItem = (new TransactionItem())
+                ->setPrice($cartItem['Item']['Price'])
+                ->setMerchantId($cartItem['Item']['ID'])
+                ->setName($cartItem['Item']['Name'])
+                ->setQuantity($cartItem['Quantity'])
+                ->setSaleDatetime(new \DateTime());
+            $transactionRecord->addTransactionItem($transactionItem);
+        }
+
+        return $transactionRecord;
     }
 }
