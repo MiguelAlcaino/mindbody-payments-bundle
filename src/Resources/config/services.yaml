@@ -114,6 +114,15 @@ services:
 
     MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService: '@miguel_alcaino.mindbody.shopping_cart'
 
+    miguel_alcaino.mindbody.transaction_record_handler:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.transaction_record_filler'
+            - '@miguel_alcaino.mindbody.shopping_cart'
+            - '@miguel_alcaino.mindbody.from_session'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordHandler: '@miguel_alcaino.mindbody.transaction_record_handler'
+
     ### END MINDBODY BUSINESS LOGIC ###
 
     miguel_alcaino.mindbody_service:
