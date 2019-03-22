@@ -61,6 +61,20 @@ twig:
         siteName: '%siteName%'
 ```
 
+Configure requested services in config/services.yaml
+-----------
+ - Add an alias to the class `MiguelAlcaino\PaymentGateway\Interfaces\PaymentGatewayRouterInterface`.
+  The intention of this service is to provide route names used in the MindbodyBundle but coming from the 
+  paymentGateway. The payment gateway bundle implemented in the project should provide a service that cover 
+  this, but in case it does not provide it you have to crate a service 
+  that implements `MiguelAlcaino\PaymentGateway\Interfaces\PaymentGatewayRouterInterface`
+ 
+ This is an example code:
+ ```
+ services:
+     MiguelAlcaino\PaymentGateway\Interfaces\PaymentGatewayRouterInterface: '@miguelalcaino.migs.payment_service'
+ ```
+
 Prices
 ------
 By default, when prices are being displayed in twig they will be using the `price_format` filter which by default has 2 decimal separators, 
