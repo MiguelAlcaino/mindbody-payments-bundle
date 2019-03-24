@@ -64,7 +64,7 @@ class CheckoutShoppingCartRequest implements \JsonSerializable
             'CartItems' => [
                 'CartItem' => $this->CartItems,
             ],
-            'Test'      => $this->Test,
+            'Test'      => $this->Test ? 'true' : 'false',
             'InStore'   => $this->InStore ? 'true' : 'false',
         ];
 
