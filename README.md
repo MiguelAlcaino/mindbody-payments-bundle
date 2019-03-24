@@ -121,3 +121,23 @@ Create a new file `fos_user.yaml` under `config/routes/`. The file should look l
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
 ```
+
+Widget setup (the one that shows the system inside a popup)
+------------
+Add to your `.env.local` 
+
+```
+URL_WHERE_WIDGET_IS_DISPLAYED=https://www.yoursite.com/schedule-page-with-wdget
+```
+- `URL_WHERE_WIDGET_IS_DISPLAYED`: This env variable is the url where the widget will be displayed.
+
+Add in the page that will display the widget the javascript code seen here: `src/Resources/views/widget/testIndex.html.twig`.
+This javascript code is supposed to work along the javascript code from mindbody. It hacks the `Book` buttons and makes them point
+to the payment system inside a widget.
+
+
+This javascript code accepts two query variables in the url:
+
+ - `show_popup=1` will trigger the popup
+ - `popup_u` is the paypment system's url base64 encoded
+ - 

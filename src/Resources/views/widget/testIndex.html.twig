@@ -117,8 +117,9 @@
         });
     }
 
-    if(urlParams.has('show_popup_success')){
-        var successfulUrl = '{{ path('widget_successful_payment') }}';
+    if(urlParams.has('show_popup')){
+        var popupUrl = urlParams.get('popup_u');
+        popupUrl = atob(popupUrl);
         swal({
             html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+successfulUrl+'?serviceId='+urlParams.get('serviceId')+'"></iframe>',
             animation: false,
