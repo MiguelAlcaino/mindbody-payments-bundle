@@ -25,3 +25,4 @@ login.title: 'Already a member? Please login.'
 login.password_recovery: 'Password recovery?'
 login.register: 'Register'
 or: or
+payment.error.generic_error_message: 'Your payment could not be process successfully. Please check your card details.'
