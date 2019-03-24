@@ -571,33 +571,20 @@ class WidgetController extends AbstractController
 
     /**
      * @Route("/successful-payment", name="widget_successful_payment")
+     * @param FromSessionService    $fromSessionService
+     * @param ParameterBagInterface $parameterBag
+     *
+     * @return Response
      */
-    public function successfulPaymentAction(Request $request)
+    public function successfulPaymentAction(FromSessionService $fromSessionService, ParameterBagInterface $parameterBag)
     {
-        $transactionRecord = $request->getSession()->get('transactionRecord');
-        if ($request->getSession()->has('className')) {
-            $routeParams = [
-                'className'      => $request->getSession()->get('className'),
-                'teacherName'    => $request->getSession()->get('teacherName'),
-                'classStartTime' => $request->getSession()->get('classStartTime'),
-                'classEndTime'   => $request->getSession()->get('classEndTime'),
-                'classId'        => $request->getSession()->get('mindbody_class_ID'),
-            ];
-
-            if ($request->getSession()->has('classType') && $request->getSession()->get('classType') === 'enrollment') {
-                $routeParams['classType'] = $request->getSession()->get('classType');
-            }
-
-            $nextUrl = $this->generateUrl('widget_book_summary', $routeParams);
-        } else {
-            $nextUrl = $this->getParameter('schedule_page');
-        }
+        $transactionRecord = $fromSessionService->getTransactionRecord();
 
         return $this->render(
-            '@MindBodyPayments/Widget/successfulPayment.html.twig',
+            '@MiguelAlcainoMindbodyPayments/widget/successfulPayment.html.twig',
             [
                 'transactionRecord' => $transactionRecord,
-                'nextUrl'           => $nextUrl,
+                'nextUrl'           => $parameterBag->get('schedule_page'),
             ]
         );
     }
