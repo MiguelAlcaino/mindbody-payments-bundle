@@ -9,6 +9,8 @@ parameters:
     router.request_context.base_url: ''
     login_template: '@@MiguelAlcainoMindbodyPayments/Default/login.html.twig'
     widget_login_template: '@@MiguelAlcainoMindbodyPayments/widget/login.html.twig'
+    env(URL_WHERE_WIDGET_IS_DISPLAYED): '/widget/test-index'
+    url_where_widget_is_displayed: '%env(URL_WHERE_WIDGET_IS_DISPLAYED)%'
 
 services:
     _defaults:
