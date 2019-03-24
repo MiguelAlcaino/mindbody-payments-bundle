@@ -112,7 +112,8 @@ class ShoppingCartService
             $clientId,
             $cartItems,
             $paymentInfos,
-            $promotionalCode
+            $promotionalCode,
+            false
         );
 
         $transactionRecord
