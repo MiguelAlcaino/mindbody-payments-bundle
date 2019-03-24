@@ -2,10 +2,6 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
-use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
-use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionItem;
-use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
-use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoneServiceFoundException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\Widget\CheckoutForm;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler;
@@ -19,7 +15,6 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService;
-use MiguelAlcaino\PaymentGateway\Exception\Charge\CreditCardChargeException;
 use MiguelAlcaino\PaymentGateway\Interfaces\PaymentGatewayRouterInterface;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -393,183 +388,6 @@ class WidgetController extends AbstractController
     }
 
     /**
-     * @return array|Response
-     * @Route("/credit-card-form", name="widget_credit_card_form")
-     * @Template("@MindBodyPayments/Widget/makePayment.html.twig")
-     */
-    public function creditCardFormAction(Request $request)
-    {
-        if (!$request->getSession()->has('mindbody_client_ID')) {
-            try {
-                $services = $this->getServices($request);
-            } catch (NoneServiceFoundException $exception) {
-                return $exception->getRoute();
-            }
-
-            $chosenService = null;
-            if ($request->query->has('serviceId')) {
-                foreach ($services as $service) {
-                    if ($request->query->get('serviceId') == $service['id']) {
-                        $chosenService = $service;
-                    }
-                }
-                if (!is_null($chosenService)) {
-                    $request->getSession()->remove('className');
-                    $request->getSession()->remove('teacherName');
-                    $request->getSession()->set('serviceId', $chosenService['id']);
-                    $request->getSession()->set(
-                        'referral',
-                        $this->generateUrl(
-                            'widget_credit_card_form',
-                            [
-                                'serviceId' => $chosenService['id'],
-                            ]
-                        )
-                    );
-                }
-            }
-
-            return $this->redirectToRoute('mindbody_customer_login');
-        } else {
-            if ($request->query->has('serviceId')) {
-                try {
-                    $services = $this->getServices($request);
-                } catch (NoneServiceFoundException $exception) {
-                    return $exception->getRoute();
-                }
-
-                $chosenService = null;
-                foreach ($services as $service) {
-                    if ($request->query->get('serviceId') == $service['id']) {
-                        $chosenService = $service;
-                    }
-                }
-                if (!is_null($chosenService)) {
-                    $request->getSession()->set('serviceId', $chosenService['id']);
-                    $responseCalculateShoppingCart = $this->get('mind_body_service')->calculateShoppingCart(
-                        $request->getSession()->get('mindbody_client_ID'),
-                        $chosenService['id'],
-                        null
-                    );
-
-                    $request->getSession()->set(
-                        'serviceName',
-                        $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['CartItems']['CartItem']['Item']['Name']
-                    );
-                    $request->getSession()->set(
-                        'grandTotal',
-                        $responseCalculateShoppingCart['CheckoutShoppingCartResult']['ShoppingCart']['GrandTotal']
-                    );
-                }
-            }
-        }
-
-        if ($request->getSession()->has('errorMessage')) {
-            $viewParams['errorMessage'] = $request->getSession()->get('errorMessage');
-            $request->getSession()->remove('errorMessage');
-        }
-
-        return $this->redirectToRoute('miguelalcaino_migs_reddirect_to_parent_window');
-    }
-
-    /**
-     * @param Request $request
-     * @Route("/process-payment", name="widget_process_payment", methods={"POST"})
-     */
-    public function processPaymentAction(Request $request, FromSessionService $fromSessionService)
-    {
-        $creditCardForm = $this->createForm(
-            CreditCardJustTextType::class,
-            null,
-            [
-                'method' => 'POST',
-                'action' => $this->generateUrl('widget_process_payment'),
-            ]
-        );
-
-        $creditCardForm->handleRequest($request);
-
-        if ($creditCardForm->isSubmitted() && $creditCardForm->isValid()) {
-            $manager           = $this->getDoctrine()->getManager();
-            $creditCardToken   = $creditCardForm->get('jsCreditCardToken')->getData();
-            $transactionRecord = new TransactionRecord();
-            $systemCustomer    = $manager->getRepository(Customer::class)->findOneBy(
-                [
-                    'email' => $request->getSession()->get('mindbody_client_email'),
-                ]
-            );
-
-            $taxAmount = ($this->getParameter('tax_percentage') / 100) * $request->getSession()->get('grandTotal');
-
-            $transactionRecord->setCustomer($systemCustomer)
-                ->setCreditCardHolderName($creditCardForm->get('cardHolderName')->getData())
-                ->setDocumentNumber($creditCardForm->get('documentNumber')->getData())
-                ->setCreditCardLastFourDigits(substr($creditCardForm->get('cardNumber')->getData(), -4))
-                ->setTaxAmount($taxAmount)
-                ->setInstallments($creditCardForm->get('installments')->getData())
-                ->setPaymentGatewayFee(0)
-                ->setUserCountry($systemCustomer->getUserCountry());
-            $transactionItem = new TransactionItem();
-            $transactionItem
-                ->setName($request->getSession()->get('serviceName'))
-                ->setPrice($request->getSession()->get('grandTotal'));
-            try {
-                $charge = $this->get('payment_gateway_service')->getPaymentGatewayService()->charge(
-                    $transactionRecord,
-                    $transactionItem,
-                    $creditCardToken
-                );
-            } catch (CreditCardChargeException $exception) {
-                $request->getSession()->set('errorMessage', 'There was an error processing your card. Please try again.');
-
-                return $this->redirectToRoute('widget_credit_card_form');
-            }
-
-            /** @var TransactionRecord $transactionRecord */
-            $transactionRecord = $charge['transactionRecord'];
-            $result            = $charge['result'];
-
-            $customPaymentMethods = $this->get('mind_body_service')->getFormattedCustomPaymentMethods();
-
-            if ($request->getSession()->has('discountAmount')) {
-                $discountAmount = $request->getSession()->get('discountAmount');
-                $transactionRecord->setDiscountAmount($discountAmount);
-            } else {
-                $discountAmount = 0;
-            }
-
-            $transactionRecord = $this->get('mind_body_service')->makePurchase(
-                $transactionRecord,
-                $request->getSession()->get('mindbody_client_ID'),
-                $request->getSession()->get('serviceId'),
-                $customPaymentMethods['iugu'],
-                $request->getSession()->get('grandTotal'),
-                null,
-                $discountAmount
-            );
-
-            $manager->persist($transactionRecord);
-
-            $manager->flush();
-
-            $fromSessionService->setPaymentResponse($result);
-            $fromSessionService->setTransactionRecord($transactionRecord);
-
-            return $this->redirectToRoute('widget_successful_payment');
-        } else {
-            return $this->render(
-                '@MindBodyPayments/Widget/makePayment.html.twig',
-                [
-                    'paymentGatewayJsId' => $this->getParameter('iugu.js_id'),
-                    'form'               => $creditCardForm->createView(),
-                    'serviceName'        => $request->getSession()->get('serviceName'),
-                    'grandTotal'         => $request->getSession()->get('grandTotal'),
-                ]
-            );
-        }
-    }
-
-    /**
      * @Route("/successful-payment", name="widget_successful_payment")
      * @param FromSessionService    $fromSessionService
      * @param ParameterBagInterface $parameterBag
@@ -644,51 +462,4 @@ class WidgetController extends AbstractController
 
         return $viewParams;
     }
-
-    private function getServices(Request $request)
-    {
-        if ($request->getSession()->has('classType') && $request->getSession()->get('classType') === 'enrollment') {
-            $programIds = [
-                [
-                    'id' => $this->getParameter('enrollment_program_id'),
-                ],
-            ];
-        } else {
-            $programIds = [
-                [
-                    'id' => $this->getParameter('class_program_id'),
-                ],
-            ];
-        }
-        try {
-            if ($request->getSession()->has('classType') && $request->getSession()->get('classType') === 'enrollment') {
-                $services = $this->get('mind_body_service')->getFormattedServices(
-                    false,
-                    $programIds,
-                    $request->getSession()->get('mindbody_class_ID')
-                );
-            } else {
-                $services = $this->get('mind_body_service')->getFormattedServices(false, $programIds);
-            }
-        } catch (NoneServiceFoundException $exception) {
-            $this->get('logger')->error('None service has been found');
-            $routeParams = [
-                'className'      => $request->getSession()->get('className'),
-                'teacherName'    => $request->getSession()->get('teacherName'),
-                'classStartTime' => $request->getSession()->get('classStartTime'),
-                'classEndTime'   => $request->getSession()->get('classEndTime'),
-                'classId'        => $request->getSession()->get('mindbody_class_ID'),
-            ];
-
-            if ($request->getSession()->has('classType') && $request->getSession()->get('classType') === 'enrollment') {
-                $routeParams['classType'] = 'enrollment';
-            }
-
-            $exception->setRoute($this->redirectToRoute('widget_book_summary', $routeParams));
-            throw $exception;
-        }
-
-        return $services;
-    }
-
 }
