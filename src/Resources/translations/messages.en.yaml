@@ -5,6 +5,7 @@ menu.clients: Clients
 menu.settings: Settings
 menu.logout: Logout
 menu.locations: Locations
+menu.users: Admin Users
 notice.locations_successfully_synchronized: 'Locations have been successfully synchronized'
 notice.products_successfully_synchronized: 'Packages have been successfully synchronized'
 admin.location.sync_button: Sync Locations
