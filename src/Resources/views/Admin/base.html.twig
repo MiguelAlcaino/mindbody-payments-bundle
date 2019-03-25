@@ -22,8 +22,13 @@
             <li class="nav-item">
                 <a class="nav-link {% if app.request.get('_route') == 'admin_settings' %}active{% endif %}" href="{{ path('admin_settings') }}" >{% trans %}menu.settings{% endtrans %}</a>
             </li>
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('fos_user_security_logout') }}">{% trans %}menu.logout{% endtrans %}</a>
+                <a class="nav-link {% if app.request.get('_route') == 'user_index' %}active{% endif %}" href="{{ path('user_index') }}" >{% trans %}menu.users{% endtrans %}</a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('admin_logout') }}">{% trans %}menu.logout{% endtrans %}</a>
             </li>
         </ul>
     </nav>
