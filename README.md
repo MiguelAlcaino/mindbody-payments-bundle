@@ -83,47 +83,74 @@ By default, when prices are being displayed in twig they will be using the `pric
  - price.default_decimal_point (string)
  - price.default_thousand_separator (string)
 
-Configure FosUserBundle:
+Configure Symfony Security:
 ======================
 
-Add config
+This adds the security to your MinbdodyPaymentsBundle's Admin panel. The login and logout urls should be `/adm/login` 
+and `/adm/logout`. They start with `adm` so they don't crash with the security firewall's rule `/admin`.
+
+Modify config/security.yaml
 -------
-Create a new file `fos_user.yaml` under `config/packages.yaml` and add this content:
+Your `config/security.yaml` should look like this:
 ```
-fos_user:
-    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
-    firewall_name: main
-    user_class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\User
-    from_email:
-        address: "%mailer_user%"
-        sender_name: "%mailer_user%"
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        MiguelAlcaino\MindbodyPaymentsBundle\Entity\User:
+            algorithm: argon2i
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\User
+                property: email
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: true
+            guard:
+                authenticators:
+                    - MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator
+            logout:
+                path: admin_logout
+
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+         - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
 ```
 
-Edit the config/framework.yaml file
------
-```
-framework:
-    templating:
-        engines: ['twig', 'php']
-```
+Roles explanation
+-----------------
+ - `ROLE_ADMIN`: It is used to access to all the routes that are prefixed by `/admin`.
+ - `ROLE_SUPER_ADMIN`: It is used inside the admin panel to add or delete admin users.
 
-Add `mailer_user` parameter in `config/services.yaml`
---------
-```
-parameters:
-    mailer_user: youemail@example.com
-```
+**Remember**: These security and users has nothing to do with Mindbody's users, but with the users allowed to access to the admin panel.
 
-Add Routes
+Add logout route
 ----------
-Create a new file `fos_user.yaml` under `config/routes/`. The file should look like this
+Edit your `config/routes.yaml` so you have the following entry:
 ```
-fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
+admin_logout:
+    path: /adm/logout
+    methods: GET
 ```
 
 Widget setup (the one that shows the system inside a popup)
-------------
+================
 Add to your `.env.local` 
 
 ```
@@ -140,4 +167,3 @@ This javascript code accepts two query variables in the url:
 
  - `show_popup=1` will trigger the popup
  - `popup_u` is the paypment system's url base64 encoded
- - 
