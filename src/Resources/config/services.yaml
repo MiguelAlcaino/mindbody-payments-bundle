@@ -224,3 +224,15 @@ services:
         tags: ['twig.extension']
 
     ### END TWIG EXTENSIONS ###
+
+    ### SECURITY ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@router.default'
+            - '@security.csrf.token_manager'
+            - '@security.user_password_encoder.generic'
+
+    ### END SECURITY ###

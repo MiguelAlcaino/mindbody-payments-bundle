@@ -18,7 +18,8 @@
         "devincrossman/mindbody-php-api": "^1.6",
         "guzzlehttp/guzzle": "^6.3",
         "miguelalcaino/payment-gateway": "^1.0",
-        "spatie/array-to-xml": "^2.8"
+        "spatie/array-to-xml": "^2.8",
+        "symfony/security-bundle": "4.2.*"
     },
     "autoload": {
         "psr-4": {
