@@ -121,7 +121,7 @@
         var popupUrl = urlParams.get('popup_u');
         popupUrl = atob(popupUrl);
         swal({
-            html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+successfulUrl+'?serviceId='+urlParams.get('serviceId')+'"></iframe>',
+            html: '<iframe class="popup-iframe" marginwidth="0" frameborder="0" marginheight="0" scrolling="yes" height="100%" id="myIframe2" width="100%"  src="'+popupUrl+'?serviceId='+urlParams.get('serviceId')+'"></iframe>',
             animation: false,
             showCloseButton: true,
             showConfirmButton: false,
