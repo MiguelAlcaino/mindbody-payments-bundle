@@ -480,7 +480,7 @@ class MindbodyService
         ];
 
         if ($promotionCode !== null) {
-            $result['Request']['PromotionCode'] = $promotionCode;
+            $request['Request']['PromotionCode'] = $promotionCode;
         }
 
         $result = $client->CheckoutShoppingCart($request);
