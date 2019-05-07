@@ -176,10 +176,10 @@ class DefaultController extends AbstractController
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function mindbodyCustomerLogout(FromSessionService $fromSessionService)
+    public function mindbodyCustomerLogout(FromSessionService $fromSessionService, ParameterBagInterface $parameterBag)
     {
         $fromSessionService->destroyMindbodySession();
 
-        return $this->redirect($this->getParameter('schedule_page'));
+        return $this->redirect($parameterBag->get('schedule_page'));
     }
 }
