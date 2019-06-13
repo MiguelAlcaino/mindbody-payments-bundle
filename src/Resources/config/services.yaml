@@ -234,5 +234,14 @@ services:
             - '@router.default'
             - '@security.csrf.token_manager'
             - '@security.user_password_encoder.generic'
+    MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator
+        arguments:
+            - '@router.default'
+            - '@miguel_alcaino.mindbody.soap.request.client_service'
+            - '@form.factory'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository'
+            - '@miguel_alcaino.mindbody.customer_filler'
+            - '@doctrine.orm.default_entity_manager'
 
     ### END SECURITY ###
