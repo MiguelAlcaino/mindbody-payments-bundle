@@ -50,6 +50,9 @@ class CustomerFillerService
      */
     public function upsertCustomerAfterLogin($validateLogin)
     {
+        if(!isset($validateLogin['ValidateLoginResult']['Client']['Email'])){
+            return null;
+        }
         $clients = $this->mindbodyService->getClients(
             [
                 sprintf($validateLogin['ValidateLoginResult']['Client']['ID']),
