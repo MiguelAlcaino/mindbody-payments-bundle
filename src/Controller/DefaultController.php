@@ -2,11 +2,8 @@
 
 namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
-use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LoginType;
 use MiguelAlcaino\MindbodyPaymentsBundle\Model\MindbodySession;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension;
@@ -16,7 +13,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class DefaultController
@@ -27,29 +23,14 @@ use Symfony\Component\Translation\TranslatorInterface;
 class DefaultController extends AbstractController
 {
     /**
-     * @param Request                $request
-     * @param MindbodyService        $mindBodyService
-     * @param ParameterBagInterface  $parameterBag
-     * @param CustomerFillerService  $customerFiller
-     * @param EntityManagerInterface $manager
-     * @param FromSessionService     $fromSessionService
-     * @param TranslatorInterface    $translator
+     * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
-     * @throws \Exception
      * @Route("/login", name="mindbody_customer_login", methods={"POST", "GET"})
      */
     public function loginCustomerAction(
-        Request $request,
-        MindBodyService $mindBodyService,
-        ParameterBagInterface $parameterBag,
-        CustomerFillerService $customerFiller,
-        EntityManagerInterface $manager,
-        FromSessionService $fromSessionService,
-        TranslatorInterface $translator
+        Request $request
     ) {
-        $request->getSession()->set(MindbodySession::MINDBODY_SELECTED_SERVICE_ID_VAR_NAME, $request->query->get('service'));
-
         $form = $this->createForm(
             LoginType::class,
             null,
@@ -63,48 +44,8 @@ class DefaultController extends AbstractController
         $form->handleRequest($request);
 
         $arrayToReturn['form'] = $form->createView();
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $validateLogin = $mindBodyService->validateLogin(
-                    $form->get('email')->getData(),
-                    $form->get('password')->getData()
-                );
 
-                $systemCustomer = $customerFiller->upsertCustomerAfterLogin($validateLogin);
-
-                $manager->persist($systemCustomer);
-                $manager->flush();
-
-                $fromSessionService->setMindbodyClientGUID($validateLogin['ValidateLoginResult']['GUID']);
-                $fromSessionService->setMindbodyClientID($systemCustomer->getMerchantId());
-                $fromSessionService->setMindbodyClientEmail($systemCustomer->getEmail());
-
-                if ($request->getSession()->has('referral')) {
-                    $referral = $request->getSession()->get('referral');
-
-                    return $this->redirect($referral);
-                } else {
-                    if ($parameterBag->has('login_success_route')) {
-                        return $this->redirectToRoute($parameterBag->get('login_success_route'));
-                    } else {
-                        throw new \Exception('A login_success_route param has to be defined');
-                    }
-                }
-            } catch (NotValidLoginException $exception) {
-                $arrayToReturn['errorMessage'] = $translator->trans('mindbody.login.incorrect');
-                if ($request->query->has('template') && $request->query->get('template') === 'widget') {
-                    return $this->renderLoginForm($arrayToReturn, $parameterBag->get('widget_login_template'));
-                } else {
-                    return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
-                }
-            }
-        } else {
-            if ($request->query->has('template') && $request->query->get('template') === 'widget') {
-                return $this->renderLoginForm($arrayToReturn, $parameterBag->get('widget_login_template'));
-            } else {
-                return $this->renderLoginForm($arrayToReturn, $parameterBag->get('login_template'));
-            }
-        }
+        return $this->renderLoginForm($arrayToReturn);
     }
 
     /**
