@@ -20,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * Product controller.
  *
- * @Route("product")
+ * @Route("/admin/product")
  */
 class ProductController extends AbstractController
 {
