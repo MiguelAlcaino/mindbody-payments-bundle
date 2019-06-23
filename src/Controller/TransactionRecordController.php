@@ -5,6 +5,7 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\TransactionRecord;
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\RefundType;
+use MiguelAlcaino\MindbodyPaymentsBundle\Repository\TransactionRecordRepository;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyService;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Paginator;
 use MiguelAlcaino\PaymentGateway\Interfaces\RefundHandlerInterface;
@@ -12,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +34,7 @@ class TransactionRecordController extends AbstractController
      * @return Response
      * @Route("/", name="admin_transactions_index", methods={"GET"})
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, TransactionRecordRepository $transactionRecordRepository, ParameterBagInterface $parameterBag)
     {
         $limit         = 50;
         $midRange      = 7;
@@ -52,22 +54,20 @@ class TransactionRecordController extends AbstractController
             $viewParams['end']   = $end;
 
             $startDatetime     = \DateTime::createFromFormat('d-m-Y H:i:s', $start . ' 00:00:00')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $endDatetime       = \DateTime::createFromFormat('d-m-Y H:i:s', $end . '23:59:59')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $criteria['start'] = $startDatetime;
             $criteria['end']   = $endDatetime;
         }
 
-        $em = $this->getDoctrine()->getManager();
 
-        $transactionRecords = $em->getRepository(TransactionRecord::class)
+        $transactionRecords = $transactionRecordRepository
             ->getAllBy($criteria, $limit, ($offset - 1) * $limit);
 
-        $totalTransactionRecords = $em->getRepository(TransactionRecord::class)
-            ->countBy($criteria);
+        $totalTransactionRecords = $transactionRecordRepository->countBy($criteria);
 
         $paginator = new Paginator(
             $totalTransactionRecords,
@@ -168,7 +168,7 @@ class TransactionRecordController extends AbstractController
     /**
      * @Route("/download/excel", name="download_excel")
      */
-    public function downloadExcelAction(Request $request)
+    public function downloadExcelAction(Request $request, TransactionRecordRepository $transactionRecordRepository, ParameterBagInterface $parameterBag)
     {
         $spreadsheet   = new Spreadsheet();
         $filename      = '/tmp/cyglo-transactions-' . rand(0, 100) . '.xlsx';
@@ -187,10 +187,10 @@ class TransactionRecordController extends AbstractController
             $viewParams['end']   = $end;
 
             $startDatetime     = \DateTime::createFromFormat('d-m-Y H:i:s', $start . ' 00:00:00')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $endDatetime       = \DateTime::createFromFormat('d-m-Y H:i:s', $end . '23:59:59')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $criteria['start'] = $startDatetime;
             $criteria['end']   = $endDatetime;
@@ -198,8 +198,7 @@ class TransactionRecordController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        $transactionRecords = $em->getRepository(TransactionRecord::class)
-            ->getForExcel($criteria, false);
+        $transactionRecords = $transactionRecordRepository->getForExcel($criteria, false);
         $newTransactions    = [];
         $newTransactions[]  = [
             'id',
@@ -317,7 +316,7 @@ class TransactionRecordController extends AbstractController
      * @author malcaino
      * @Route("/repair-transaction", name="admin_transactions_repair_transaction_with_mindbody", methods={"POST"})
      */
-    public function repairTransactionWithMindbodyAction(Request $request, MindbodyService $mindBodyService)
+    public function repairTransactionWithMindbodyAction(Request $request, MindbodyService $mindBodyService, ParameterBagInterface $parameterBag)
     {
         $manager = $this->getDoctrine()->getManager();
         /** @var TransactionRecord $transactionRecord */
@@ -328,7 +327,7 @@ class TransactionRecordController extends AbstractController
         $mindbodyPaymentMethodId = $transactionRecord->getMindbodyPaymentMethodId();
 
         if (empty($mindbodyPaymentMethodId)) {
-            $mindbodyPaymentMethodId = $this->getParameter('mindbody_tpaga_id');
+            $mindbodyPaymentMethodId = $parameterBag->get('mindbody_tpaga_id');
         }
 
         $transactionRecord = $mindBodyService->makePurchase(
@@ -345,7 +344,7 @@ class TransactionRecordController extends AbstractController
 
         $mailer  = $this->get('mailer');
         $message = (new \Swift_Message('Tu compra en Cyglo está lista!'))
-            ->setFrom($this->getParameter('mailer_user'), 'Hola Cyglo')
+            ->setFrom($parameterBag->get('mailer_user'), 'Hola Cyglo')
             ->setTo($transactionRecord->getCustomer()->getEmail())
             ->setBody(
                 $this->renderView(
