@@ -161,7 +161,7 @@ locals:
         <i class="icon__alert"></i>
     </div>
     <header class="header">
-        <h1 class="header__title">{% block popupTitle %}Summary{% endblock %} {% if app.request.session.has('mindbody_client_email') %}<span class="user-details-header">{{ app.request.session.get('mindbody_client_email') }} (Not you? <a target="_parent" href="{{ path('mindbody_customer_logout') }}">Logout</a>)</span>{% endif %}</h1>
+        <h1 class="header__title">{% block popupTitle %}Summary{% endblock %} {% if app.request.session.has('mindbody_client_email') %}<span class="user-details-header">{{ app.request.session.get('mindbody_client_email') }} (Not you? <a target="_parent" href="{{ path('mindbody_logout') }}">Logout</a>)</span>{% endif %}</h1>
     </header>
     <main class="main">
         {% block content %}{% endblock %}

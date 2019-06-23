@@ -67,17 +67,4 @@ class DefaultController extends AbstractController
             ]
         );
     }
-
-    /**
-     * @Route("/logout", name="mindbody_customer_logout")
-     * @param FromSessionService $fromSessionService
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function mindbodyCustomerLogout(FromSessionService $fromSessionService, ParameterBagInterface $parameterBag)
-    {
-        $fromSessionService->destroyMindbodySession();
-
-        return $this->redirect($parameterBag->get('schedule_page'));
-    }
 }
