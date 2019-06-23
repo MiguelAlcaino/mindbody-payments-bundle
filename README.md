@@ -100,21 +100,38 @@ security:
             algorithm: argon2i
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        admin_provider:
             entity:
                 class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\User
+                property: email
+        mindbody_user_provider:
+            entity:
+                class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer
                 property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
+        main_admin:
+            provider: admin_provider
+            pattern: ^/(admin|adm)
             anonymous: true
             guard:
                 authenticators:
                     - MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator
             logout:
                 path: admin_logout
+                target:  admin_login
+
+        mindbody_purchase_area:
+            provider: mindbody_user_provider
+            anonymous: true
+            guard:
+                authenticators:
+                    - MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator
+            logout:
+                path: mindbody_logout
+                target: http://www.ogb.cl
 
             # activate different ways to authenticate
 
@@ -129,8 +146,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
 ```
 
 Roles explanation
