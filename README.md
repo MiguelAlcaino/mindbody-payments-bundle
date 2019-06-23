@@ -8,9 +8,8 @@ Add routes
 Create a new file `mindbody_payments.yaml` under `config/routes/`. The file should look like this
 
 ```
-mindbody_payments:
-    resource: '@MiguelAlcainoMindbodyPaymentsBundle/Controller/'
-    type: annotation
+mindbody_routes:
+    resource: "@MiguelAlcainoMindbodyPaymentsBundle/Resources/routes/mindbody_payments.yaml"
 ```
 
 Add config
@@ -157,15 +156,6 @@ Roles explanation
  - `ROLE_SUPER_ADMIN`: It is used inside the admin panel to add or delete admin users.
 
 **Remember**: These security and users has nothing to do with Mindbody's users, but with the users allowed to access to the admin panel.
-
-Add logout route
-----------
-Edit your `config/routes.yaml` so you have the following entry:
-```
-admin_logout:
-    path: /adm/logout
-    methods: GET
-```
 
 Widget setup (the one that shows the system inside a popup)
 ================
