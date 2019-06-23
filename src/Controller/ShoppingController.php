@@ -16,10 +16,11 @@ class ShoppingController extends AbstractController
      * @param Request $request
      * @param string  $type
      * @param string  $itemId
+     *
+     * @return Response
      */
-    public function shopSingleItemAction(Request $request, string $type, string $itemId){
-        dump($type, $itemId);
-
-        return new Response('<html><body>HOLA</body></html>');
+    public function shopSingleItemAction(Request $request, string $type, string $itemId): Response
+    {
+        return $this->render('@MiguelAlcainoMindbodyPayments/shopping/single_item.html.twig');
     }
 }
