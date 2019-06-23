@@ -1,0 +1,9 @@
+mindbody_payments:
+    resource: '@MiguelAlcainoMindbodyPaymentsBundle/Controller/'
+    type: annotation
+admin_logout:
+    path: /adm/logout
+    methods: GET
+mindbody_logout:
+    path: /mindbody/logout
+    methods: GET
