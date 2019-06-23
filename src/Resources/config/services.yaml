@@ -215,6 +215,12 @@ services:
             - '@doctrine'
         tags: ['doctrine.repository_service']
 
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
     ### END REPOSITORY ###
 
     ### TWIG EXTENSIONS ###
@@ -247,3 +253,13 @@ services:
             - '@doctrine.orm.default_entity_manager'
 
     ### END SECURITY ###
+
+    ### CUSTOM SETTINGS ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\CustomSettingService:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\CustomSettingService
+        arguments:
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository'
+            - '@doctrine.orm.default_entity_manager'
+
+    ### END CUSTOM SETTINGS ###

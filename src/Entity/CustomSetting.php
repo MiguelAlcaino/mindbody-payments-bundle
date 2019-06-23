@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CustomSetting
 {
+    public const FORM_TYPE_TEXT     = 'text';
+    public const FORM_TYPE_TEXTAREA = 'textarea';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -29,7 +32,12 @@ class CustomSetting
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $formType;
+    private $formType = self::FORM_TYPE_TEXT;
+
+    /**
+     * @ORM\Column(type="integer", options={"DEFAULT" = 1})
+     */
+    private $order_position = 1;
 
     public function getId(): ?int
     {
@@ -68,6 +76,18 @@ class CustomSetting
     public function setFormType(string $formType): self
     {
         $this->formType = $formType;
+
+        return $this;
+    }
+
+    public function getOrderPosition(): ?int
+    {
+        return $this->order_position;
+    }
+
+    public function setOrderPosition(int $order_position): self
+    {
+        $this->order_position = $order_position;
 
         return $this;
     }
