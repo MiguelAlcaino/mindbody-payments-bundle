@@ -51,13 +51,8 @@ BOOKING_PAGE='reserva-tu-clase'
 Add global variables to Twig in `config/packages/twig.yaml`
 ----------------
 ```
-twig:
-    globals:
-        main_host: '%env(MAIN_HOST)%'
-        payment_host: '%env(PAYMENT_SYSTEM_URL)%'
-        booking_page: '%env(BOOKING_PAGE)%'
-        currency: '%currency%'
-        siteName: '%siteName%'
+imports:
+    - { resource: '@MiguelAlcainoMindbodyPaymentsBundle/Resources/config/twig.yaml' }
 ```
 
 Configure requested services in config/services.yaml
