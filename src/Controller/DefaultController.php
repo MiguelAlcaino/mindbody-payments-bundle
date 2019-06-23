@@ -23,32 +23,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     /**
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
-     * @Route("/login", name="mindbody_customer_login", methods={"POST", "GET"})
-     */
-    public function loginCustomerAction(
-        Request $request
-    ) {
-        $form = $this->createForm(
-            LoginType::class,
-            null,
-            [
-                'method' => 'POST',
-            ]
-        );
-
-        $arrayToReturn = [];
-
-        $form->handleRequest($request);
-
-        $arrayToReturn['form'] = $form->createView();
-
-        return $this->renderLoginForm($arrayToReturn);
-    }
-
-    /**
      * @param Request              $request
      * @param MindBodyService      $mindBodyService
      * @param PriceFormatExtension $priceFormatExtension
@@ -92,23 +66,6 @@ class DefaultController extends AbstractController
                 'discountCode'   => $discountCode,
             ]
         );
-    }
-
-    /**
-     * Returns a rendered view of a Login form
-     *
-     * @param array       $viewParams
-     * @param string|null $loginTemplatePath
-     *
-     * @return Response
-     */
-    private function renderLoginForm(array $viewParams, string $loginTemplatePath = null): ?Response
-    {
-        if ($loginTemplatePath !== null) {
-            return $this->render($loginTemplatePath, $viewParams);
-        } else {
-            return $this->render('@MiguelAlcainoMindbodyPayments/Default/login.html.twig', $viewParams);
-        }
     }
 
     /**
