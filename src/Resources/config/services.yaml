@@ -11,6 +11,8 @@ parameters:
     widget_login_template: '@@MiguelAlcainoMindbodyPayments/widget/login.html.twig'
     env(URL_WHERE_WIDGET_IS_DISPLAYED): '/widget/test-index'
     url_where_widget_is_displayed: '%env(URL_WHERE_WIDGET_IS_DISPLAYED)%'
+    env(SCHEDULE_PAGE_URL): '%env(URL_WHERE_WIDGET_IS_DISPLAYED)%'
+    schedule_page_url: '%env(SCHEDULE_PAGE_URL)%'
 
 services:
     _defaults:

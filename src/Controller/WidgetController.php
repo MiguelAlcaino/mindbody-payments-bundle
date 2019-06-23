@@ -249,7 +249,7 @@ class WidgetController extends AbstractController
                 }
             }
 
-            $viewParams['schedulePage'] = $parameterBag->get('schedule_page');
+            $viewParams['schedulePage'] = $parameterBag->get('schedule_page_url');
 
             return $this->render('@MiguelAlcainoMindbodyPayments/widget/signUpForClass.html.twig', $viewParams);
         } else {
@@ -402,7 +402,7 @@ class WidgetController extends AbstractController
             '@MiguelAlcainoMindbodyPayments/widget/successfulPayment.html.twig',
             [
                 'transactionRecord' => $transactionRecord,
-                'nextUrl'           => $parameterBag->get('schedule_page'),
+                'nextUrl'           => $parameterBag->get('schedule_page_url'),
             ]
         );
     }

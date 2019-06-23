@@ -4,6 +4,8 @@ namespace MiguelAlcaino\MindbodyPaymentsBundle\Controller;
 
 use MiguelAlcaino\MindbodyPaymentsBundle\Form\LoginType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,5 +48,15 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         return $this->render('@MiguelAlcainoMindbodyPayments/Default/login.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @param ParameterBagInterface $parameterBag
+     *
+     * @return RedirectResponse
+     * @Route("/logout-target", name="mindbody_logout_target", methods={"GET"})
+     */
+    public function mindbodyTargetLogout(ParameterBagInterface $parameterBag){
+        return new RedirectResponse($parameterBag->get('schedule_page_url'));
     }
 }
