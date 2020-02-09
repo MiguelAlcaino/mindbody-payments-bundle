@@ -1,0 +1,55 @@
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        MiguelAlcaino\MindbodyPaymentsBundle\Entity\User:
+            algorithm: argon2i
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        admin_provider:
+            entity:
+                class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\User
+                property: email
+        mindbody_user_provider:
+            entity:
+                class: MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer
+                property: email
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main_admin:
+            provider: admin_provider
+            pattern: ^/(admin|adm)
+            anonymous: true
+            guard:
+                authenticators:
+                    - MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator
+            logout:
+                path: admin_logout
+                target:  admin_login
+
+        mindbody_purchase_area:
+            provider: mindbody_user_provider
+            anonymous: true
+            guard:
+                authenticators:
+                    - MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator
+            logout:
+                path: mindbody_logout
+                target: mindbody_logout_target
+
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

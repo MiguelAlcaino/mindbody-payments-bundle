@@ -2,10 +2,29 @@ mindbody.within_ten_years_validator.before_current_month_year: 'La fecha de expi
 mindbody.within_ten_years_validator.after_ten_years: 'La fecha de expiración supera 10 años desde la fecha actual.'
 service_for_new_users.error: 'Estás intentando comprar un servicio que es sólo para nuevos usuarios. Nuestros registros indican que ya has comprado antes. Por favor selecciona otro servicio.'
 mindbody.login.incorrect: 'Incorrect email or password. Please try again.'
-
-#ADMIN
 menu.transactions: Transacciones
 menu.services: Planes
 menu.clients: Clientes
 menu.settings: Settings
 menu.logout: Logout
+menu.locations: Locaciones
+notice.locations_successfully_synchronized: Las locaciones han sido sincronizadas correctamente
+notice.products_successfully_synchronized: 'Los servicios han sido sincronizados correctamente con Mindbody'
+admin.location.sync_button: Sync Locaciones
+notice.programs_successfully_synchronized: 'Los programas se han sicronizado con éxito.'
+notice.widget.client_registered_already_in_class: 'Ya estas registrado en esta clase.'
+notice.widget.client_outside_schedule_window: 'Estas fuera de la ventana de agendamiento. No puedes reservar esta clase.'
+error.widget.error_add_user_to_class: 'Ha habido un error tratando de reservar esta clase. Por favor intenta de nuevo.'
+widget.sign_up_for_class.popup_title: 'Estado de la reserva'
+widget.sign_up_for_class.content: 'Felicidades! Has agendado la clase con éxito.'
+widget.sign_up_for_class.view_schedule_page_link_title: 'Ver calendario'
+widget.error.chopping_cart_calculation_error: 'Ha habido un error tratando de agragar este item a tu compra. Por favor verfica tu selección e intenta otra vez.'
+widget.layout.next_button: 'Siguiente'
+widget.book_summary.title: 'Selecciona tu clase'
+widget.choose_package.title: 'Selecciona un paqueta para comprar'
+widget.choose_package.next_button: 'Continua al pago'
+widget.choose_package.form.title: 'Paquetes'
+login.title: 'Estás registrado? Logueate aquí'
+login.password_recovery: 'Perdiste tu contraseña?'
+login.register: 'Registrate aquí'
+or: o

@@ -1,6 +1,7 @@
 <tr>
     <td>{{ product.name }}</td>
-    <td>${{ product.price|number_format(0,',','.') }}</td>
+    <td>{{ currency }}{{ product.price|number_format(0,',','.') }}</td>
+    <td><a href="{{ url('shopping_shop_single_item', { type: 'service', itemId: product.merchantId}) }}">Link</a></td>
     <td>
         <a href="{{ path('admin_product_edit', { 'id': product.id }) }}" class="btn btn-primary btn-sm">Editar</a>
     </td>

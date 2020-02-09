@@ -1,0 +1,20 @@
+{% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
+{% block popupTitle %}{% trans %}widget.book_summary.title{% endtrans %}{% endblock %}
+{% block content %}
+
+    <div class="item" data-item-type="Class">
+        <div class="item__details">
+            <div class="item__studio">{{ siteName }}</div>
+            <div class="item__class">{{ className }}</div>
+            <div class="item__trainer">with {{ teacherName }}</div>
+            <div class="item__dateTime">{{ classStartTime|date('H:i') }} - {{ classEndTime|date('H:i') }}
+                | {{ classStartTime|date('l, F j') }}</div>
+        </div>
+    </div>
+
+    <a class="cta cart-cta-disable-me-on-click cart-cta-preview-confirmation"
+       href="{{ path('widget_before_login') }}">{% trans %}widget.layout.next_button{% endtrans %}</a>
+{% endblock %}
+{% block javascript %}
+{{ parent() }}
+{% endblock %}

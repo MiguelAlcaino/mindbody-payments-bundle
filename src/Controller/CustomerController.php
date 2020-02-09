@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use MiguelAlcaino\MindbodyPaymentsBundle\Entity\Customer;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -21,7 +22,7 @@ class CustomerController extends AbstractController
      *
      * @Route("/", name="customer_index", methods={"GET"})
      */
-    public function indexAction(Request $request, EntityManagerInterface $em)
+    public function indexAction(Request $request, EntityManagerInterface $em, ParameterBagInterface $parameterBag)
     {
 
         $limit         = 50;
@@ -42,10 +43,10 @@ class CustomerController extends AbstractController
             $viewParams['end']   = $end;
 
             $startDatetime     = \DateTime::createFromFormat('d-m-Y H:i:s', $start . ' 00:00:00')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $endDatetime       = \DateTime::createFromFormat('d-m-Y H:i:s', $end . '23:59:59')->setTimezone(
-                new \DateTimeZone($this->getParameter('timezone'))
+                new \DateTimeZone($parameterBag->get('timezone'))
             );
             $criteria['start'] = $startDatetime;
             $criteria['end']   = $endDatetime;

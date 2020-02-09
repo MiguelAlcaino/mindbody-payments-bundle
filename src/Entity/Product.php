@@ -58,15 +58,22 @@ class Product
      */
     private $productDiscounts;
 
+    /**
+     * @var Location[]
+     * @ORM\ManyToMany(targetEntity="MiguelAlcaino\MindbodyPaymentsBundle\Entity\Location", mappedBy="products")
+     */
+    private $locations;
+
     public function __construct()
     {
-        $this->isDeleted = false;
+        $this->isDeleted        = false;
         $this->productDiscounts = new ArrayCollection();
+        $this->locations        = new ArrayCollection();
     }
 
     public function __toString()
     {
-        return sprintf($this->name);
+        return sprintf($this->price.' '.$this->name);
     }
 
     /**
@@ -233,5 +240,33 @@ class Product
         }
 
         return null;
+    }
+
+    /**
+     * @return Location[]
+     */
+    public function getLocations()
+    {
+        return $this->locations;
+    }
+
+    /**
+     * @param Location $location
+     *
+     * @return $this
+     */
+    public function addLocation(Location $location)
+    {
+        $this->locations->add($location);
+
+        return $this;
+    }
+
+    /**
+     * @param Location $location
+     */
+    public function removeLocation(Location $location)
+    {
+        $this->locations->removeElement($location);
     }
 }

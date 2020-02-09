@@ -1,0 +1,52 @@
+{% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
+{% block popupTitle %}{% trans %}widget.choose_package.title{% endtrans %}{% endblock %}
+{% block content %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    {{ form_start(form, {attr: {
+        class: 'form'
+    }}) }}
+    {#<form class="form" action="/sites/50710/cart/add_service" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">#}
+    <input type="hidden" name="ecommerce_redirect" id="ecommerce_redirect" value="true">
+    <fieldset class="fieldset">
+        <legend class="fieldset__legend">{% trans %}widget.choose_package.form.title{% endtrans %}</legend>
+        {% for radioWidget in form.service.children %}
+            {% for service in services %}
+                {% if service.merchantId == radioWidget.vars.value %}
+                <label class="radio {#is-active#}" for="{{ radioWidget.vars.id }}">
+                    <div class="radio__label">{{ radioWidget.vars.label }}</div>
+                    <div class="radio__detail">{{ currency }}{{ service.price|price_format }}</div>
+                    {{ form_widget(radioWidget, {attr: {
+                        class: 'radio__input'
+                    }}) }}
+                    <svg class="icon__radio">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#radioSymbol"></use>
+                    </svg>
+                </label>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </fieldset>
+    <button name="button" type="submit" class="cta cart-cta-disable-me-on-click cart-cta-select-service"
+            autocomplete="off">{% trans %}widget.choose_package.next_button{% endtrans %}
+    </button>
+    {{ form_end(form) }}
+{% endblock %}
+{% block javascript %}
+{{ parent() }}
+<script>
+    $('input[type=radio]').change(function(){
+        // console.log($(this).val());
+        $('label.radio').each(function(){
+            $(this).removeClass('is-active');
+        });
+        $(this).closest('label.radio').addClass('is-active');
+    });
+
+    $('form').submit(function(){
+        $(this).find('button[type=submit]').addClass('is-disabled');
+        $(this).find('button[type=submit]').find('i').show();
+    });
+</script>
+{% endblock %}

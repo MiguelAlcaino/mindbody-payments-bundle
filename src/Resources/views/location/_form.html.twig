@@ -1,0 +1,21 @@
+{{ form_start(form) }}
+<div class="form-group">
+    {{ form_widget(form.name, {attr: {
+        class: 'form-control'
+    }}) }}
+</div>
+<div class="form-group">
+    {% for productWidget in form.products.children %}
+        <div class="form-check">
+            {{ form_widget(productWidget, {attr: {
+                class: 'form-check-input'
+            }}) }}
+            {{ form_label(productWidget, null, {label_attr: {
+                class: 'form-check-label'
+            }}) }}
+        </div>
+
+    {% endfor %}
+</div>
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

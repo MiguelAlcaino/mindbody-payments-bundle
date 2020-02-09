@@ -1,8 +1,29 @@
 service_for_new_users.error: 'This service is just for new users.'
-
-#ADMIN
 menu.transactions: Transactions
 menu.services: Packages
 menu.clients: Clients
 menu.settings: Settings
 menu.logout: Logout
+menu.locations: Locations
+menu.users: Admin Users
+notice.locations_successfully_synchronized: 'Locations have been successfully synchronized'
+notice.products_successfully_synchronized: 'Packages have been successfully synchronized'
+admin.location.sync_button: Sync Locations
+notice.programs_successfully_synchronized: 'Programs have been successfully synchronized'
+notice.widget.client_registered_already_in_class: 'You are registered in this class already'
+notice.widget.client_outside_schedule_window: 'You are outside the scheduling window'
+error.widget.error_add_user_to_class: 'There has been an error trying to make this booking. Please try again.'
+widget.sign_up_for_class.popup_title: 'Booking status'
+widget.sign_up_for_class.content: 'Congratulations!. Your booking has been done successfully.'
+widget.sign_up_for_class.view_schedule_page_link_title: 'View schedule'
+widget.error.chopping_cart_calculation_error: 'There has been an error trying to add this package to your shopping cart. Please check your selection and try again.'
+widget.layout.next_button: 'Next'
+widget.book_summary.title: 'Choose your class'
+widget.choose_package.title: 'Please choose the package you want to buy'
+widget.choose_package.next_button: 'Proceed to payment'
+widget.choose_package.form.title: 'Packages'
+login.title: 'Already a member? Please login.'
+login.password_recovery: 'Password recovery?'
+login.register: 'Register'
+or: or
+payment.error.generic_error_message: 'Your payment could not be process successfully. Please check your card details.'

@@ -15,7 +15,8 @@ use MiguelAlcaino\MindbodyPaymentsBundle\Exception\InvalidItemInShoppingCartExce
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NoProgramsInTransactionRecordException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Exception\NotValidLoginException;
 use MiguelAlcaino\MindbodyPaymentsBundle\Service\Exception\MindbodyServiceException;
-use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler;
+use MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -116,6 +117,7 @@ class MindbodyService
      *
      * @return array|mixed|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest::getServices instead
      */
     public function getServices($locations, $userChache = true)
     {
@@ -145,6 +147,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedServices instead
      */
     public function getFormattedServices($useCache = true)
     {
@@ -199,6 +202,8 @@ class MindbodyService
      * Returns an array with id and name of the different Mindbody locations
      *
      * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler::getFormattedLocations instead
      */
     public function getFormattedLocations()
     {
@@ -228,6 +233,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest::getLocations instead
      */
     public function getLocations()
     {
@@ -489,7 +495,7 @@ class MindbodyService
         ];
 
         if ($promotionCode !== null) {
-            $result['Request']['PromotionCode'] = $promotionCode;
+            $request['Request']['PromotionCode'] = $promotionCode;
         }
 
         $result = $client->CheckoutShoppingCart($request);
@@ -514,6 +520,7 @@ class MindbodyService
      *
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler::getClientServicesFormatted instead
      */
     public function getClientServicesFormatted($clientId, $programIds = [], $showActiveOnly = true)
     {
@@ -563,6 +570,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServicesSoap($clientId, $programIds = [], $showActiveOnly = true)
     {
@@ -635,6 +643,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws MindbodyServiceException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::purchaseShoppingCart instead
      */
     public function purchaseShoppingCartWithSoap(
         $clientId,
@@ -781,6 +790,7 @@ class MindbodyService
      *
      * @return mixed
      * @throws MindbodyServiceException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::purchaseShoppingCart instead
      */
     public function purchaseShoppingCart(
         $clientId,
@@ -889,6 +899,7 @@ class MindbodyService
      *
      * @return array
      * @throws \Exception
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester::getClientServices instead
      */
     public function getClientServices($clientId, $showActiveOnly = null, $programIds = null)
     {
@@ -1000,6 +1011,7 @@ class MindbodyService
      * @throws \Exception
      * @return TransactionRecord
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService::makePurchase instead
      */
     public function makePurchaseWithSoap(
         $transactionRecord,
@@ -1137,6 +1149,7 @@ class MindbodyService
      * @throws \Exception
      * @return TransactionRecord
      * @throws \GuzzleHttp\Exception\GuzzleException
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService::makePurchase instead
      */
     public function makePurchase(
         $transactionRecord,
@@ -1235,6 +1248,7 @@ class MindbodyService
      * Returns an array of formatted custom payment methods
      *
      * @return array
+     * @deprecated Use \MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler::getFormattedCustomPaymentMethods instead
      */
     public function getFormattedCustomPaymentMethods()
     {

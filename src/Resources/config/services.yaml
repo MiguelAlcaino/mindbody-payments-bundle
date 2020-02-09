@@ -7,16 +7,21 @@ parameters:
     router.request_context.host: '%env(HOST)%'
     router.request_context.scheme: https
     router.request_context.base_url: ''
+    login_template: '@@MiguelAlcainoMindbodyPayments/Default/login.html.twig'
+    widget_login_template: '@@MiguelAlcainoMindbodyPayments/widget/login.html.twig'
+    env(URL_WHERE_WIDGET_IS_DISPLAYED): '/widget/test-index'
+    url_where_widget_is_displayed: '%env(URL_WHERE_WIDGET_IS_DISPLAYED)%'
+    env(SCHEDULE_PAGE_URL): '%env(URL_WHERE_WIDGET_IS_DISPLAYED)%'
+    schedule_page_url: '%env(SCHEDULE_PAGE_URL)%'
 
 services:
     _defaults:
         public: false
-    #CONTROLLERS
-    MiguelAlcaino\MindbodyPaymentsBundle\Controller\:
-        resource: '../../Controller'
-        tags: ['controller.service_arguments']
 
     #SERVICES
+    guzzle.client:
+        class: GuzzleHttp\Client
+
     file_cache_service:
         class: Symfony\Component\Cache\Simple\FilesystemCache
 
@@ -29,15 +34,100 @@ services:
             $password: '%mindbody_source_password%'
             $siteIds: '%mindbody_site_ids%'
 
+    ### MINDBODY SOAP REQUESTERS ###
+
+    miguel_alcaino.minbody.credentials:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\Credentials\MindbodyCredentialsService
+        arguments:
+            - '@parameter_bag'
+
+    miguel_alcaino.mindbody.soap.request:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\MindbodySOAPRequester
+        arguments:
+            - '@miguel_alcaino.minbody.credentials'
+            - '@guzzle.client'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\MindbodySOAPRequester: '@miguel_alcaino.mindbody.soap.request'
+
+    miguel_alcaino.mindbody.soap.request.sale_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SaleServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.sale_service'
+
+    miguel_alcaino.mindbody.soap.request.site_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\SiteServiceSOAPRequest: '@miguel_alcaino.mindbody.request_handler.site_service'
+
+    miguel_alcaino.mindbody.soap.request.class_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClassServiceSOAPRequester
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClassServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.class_service'
+
+    miguel_alcaino.mindbody.soap.request.client_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodySOAPRequest\ClientServiceSOAPRequester: '@miguel_alcaino.mindbody.soap.request.client_service'
+
+    ### END MINDBODY SOAP REQUESTERS ###
+
     ### MINDBODY REQUEST HANDLERS ###
 
+    miguel_alcaino.mindbody.request_handler.sale_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.sale_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SaleServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.sale_service'
+
     miguel_alcaino.mindbody.request_handler.site_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler
         arguments:
             $mb: '@miguel_alcaino.mb_api'
             $cache: '@file_cache_service'
+            $siteServiceSOAPRequest: '@miguel_alcaino.mindbody.soap.request.site_service'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodySOAPRequest\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\SiteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+
+    miguel_alcaino.mindbody.request_handler.client_service:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.client_service'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyClient\MindbodyRequestHandler\ClientServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.client_service'
+
+    ### END MINDBODY REQUEST HANDLERS ###
+
+    ### MINDBODY BUSINESS LOGIC ###
+
+    miguel_alcaino.mindbody.shopping_cart:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService
+        arguments:
+            - '@miguel_alcaino.mindbody.soap.request.class_service'
+            - '@miguel_alcaino.mindbody.request_handler.sale_service'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\ShoppingCart\ShoppingCartService: '@miguel_alcaino.mindbody.shopping_cart'
+
+    miguel_alcaino.mindbody.transaction_record_handler:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordHandler
+        arguments:
+            - '@miguel_alcaino.mindbody.transaction_record_filler'
+            - '@miguel_alcaino.mindbody.shopping_cart'
+            - '@miguel_alcaino.mindbody.from_session'
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordHandler: '@miguel_alcaino.mindbody.transaction_record_handler'
+
+    ### END MINDBODY BUSINESS LOGIC ###
 
     miguel_alcaino.mindbody_service:
         public: true
@@ -70,12 +160,12 @@ services:
     MiguelAlcaino\MindbodyPaymentsBundle\Service\TransactionRecord\TransactionRecordFillerService: '@miguel_alcaino.mindbody.transaction_record_filler'
 
     miguel_alcaino.mindbody.from_session:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine.orm.default_entity_manager'
             - '@session'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\FromSessionService: '@miguel_alcaino.mindbody.from_session'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\FromSessionService: '@miguel_alcaino.mindbody.from_session'
 
     miguel_alcaino.mindbody.within_ten_years_validator:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Validator\WithinTenYearsValidatorService
@@ -89,20 +179,87 @@ services:
         arguments:
             - '@miguel_alcaino.mindbody.from_session'
             - '@miguel_alcaino.mindbody_service'
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine.orm.default_entity_manager'
     MiguelAlcaino\MindbodyPaymentsBundle\Service\Customer\CustomerFillerService: '@miguel_alcaino.mindbody.customer_filler'
 
     miguel_alcaino.mindbody.user_session_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService
         arguments:
             $fromSessionService: '@miguel_alcaino.mindbody.from_session'
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\UserSessionService: '@miguel_alcaino.mindbody.user_session_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\Session\UserSessionService: '@miguel_alcaino.mindbody.user_session_service'
 
-    miguel_alcaino.mindbody.program_service:
-        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService
+    ### REPOSITORY ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\LocationRepository
         arguments:
-            $parameterBag: '@parameter_bag'
-            $siteServiceRequestHandler: '@miguel_alcaino.mindbody.request_handler.site_service'
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
 
-    MiguelAlcaino\MindbodyPaymentsBundle\Service\MindbodyProgramService: '@miguel_alcaino.mindbody.program_service'
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProductRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProgramRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\ProgramRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository
+        arguments:
+            - '@doctrine'
+        tags: ['doctrine.repository_service']
+
+    ### END REPOSITORY ###
+
+    ### TWIG EXTENSIONS ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\TwigExtension\PriceFormatExtension
+        arguments:
+            - '@parameter_bag'
+        tags: ['twig.extension']
+
+    ### END TWIG EXTENSIONS ###
+
+    ### SECURITY ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Security\LoginFormAuthenticator
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@router.default'
+            - '@security.csrf.token_manager'
+            - '@security.user_password_encoder.generic'
+    MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Security\MindbodyPurchaseAreaAuthenticator
+        arguments:
+            - '@router.default'
+            - '@miguel_alcaino.mindbody.soap.request.client_service'
+            - '@form.factory'
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomerRepository'
+            - '@miguel_alcaino.mindbody.customer_filler'
+            - '@doctrine.orm.default_entity_manager'
+
+    ### END SECURITY ###
+
+    ### CUSTOM SETTINGS ###
+
+    MiguelAlcaino\MindbodyPaymentsBundle\Service\CustomSettingService:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\CustomSettingService
+        arguments:
+            - '@MiguelAlcaino\MindbodyPaymentsBundle\Repository\CustomSettingRepository'
+            - '@doctrine.orm.default_entity_manager'
+
+    ### END CUSTOM SETTINGS ###

@@ -10,7 +10,7 @@
             <h4 class="card-header">{{ service.name }}</h4>
             <div class="card-body">
                 <p style="font-size: 30px;font-weight: 500;" class="card-text">
-                    ${{ service.price|number_format(0,'.') }}</p>
+                    {{ currency }}{{ service.price|price_format }}</p>
                 <a class="btn btn-primary"
                    href="{{ path('mindbody_customer_login', {'service': service.id}) }}">
                     <i class="fa fa-arrow-right" aria-hidden="true"></i>

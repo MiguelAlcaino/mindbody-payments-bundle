@@ -1,6 +1,6 @@
 <?php
 
-namespace MiguelAlcaino\MindbodyPaymentsBundle\Service;
+namespace MiguelAlcaino\MindbodyPaymentsBundle\Service\Session;
 
 class UserSessionService
 {

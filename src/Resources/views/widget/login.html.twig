@@ -1,0 +1,54 @@
+{% extends '@MiguelAlcainoMindbodyPayments/widget/layout/layout.html.twig' %}
+{% block popupTitle %}Login{% endblock %}
+{% block content %}
+
+    {% if errorMessage is defined %}<div class="alert">{{ errorMessage }}</div>{% endif %}
+    {% for message in app.flashes('notice') %}
+        <div class="flash-notice">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form, {
+        attr: {
+            class: 'signin'
+        }
+    }) }}
+        <div class="title--attached">
+            <div class="title__content">{% trans %}login.title{% endtrans %}</div>
+        </div>
+        <fieldset class="fieldset">
+            <div class="field">
+                {{ form_widget(form.email, {attr: {
+                    class: 'field__input js-hasValue',
+                    'data-hc-parsley-required': 'true',
+                }}) }}
+                {{ form_label(form.email, null, {label_attr: {
+                    class: 'field__label'
+                }}) }}
+            </div>
+            <div class="field">
+                {{ form_widget(form.password, {attr: {
+                    class: 'field__input js-hasValue',
+                    'data-hc-parsley-required': 'true',
+                }}) }}
+                {{ form_label(form.password, null, {label_attr: {
+                    class: 'field__label'
+                }}) }}
+            </div>
+        </fieldset>  <button name="button" type="submit" class="cta signin__cta" autocomplete="off">Login <i style="display: none;" class="fas fa-spinner fa-spin"></i></button>
+        <a class="signin__forgot" href="https://widgets.healcode.com/sites/727087/client/forgot_password">{% trans %}login.password_recovery{% endtrans %}</a>
+        <div class="signin__or">{% trans %}or{% endtrans %}</div>
+        <a style="pointer-events: all;" class="cta--outline signin__create_account" href="{{ path('widget_register_new_mindbody_user') }}">{% trans %}login.register{% endtrans %}</a>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block javascript %}
+{{ parent() }}
+<script>
+    $('form').submit(function(){
+        $(this).find('button[type=submit]').addClass('is-disabled');
+        $(this).find('button[type=submit]').find('i').show();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+twig:
+    globals:
+        main_host: '%env(MAIN_HOST)%'
+        payment_host: '%env(PAYMENT_SYSTEM_URL)%'
+        booking_page: '%env(BOOKING_PAGE)%'
+        currency: '%currency%'
+        siteName: '%siteName%'
