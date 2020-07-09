@@ -24,6 +24,10 @@ services:
 
     miguel_alcaino.mb_api:
         class: MiguelAlcaino\MindbodyPaymentsBundle\Service\MB_API
+        factory: ['@miguel_alcaino.factory.mb_api', 'create']
+
+    miguel_alcaino.factory.mb_api:
+        class: MiguelAlcaino\MindbodyPaymentsBundle\Service\Factory\MbApiFactory
         arguments:
             $sourceName: '%mindbody_source_name%'
             $password: '%mindbody_source_password%'
